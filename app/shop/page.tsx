@@ -174,17 +174,19 @@ function ShopContent() {
         <FeaturedSection />
 
         {/* Header & Controls */}
-        <ShopHeader
-          title={selectedCategory === "all" ? "Tous les produits" : activeCategory?.label || "Boutique"}
-          productCount={products.length}
-          sortBy={sortBy}
-          setSortBy={setSortBy}
-          activeFiltersCount={activeFiltersCount}
-          clearAllFilters={clearAllFilters}
-          isFilterOpen={isFilterOpen}
-          setIsFilterOpen={setIsFilterOpen}
-          filterProps={filterProps}
-        />
+        <div id="product-section" className="scroll-mt-24">
+          <ShopHeader
+            title={selectedCategory === "all" ? "Tous les produits" : activeCategory?.label || "Boutique"}
+            productCount={products.length}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            activeFiltersCount={activeFiltersCount}
+            clearAllFilters={clearAllFilters}
+            isFilterOpen={isFilterOpen}
+            setIsFilterOpen={setIsFilterOpen}
+            filterProps={filterProps}
+          />
+        </div>
 
         <div className="flex gap-8 lg:gap-12 mt-8">
           {/* Desktop Sidebar */}

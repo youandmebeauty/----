@@ -52,7 +52,7 @@ const CATEGORY_CONTENT: Record<string, { title: string; subtitle: string; descri
         description: "Les outils indispensables pour une application parfaite et des résultats professionnels."
     },
     default: {
-        subtitle: "Nouvelle Collection",
+        subtitle: "Sélection Exclusive",
         title: "L'Essence de la Beauté",
         description: "Découvrez nos dernières innovations pour une beauté naturelle et sophistiquée."
     }
@@ -103,6 +103,13 @@ export function FeaturedSection() {
 
     const content = getContent()
 
+    const handleDiscoverClick = () => {
+        const productSection = document.getElementById('product-section')
+        if (productSection) {
+            productSection.scrollIntoView({ behavior: 'smooth' })
+        }
+    }
+
     return (
         <section className="relative w-full h-[400px] lg:h-[500px] mb-16 overflow-hidden rounded-2xl">
             <div className="absolute inset-0 bg-black">
@@ -140,6 +147,7 @@ export function FeaturedSection() {
                             {content.description}
                         </p>
                         <Button
+                            onClick={handleDiscoverClick}
                             variant="outline"
                             className="bg-white/10 backdrop-blur-md border-white text-white hover:bg-white hover:text-black transition-all duration-300 rounded-full px-8"
                         >
