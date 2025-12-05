@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import * as ort from "onnxruntime-web";
+// NOTE: onnxruntime-web loaded dynamically from CDN to avoid webpack build issues
 import {
     Sparkles,
     AlertCircle,
@@ -16,7 +16,7 @@ import type { DetectionRaw, MappedDetection, GroupedDetection, Product } from "@
 
 // ----------------- Config -----------------
 const INPUT_SIZE = 640;
-const CONF_THRESHOLD = 0.15;
+const CONF_THRESHOLD = 0.05;
 const IOU_THRESHOLD = 0.45;
 
 const CLASS_NAMES = [
@@ -48,33 +48,46 @@ const SKIN_CONCERN_DETAILS: Record<number, { name: string; description: string }
 
 // ----------------- Helpers: ONNX model, preprocess, NMS -----------------
 
-let onnxSession: ort.InferenceSession | null = null;
+let onnxSession: any = null;
 
-async function initializeONNX() {
-    try {
-        // Import ONNX Runtime dynamically on client side only
-        const ort = await import('onnxruntime-web');
-        
-        // Configure ONNX Runtime environment
-        ort.env.wasm.numThreads = 1;
-        ort.env.wasm.simd = true;
+async function loadONNXRuntime(): Promise<any> {
+    // Load ONNX Runtime from CDN to avoid webpack bundling
+    return new Promise((resolve, reject) => {
+        if ((window as any).ort) {
+            resolve((window as any).ort);
+            return;
+        }
 
-        // CRITICAL: Use CDN for WASM files (works on Vercel)
-        ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.23.2/dist/';
-        
-        console.log("ONNX Runtime configuration set (using CDN for WASM files)");
-        return ort;
-    } catch (error) {
-        console.error("Failed to initialize ONNX Runtime:", error);
-        throw error;
-    }
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/ort.min.js';
+        script.async = true;
+
+        script.onload = () => {
+            const ort = (window as any).ort;
+            if (!ort) {
+                reject(new Error('ONNX Runtime not found after script load'));
+                return;
+            }
+
+            // Configure ONNX Runtime
+            ort.env.wasm.numThreads = 1;
+            ort.env.wasm.simd = true;
+            ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/';
+
+            console.log("✓ ONNX Runtime loaded from CDN");
+            resolve(ort);
+        };
+
+        script.onerror = () => reject(new Error('Failed to load ONNX Runtime from CDN'));
+        document.head.appendChild(script);
+    });
 }
 async function loadModel() {
     if (onnxSession) return onnxSession;
 
     try {
-        // Initialize ONNX environment first and get the module
-        const ort = await initializeONNX();
+        // Load ONNX Runtime from CDN and get the module
+        const ort = await loadONNXRuntime();
 
         const modelPath = "/models/best.onnx";
         console.log("Attempting to load model from:", modelPath);
@@ -111,13 +124,13 @@ async function loadModel() {
         return onnxSession;
     } catch (error) {
         console.error("Error loading ONNX model:", error);
-        
+
         // Provide more helpful error messages
         let errorMessage = "Échec du chargement du modèle";
-        
+
         if (error instanceof Error) {
             const errMsg = error.message.toLowerCase();
-            
+
             if (errMsg.includes('fetch') || errMsg.includes('network')) {
                 errorMessage = "Impossible de charger le modèle. Vérifiez votre connexion internet.";
             } else if (errMsg.includes('wasm')) {
@@ -128,7 +141,7 @@ async function loadModel() {
                 errorMessage = `Erreur de chargement du modèle: ${error.message}`;
             }
         }
-        
+
         throw new Error(errorMessage);
     }
 }
@@ -314,8 +327,8 @@ export default function SkinAnalyzerFeature() {
 
     useEffect(() => {
         setIsClient(true);
-        // Preload ONNX in background
-        initializeONNX().catch(console.error);
+        // Preload ONNX Runtime in background
+        loadONNXRuntime().catch(console.error);
     }, []);
 
     // ----------------- Inference -----------------
@@ -327,8 +340,8 @@ export default function SkinAnalyzerFeature() {
         setLoading(true);
 
         try {
-            // Initialize ONNX if not already done
-            await initializeONNX();
+            // Load ONNX Runtime
+            const ort = await loadONNXRuntime();
 
             // Check Quota
             const quotaResponse = await fetch("/api/skin-analyzer/quota", {

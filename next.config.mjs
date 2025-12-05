@@ -22,13 +22,11 @@ const nextConfig = {
     },
   },
   webpack: (config, { isServer }) => {
-    // CRITICAL: Tell webpack to ignore onnxruntime-web completely on the server
+    // Externalize onnxruntime-web on both server and client to prevent webpack parsing
     if (isServer) {
       config.externals.push('onnxruntime-web');
-    }
-
-    // For client-side, prevent webpack from trying to parse it
-    if (!isServer) {
+    } else {
+      // Client-side configuration
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
@@ -36,9 +34,12 @@ const nextConfig = {
         crypto: false,
       };
 
-      // CRITICAL: Externalize onnxruntime-web to prevent webpack from bundling it
-      config.externals = config.externals || {};
-      config.externals['onnxruntime-web'] = 'onnxruntime-web';
+      // CRITICAL: Prevent webpack from trying to bundle onnxruntime-web
+      // It will be loaded dynamically at runtime
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'onnxruntime-web': false,
+      };
     }
 
     return config;
@@ -48,6 +49,19 @@ const nextConfig = {
       {
         source: "/models/:path*",
         headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/onnx-wasm/:path*",
+        headers: [
+          {
+            key: "Content-Type",
+            value: "application/wasm",
+          },
           {
             key: "Cache-Control",
             value: "public, max-age=31536000, immutable",
