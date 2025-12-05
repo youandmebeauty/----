@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import { Sparkles, Heart, Package, Award, Shield, Truck, ArrowRight } from "lucide-react"
+import { ScrollAnimation } from "./scroll-animation"
 
 const values = [
     {
@@ -70,7 +71,7 @@ export function WhyChooseUs() {
                     </div>
 
                     <h2 className="font-serif text-5xl md:text-6xl lg:text-7xl font-medium mb-6 text-foreground">
-                        Pourquoi <br/> <span className="italic text-primary">You&me Beauty</span>
+                        Pourquoi <br /> <span className="italic text-primary">You&me Beauty</span>
                     </h2>
 
                     <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
@@ -83,46 +84,51 @@ export function WhyChooseUs() {
                     {values.map((value, index) => {
                         const Icon = value.icon
                         return (
-                            <div
+                            <ScrollAnimation
                                 key={index}
-                                className="group relative bg-card/50 backdrop-blur-sm border border-border/50 rounded-3xl p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-700 hover:-translate-y-3 sticky md:static overflow-hidden"
-                                style={{
-                                    top: `calc(8rem + ${index * 1.5}rem)`,
-                                    zIndex: values.length - index,
-                                    animationDelay: `${index * 100}ms`
-                                }}
+                                variant="slideUp"
+                                delay={index * 0.1}
                             >
-                                {/* Animated gradient background */}
-                                <div className={`absolute inset-0 bg-gradient-to-br ${value.gradient} rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
+                                <div
+                                    className="group relative bg-card/50 backdrop-blur-sm border border-border/50 rounded-3xl p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-700 hover:-translate-y-3 sticky md:static overflow-hidden"
+                                    style={{
+                                        top: `calc(8rem + ${index * 1.5}rem)`,
+                                        zIndex: values.length - index,
+                                        animationDelay: `${index * 100}ms`
+                                    }}
+                                >
+                                    {/* Animated gradient background */}
+                                    <div className={`absolute inset-0 bg-gradient-to-br ${value.gradient} rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
 
-                                {/* Shine effect on hover */}
-                                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
-                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-                                </div>
-
-                                {/* Content */}
-                                <div className="relative">
-                                    {/* Icon Container */}
-                                    <div className={`w-20 h-20 ${value.iconBg} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 shadow-lg`}>
-                                        <Icon className="w-10 h-10 text-primary group-hover:scale-110 transition-transform duration-700" />
+                                    {/* Shine effect on hover */}
+                                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
                                     </div>
 
-                                    {/* Title */}
-                                    <h3 className="font-serif text-2xl font-semibold mb-4 text-foreground group-hover:text-primary transition-colors duration-500">
-                                        {value.title}
-                                    </h3>
+                                    {/* Content */}
+                                    <div className="relative">
+                                        {/* Icon Container */}
+                                        <div className={`w-20 h-20 ${value.iconBg} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 shadow-lg`}>
+                                            <Icon className="w-10 h-10 text-primary group-hover:scale-110 transition-transform duration-700" />
+                                        </div>
 
-                                    {/* Description */}
-                                    <p className="text-muted-foreground leading-relaxed mb-6 font-light">
-                                        {value.description}
-                                    </p>
+                                        {/* Title */}
+                                        <h3 className="font-serif text-2xl font-semibold mb-4 text-foreground group-hover:text-primary transition-colors duration-500">
+                                            {value.title}
+                                        </h3>
 
-                                    {/* Decorative animated line */}
-                                    <div className="relative h-1 bg-border/30 rounded-full overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-primary to-primary/50 rounded-full w-12 group-hover:w-full transition-all duration-700"></div>
+                                        {/* Description */}
+                                        <p className="text-muted-foreground leading-relaxed mb-6 font-light">
+                                            {value.description}
+                                        </p>
+
+                                        {/* Decorative animated line */}
+                                        <div className="relative h-1 bg-border/30 rounded-full overflow-hidden">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-primary to-primary/50 rounded-full w-12 group-hover:w-full transition-all duration-700"></div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </ScrollAnimation>
                         )
                     })}
                 </div>

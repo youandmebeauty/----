@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import Image from "next/image"
+import { ScrollAnimation } from "./scroll-animation"
 
 const categories = [
   {
@@ -32,7 +33,7 @@ const categories = [
 
 export function Categories() {
   return (
-    <section className="mt-20 pt-24 bg-gradient-to-b rounded-3xl m-4 from-secondary to-background/30">
+    <section className="mt-24 pt-24 bg-gradient-to-b rounded-3xl m-4 from-secondary to-background/30">
       <div className="container mx-auto px-4 ">
         <div className="mb-16 flex items-end justify-between ">
           <div className="max-w-xl">
@@ -51,28 +52,33 @@ export function Categories() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {categories.map((category, index) => (
-            <Link
+            <ScrollAnimation
               key={category.id}
-              href={category.href}
-              className="rounded-xl group relative aspect-[3/4] overflow-hidden bg-secondary block"
+              variant="scaleUp"
+              delay={index * 0.15}
             >
-              <Image
-                src={category.image}
-                alt={category.name}
-                fill
-                className="object-cover transition-transform duration-1000 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
+              <Link
+                href={category.href}
+                className="rounded-xl group relative aspect-[3/4] overflow-hidden bg-secondary block"
+              >
+                <Image
+                  src={category.image}
+                  alt={category.name}
+                  fill
+                  className="object-cover transition-transform duration-1000 group-hover:scale-110"
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
 
-              <div className="absolute inset-0 p-8 flex flex-col justify-end">
-                <div>
-                  <h3 className="font-serif text-3xl text-white mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    {category.name}
-                  </h3>
-                  <div className="w-full h-px bg-white/50 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                <div className="absolute inset-0 p-8 flex flex-col justify-end">
+                  <div>
+                    <h3 className="font-serif text-3xl text-white mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                      {category.name}
+                    </h3>
+                    <div className="w-full h-px bg-white/50 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                  </div>
                 </div>
-              </div>
-            </Link>
+              </Link>
+            </ScrollAnimation>
           ))}
         </div>
       </div>

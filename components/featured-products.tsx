@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { ProductCard } from "./product-card"
 import { getFeaturedProducts } from "@/lib/services/product-service"
 import type { Product } from "@/lib/models"
+import { ScrollAnimation } from "./scroll-animation"
 
 export function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([])
@@ -50,10 +51,10 @@ export function FeaturedProducts() {
       <div className="container mx-auto px-4">
         <div className="mb-16 flex items-end justify-between">
           <div className="max-w-xl">
-<div className="inline-flex items-center gap-2">
-                            <span className="h-px w-8 bg-primary"></span>
-                            <span className="text-sm font-medium tracking-widest uppercase text-primary">Collection Exclusive</span>
-                        </div>
+            <div className="inline-flex items-center gap-2">
+              <span className="h-px w-8 bg-primary"></span>
+              <span className="text-sm font-medium tracking-widest uppercase text-primary">Collection Exclusive</span>
+            </div>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
               Produits Vedettes
             </h2>
@@ -62,8 +63,14 @@ export function FeaturedProducts() {
         </div>
 
         <div className="grid grid-cols-1 gap-y-16 gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {products.map((product, index) => (
+            <ScrollAnimation
+              key={product.id}
+              variant="slideUp"
+              delay={index * 0.1}
+            >
+              <ProductCard product={product} />
+            </ScrollAnimation>
           ))}
         </div>
       </div>
