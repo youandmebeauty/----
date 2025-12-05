@@ -22,31 +22,43 @@ const nextConfig = {
     },
   },
   webpack: (config, { isServer }) => {
-    // WASM support for ONNX Runtime
-    config.experiments = {
-      ...config.experiments,
-      asyncWebAssembly: true,
-    };
-
-    // Handle .wasm files
-    config.module.rules.push({
-      test: /\.wasm$/,
-      type: "webassembly/async",
-    });
-
     // Ignore node-specific modules in client-side bundles
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
         fs: false,
         path: false,
+        crypto: false,
       };
+      
+      // Externalize ONNX Runtime node bindings
+      config.externals.push({
+        'onnxruntime-node': 'onnxruntime-node',
+      });
     }
+
+    // DON'T bundle WASM files - let them be loaded at runtime
+    config.module.rules.push({
+      test: /\.wasm$/,
+      type: 'asset/resource',
+      generator: {
+        filename: 'static/wasm/[name].[hash][ext]',
+      },
+    });
 
     return config;
   },
   async headers() {
     return [
+      {
+        source: "/models/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
       {
         source: "/onnx-wasm/:path*",
         headers: [
@@ -55,16 +67,13 @@ const nextConfig = {
             value: "application/wasm",
           },
           {
-            key: "Cross-Origin-Embedder-Policy",
-            value: "require-corp",
-          },
-          {
-            key: "Cross-Origin-Opener-Policy",
-            value: "same-origin",
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
           },
         ],
       },
     ];
   },
-}
-export default nextConfig
+};
+
+export default nextConfig;

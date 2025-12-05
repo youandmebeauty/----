@@ -16,8 +16,8 @@ import type { DetectionRaw, MappedDetection, GroupedDetection, Product } from "@
 
 // ----------------- Config -----------------
 const INPUT_SIZE = 640;
-const CONF_THRESHOLD = 0.1;
-const IOU_THRESHOLD = 0.25;
+const CONF_THRESHOLD = 0.15;
+const IOU_THRESHOLD = 0.45;
 
 const CLASS_NAMES = [
     "Acné",
@@ -51,35 +51,80 @@ const SKIN_CONCERN_DETAILS: Record<number, { name: string; description: string }
 let onnxSession: ort.InferenceSession | null = null;
 
 async function initializeONNX() {
-    // Configure ONNX Runtime environment
-    ort.env.wasm.numThreads = 1;
-    ort.env.wasm.simd = true;
-
-    // Set WASM file paths to public directory
-    ort.env.wasm.wasmPaths = "/onnx-wasm/";
+    try {
+        ort.env.wasm.numThreads = 1;
+        ort.env.wasm.simd = true;
+        
+        // Use CDN - this avoids all webpack bundling issues
+        ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.23.2/dist/';
+        
+        console.log("ONNX Runtime configuration set");
+    } catch (error) {
+        console.error("Failed to initialize ONNX Runtime:", error);
+        throw error;
+    }
 }
-
 async function loadModel() {
     if (onnxSession) return onnxSession;
 
     try {
-        // Initialize ONNX environment
+        // Initialize ONNX environment first
         await initializeONNX();
 
-        console.log("Attempting to load model from /models/best.onnx");
+        const modelPath = "/models/best.onnx";
+        console.log("Attempting to load model from:", modelPath);
 
-        // Load ONNX model
-        onnxSession = await ort.InferenceSession.create("/models/best.onnx", {
+        // First, check if the model file exists and is accessible
+        try {
+            const testResponse = await fetch(modelPath, { method: 'HEAD' });
+            console.log("Model file check:", {
+                status: testResponse.status,
+                statusText: testResponse.statusText,
+                contentType: testResponse.headers.get('content-type'),
+                contentLength: testResponse.headers.get('content-length')
+            });
+
+            if (!testResponse.ok) {
+                throw new Error(`Model file not accessible: ${testResponse.status} ${testResponse.statusText}`);
+            }
+        } catch (fetchError) {
+            console.error("Failed to fetch model file:", fetchError);
+            throw new Error("Le fichier du modèle n'est pas accessible. Veuillez vérifier que best.onnx existe dans public/models/");
+        }
+
+        // Load ONNX model with explicit configuration
+        console.log("Loading ONNX model...");
+        onnxSession = await ort.InferenceSession.create(modelPath, {
             executionProviders: ['wasm'],
+            graphOptimizationLevel: 'all',
         });
 
-        console.log("Model loaded successfully. Input names:", onnxSession.inputNames);
-        console.log("Model output names:", onnxSession.outputNames);
+        console.log("✓ Model loaded successfully");
+        console.log("  Input names:", onnxSession.inputNames);
+        console.log("  Output names:", onnxSession.outputNames);
 
         return onnxSession;
     } catch (error) {
         console.error("Error loading ONNX model:", error);
-        throw new Error(`Failed to load ONNX model: ${error instanceof Error ? error.message : String(error)}`);
+
+        // Provide more helpful error messages
+        let errorMessage = "Échec du chargement du modèle";
+
+        if (error instanceof Error) {
+            const errMsg = error.message.toLowerCase();
+
+            if (errMsg.includes('fetch') || errMsg.includes('network')) {
+                errorMessage = "Impossible de charger le modèle. Vérifiez votre connexion internet.";
+            } else if (errMsg.includes('wasm')) {
+                errorMessage = "Les fichiers WASM sont manquants. Placez les fichiers ONNX Runtime dans public/onnx-wasm/";
+            } else if (errMsg.includes('not accessible') || errMsg.includes('404')) {
+                errorMessage = "Le fichier du modèle est introuvable. Assurez-vous que best.onnx existe dans public/models/";
+            } else {
+                errorMessage = `Erreur de chargement du modèle: ${error.message}`;
+            }
+        }
+
+        throw new Error(errorMessage);
     }
 }
 
