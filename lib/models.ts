@@ -1,0 +1,55 @@
+export interface Product {
+  id: string
+  name: string
+  price: number
+  image: string
+  category: string
+  subcategory?: string
+  skinType?: string[]
+  hairType?: string[]
+  targetAudience?: string[]
+  productType?: string
+  description: string
+  longDescription?: string
+  ingredients?: string[]
+  rating?: number
+  reviews?: number
+  stock: number
+  featured?: boolean
+  createdAt: Date | string
+  updatedAt: Date | string
+}
+
+export interface Order {
+  id: string
+  customerName: string
+  email: string
+  phone?: string
+  address: string
+  city: string
+  postalCode: string
+  country: string
+  items: OrderItem[]
+  total: number
+  status: "pending" | "processing" | "shipped" | "delivered"
+  notes?: string
+  createdAt: Date | string
+}
+
+export interface OrderItem {
+  id: string
+  name: string
+  price: number
+  quantity: number
+  image: string
+}
+
+export interface SearchFilters {
+  category?: string
+  subcategory?: string
+  skinType?: string[]
+  hairType?: string[]
+  minPrice?: number
+  maxPrice?: number
+  sortBy?: "price-asc" | "price-desc" | "name-asc" | "name-desc" | "newest"
+}

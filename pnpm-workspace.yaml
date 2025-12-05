@@ -1,0 +1,8 @@
+ignoredBuiltDependencies:
+  - '@firebase/util'
+  - protobufjs
+
+onlyBuiltDependencies:
+  - core-js
+  - onnxruntime-node
+  - sharp
