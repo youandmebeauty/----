@@ -29,8 +29,7 @@ const createTransporter = () => {
   })
 }
 
-const RATE_LIMIT_DURATION = 60 * 60 * 1000 // 1 heure
-const MAX_REQUESTS_PER_HOUR = 5
+const RATE_LIMIT_DURATION = 15 * 60 * 1000 // 15 minutes
 
 export async function POST(request: NextRequest) {
   try {
@@ -47,41 +46,44 @@ export async function POST(request: NextRequest) {
 
     const { name, email, subject, message } = result.data
 
-    // 2. Rate Limiting (IP-based)
-    const ip = request.headers.get("x-forwarded-for") || 
-               request.headers.get("x-real-ip") || 
-               "unknown"
+    // 2. Rate Limiting (IP-based) - 15 minute window
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+      request.headers.get("x-real-ip") ||
+      "unknown"
 
     if (ip !== "unknown") {
-      const now = Date.now()
-      const oneHourAgo = Timestamp.fromMillis(now - RATE_LIMIT_DURATION)
-
       const rateLimitRef = adminDb.collection("rate_limits")
-      
-      // Query without compound index (filter in memory)
-      const snapshot = await rateLimitRef
-        .where("ip", "==", ip)
-        .where("type", "==", "contact")
-        .get()
+      const docRef = rateLimitRef.doc(`contact_${ip}`)
 
-      // Filter by timestamp in memory
-      const recentRequests = snapshot.docs.filter(doc => {
+      const doc = await docRef.get()
+
+      if (doc.exists) {
         const data = doc.data()
-        return data.timestamp.toMillis() > oneHourAgo.toMillis()
-      })
+        const lastTimestamp = data?.timestamp as Timestamp
 
-      if (recentRequests.length >= MAX_REQUESTS_PER_HOUR) {
-        return NextResponse.json(
-          { success: false, error: "Trop de demandes. Veuillez réessayer plus tard." },
-          { status: 429 }
-        )
+        if (lastTimestamp) {
+          const now = Date.now()
+          const timeSinceLastRequest = now - lastTimestamp.toMillis()
+
+          // Check if within 15-minute window
+          if (timeSinceLastRequest < RATE_LIMIT_DURATION) {
+            const minutesRemaining = Math.ceil((RATE_LIMIT_DURATION - timeSinceLastRequest) / 60000)
+            return NextResponse.json(
+              {
+                success: false,
+                error: `Trop de demandes. Veuillez réessayer dans ${minutesRemaining} minute${minutesRemaining > 1 ? 's' : ''}.`
+              },
+              { status: 429 }
+            )
+          }
+        }
       }
 
-      // Enregistrer la requête pour le rate limiting
-      await rateLimitRef.add({
+      // Store/update rate limit document with IP and timestamp
+      await docRef.set({
         ip,
-        type: "contact",
-        timestamp: Timestamp.now()
+        timestamp: Timestamp.now(),
+        type: "contact"
       })
     }
 

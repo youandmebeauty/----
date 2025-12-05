@@ -57,7 +57,7 @@
     "next-themes": "latest",
     "next-transpile-modules": "^10.0.1",
     "nodemailer": "^7.0.3",
-    "onnxruntime-web": "^1.23.2",
+    "onnxruntime-web": "^1.18.0",
     "postprocessing": "^6.38.0",
     "react": "^18",
     "react-day-picker": "8.10.1",
