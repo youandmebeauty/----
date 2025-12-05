@@ -54,17 +54,33 @@ async function initializeONNX() {
     // Configure ONNX Runtime environment
     ort.env.wasm.numThreads = 1;
     ort.env.wasm.simd = true;
+
+    // Set WASM file paths to public directory
+    ort.env.wasm.wasmPaths = "/onnx-wasm/";
 }
 
 async function loadModel() {
     if (onnxSession) return onnxSession;
 
-    // Initialize ONNX environment
-    await initializeONNX();
+    try {
+        // Initialize ONNX environment
+        await initializeONNX();
 
-    // Load ONNX model
-    onnxSession = await ort.InferenceSession.create("/models/best.onnx");
-    return onnxSession;
+        console.log("Attempting to load model from /models/best.onnx");
+
+        // Load ONNX model
+        onnxSession = await ort.InferenceSession.create("/models/best.onnx", {
+            executionProviders: ['wasm'],
+        });
+
+        console.log("Model loaded successfully. Input names:", onnxSession.inputNames);
+        console.log("Model output names:", onnxSession.outputNames);
+
+        return onnxSession;
+    } catch (error) {
+        console.error("Error loading ONNX model:", error);
+        throw new Error(`Failed to load ONNX model: ${error instanceof Error ? error.message : String(error)}`);
+    }
 }
 
 function preprocessImageToTensor(img: HTMLImageElement) {
@@ -272,6 +288,7 @@ export default function SkinAnalyzerFeature() {
             await initializeONNX();
 
             // Check Quota
+            console.log("Checking quota...");
             const quotaResponse = await fetch("/api/skin-analyzer/quota", {
                 method: "POST",
             });
@@ -281,11 +298,15 @@ export default function SkinAnalyzerFeature() {
             if (!quotaResponse.ok) {
                 throw new Error(quotaResult.error || "Quota exceeded");
             }
+            console.log("Quota check passed");
 
             // load model
+            console.log("Loading ONNX model...");
             const session = await loadModel();
+            console.log("Model loaded successfully");
 
             // create image element
+            console.log("Loading image...");
             const img = new Image();
             img.crossOrigin = "anonymous";
             img.src = dataUrl;
@@ -293,19 +314,25 @@ export default function SkinAnalyzerFeature() {
                 img.onload = () => res();
                 img.onerror = () => rej(new Error("Failed to load image"));
             });
+            console.log("Image loaded successfully");
 
             // preprocess
+            console.log("Preprocessing image...");
             const inputData = preprocessImageToTensor(img);
             console.log("Input Data Length:", inputData.length);
 
             // Create tensor - ONNX expects CHW format: [batch, channels, height, width]
+            console.log("Creating input tensor...");
             const inputTensor = new ort.Tensor('float32', inputData, [1, 3, INPUT_SIZE, INPUT_SIZE]);
+            console.log("Input tensor created");
 
             // run inference
+            console.log("Running inference...");
             const feeds: Record<string, any> = {};
             feeds[session.inputNames[0]] = inputTensor;
 
             const results = await session.run(feeds);
+            console.log("Inference complete");
             const outputTensor = results[session.outputNames[0]];
 
             console.log("Output Tensor Shape:", outputTensor.dims);
@@ -353,8 +380,27 @@ export default function SkinAnalyzerFeature() {
             setGroupedDetections(groupDetectionsByCategory(mapped));
             setStep("results");
         } catch (err: any) {
-            console.error("Analysis error:", err);
-            setError(err.message || "Failed to analyze image. Please try again.");
+            console.error("Analysis error details:", {
+                error: err,
+                message: err?.message,
+                stack: err?.stack,
+                type: typeof err,
+                name: err?.name
+            });
+
+            let errorMessage = "Failed to analyze image. Please try again.";
+
+            if (err instanceof Error) {
+                errorMessage = err.message;
+            } else if (typeof err === 'string') {
+                errorMessage = err;
+            } else if (err?.message) {
+                errorMessage = err.message;
+            } else if (err !== null && err !== undefined) {
+                errorMessage = `Une erreur inattendue s'est produite (Code: ${err})`;
+            }
+
+            setError(errorMessage);
             setStep("capture");
         } finally {
             setLoading(false);
