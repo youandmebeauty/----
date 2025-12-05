@@ -16,8 +16,8 @@ import type { DetectionRaw, MappedDetection, GroupedDetection, Product } from "@
 
 // ----------------- Config -----------------
 const INPUT_SIZE = 640;
-const CONF_THRESHOLD = 0.15;
-const IOU_THRESHOLD = 0.45;
+const CONF_THRESHOLD = 0.1;
+const IOU_THRESHOLD = 0.4;
 
 const CLASS_NAMES = [
     "Acné",
@@ -74,7 +74,6 @@ async function loadONNXRuntime(): Promise<any> {
             ort.env.wasm.simd = true;
             ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/';
 
-            console.log("✓ ONNX Runtime loaded from CDN");
             resolve(ort);
         };
 
@@ -90,10 +89,8 @@ async function loadModel() {
         const ort = await loadONNXRuntime();
 
         const modelPath = "/models/best.onnx";
-        console.log("Attempting to load model from:", modelPath);
 
         // Fetch the model file as ArrayBuffer for better error handling
-        console.log("Fetching model file...");
         const modelResponse = await fetch(modelPath);
 
         if (!modelResponse.ok) {
@@ -101,18 +98,12 @@ async function loadModel() {
         }
 
         const modelArrayBuffer = await modelResponse.arrayBuffer();
-        console.log(`Model fetched: ${(modelArrayBuffer.byteLength / 1024 / 1024).toFixed(2)} MB`);
 
         // Load ONNX model with simplified configuration
-        console.log("Creating ONNX inference session...");
         try {
             onnxSession = await ort.InferenceSession.create(modelArrayBuffer, {
                 executionProviders: ['wasm'],
             });
-
-            console.log("✓ Model loaded successfully");
-            console.log("  Input names:", onnxSession.inputNames);
-            console.log("  Output names:", onnxSession.outputNames);
 
             return onnxSession;
         } catch (sessionError: any) {

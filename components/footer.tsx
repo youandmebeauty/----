@@ -1,11 +1,18 @@
 "use client"
 
 import Link from "next/link"
-import { Instagram, Facebook, Twitter } from "lucide-react"
+import { Instagram, Facebook } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useTheme } from "next-themes"
 import { ArrowUp } from "lucide-react"
-import Image from "next/image"
+
+// TikTok SVG Icon Component
+const TikTokIcon = () => (
+  <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+  </svg>
+)
+
 
 export function Footer() {
   const [showScrollTop, setShowScrollTop] = useState(false)
@@ -37,7 +44,7 @@ export function Footer() {
             {/* Social Media Links */}
             <div className="flex space-x-4 mt-4">
               <a
-                href="https://instagram.com/youandmebeauty"
+                href="https://instagram.com/youme_beauty_sfax"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all duration-300"
@@ -46,7 +53,7 @@ export function Footer() {
                 <span className="sr-only">Instagram</span>
               </a>
               <a
-                href="https://facebook.com/youandmebeauty"
+                href="#"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all duration-300"
@@ -55,13 +62,13 @@ export function Footer() {
                 <span className="sr-only">Facebook</span>
               </a>
               <a
-                href="https://twitter.com/youandmebeauty"
+                href="#"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all duration-300"
               >
-                <Twitter className="h-5 w-5" />
-                <span className="sr-only">Twitter</span>
+                <TikTokIcon />
+                <span className="sr-only">TikTok</span>
               </a>
             </div>
           </div>
@@ -102,12 +109,12 @@ export function Footer() {
                 <div>
                   <h4 className="font-medium mb-1 text-foreground">Nous Écrire</h4>
                   <a
-                    href="mailto:contact@youandmebeauty.tn"
+                    href="mailto:contact@youandme.tn"
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    contact@youandmebeauty.tn
+                    contact@youandme.tn
                   </a>
-                </div>  
+                </div>
                 <div>
                   <h4 className="font-medium mb-1 text-foreground">Nous Appeler</h4>
                   <a href="tel:+21693220902" className="text-muted-foreground hover:text-primary transition-colors">

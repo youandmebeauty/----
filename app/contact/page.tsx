@@ -176,18 +176,18 @@ export default function ContactPage() {
                 </AccordionItem>
                 <AccordionItem value="item-2" className="border-b border-border/50">
                   <AccordionTrigger className="text-base hover:no-underline py-4">
-                    Consultation beauté
+                    Comment utiliser l'analyseur de peau IA ?
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground pb-4">
-                    Nos experts sont disponibles pour des consultations gratuites en ligne ou en boutique pour vous aider à choisir les produits adaptés à votre peau.
+                    Notre analyseur de peau utilise l'intelligence artificielle pour détecter les problèmes de peau. Prenez simplement une photo de votre visage et recevez des recommandations personnalisées de produits adaptés à vos besoins.
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-3" className="border-b border-border/50">
                   <AccordionTrigger className="text-base hover:no-underline py-4">
-                    Produits Cruelty-Free
+                    Quels moyens de paiement acceptez-vous ?
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground pb-4">
-                    Absolument. Tous nos produits sont certifiés sans cruauté et nous ne testons jamais sur les animaux.
+                    Paiement à la livraison ou visitez-nous sur place dans notre boutique à Sfax. Nous acceptons espèces, carte bancaire et virement.
                   </AccordionContent>
                 </AccordionItem>
               </Accordion>
