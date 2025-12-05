@@ -22,7 +22,12 @@ const nextConfig = {
     },
   },
   webpack: (config, { isServer }) => {
-    // Ignore node-specific modules in client-side bundles
+    // CRITICAL: Tell webpack to ignore onnxruntime-web completely on the server
+    if (isServer) {
+      config.externals.push('onnxruntime-web');
+    }
+
+    // For client-side, prevent webpack from trying to parse it
     if (!isServer) {
       config.resolve.fallback = {
         ...config.resolve.fallback,
@@ -30,21 +35,11 @@ const nextConfig = {
         path: false,
         crypto: false,
       };
-      
-      // Externalize ONNX Runtime node bindings
-      config.externals.push({
-        'onnxruntime-node': 'onnxruntime-node',
-      });
-    }
 
-    // DON'T bundle WASM files - let them be loaded at runtime
-    config.module.rules.push({
-      test: /\.wasm$/,
-      type: 'asset/resource',
-      generator: {
-        filename: 'static/wasm/[name].[hash][ext]',
-      },
-    });
+      // CRITICAL: Externalize onnxruntime-web to prevent webpack from bundling it
+      config.externals = config.externals || {};
+      config.externals['onnxruntime-web'] = 'onnxruntime-web';
+    }
 
     return config;
   },
@@ -53,19 +48,6 @@ const nextConfig = {
       {
         source: "/models/:path*",
         headers: [
-          {
-            key: "Cache-Control",
-            value: "public, max-age=31536000, immutable",
-          },
-        ],
-      },
-      {
-        source: "/onnx-wasm/:path*",
-        headers: [
-          {
-            key: "Content-Type",
-            value: "application/wasm",
-          },
           {
             key: "Cache-Control",
             value: "public, max-age=31536000, immutable",
