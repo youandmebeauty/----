@@ -16,7 +16,7 @@ import type { DetectionRaw, MappedDetection, GroupedDetection, Product } from "@
 
 // ----------------- Config -----------------
 const INPUT_SIZE = 640;
-const CONF_THRESHOLD = 0.05;
+const CONF_THRESHOLD = 0.15;
 const IOU_THRESHOLD = 0.45;
 
 const CLASS_NAMES = [
@@ -92,37 +92,41 @@ async function loadModel() {
         const modelPath = "/models/best.onnx";
         console.log("Attempting to load model from:", modelPath);
 
-        // First, check if the model file exists and is accessible
-        try {
-            const testResponse = await fetch(modelPath, { method: 'HEAD' });
-            console.log("Model file check:", {
-                status: testResponse.status,
-                statusText: testResponse.statusText,
-                contentType: testResponse.headers.get('content-type'),
-                contentLength: testResponse.headers.get('content-length')
-            });
+        // Fetch the model file as ArrayBuffer for better error handling
+        console.log("Fetching model file...");
+        const modelResponse = await fetch(modelPath);
 
-            if (!testResponse.ok) {
-                throw new Error(`Model file not accessible: ${testResponse.status} ${testResponse.statusText}`);
-            }
-        } catch (fetchError) {
-            console.error("Failed to fetch model file:", fetchError);
-            throw new Error("Le fichier du modèle n'est pas accessible. Veuillez vérifier que best.onnx existe dans public/models/");
+        if (!modelResponse.ok) {
+            throw new Error(`Failed to fetch model: ${modelResponse.status} ${modelResponse.statusText}`);
         }
 
-        // Load ONNX model with explicit configuration
-        console.log("Loading ONNX model...");
-        onnxSession = await ort.InferenceSession.create(modelPath, {
-            executionProviders: ['wasm'],
-            graphOptimizationLevel: 'all',
-        });
+        const modelArrayBuffer = await modelResponse.arrayBuffer();
+        console.log(`Model fetched: ${(modelArrayBuffer.byteLength / 1024 / 1024).toFixed(2)} MB`);
 
-        console.log("✓ Model loaded successfully");
-        console.log("  Input names:", onnxSession.inputNames);
-        console.log("  Output names:", onnxSession.outputNames);
+        // Load ONNX model with simplified configuration
+        console.log("Creating ONNX inference session...");
+        try {
+            onnxSession = await ort.InferenceSession.create(modelArrayBuffer, {
+                executionProviders: ['wasm'],
+            });
 
-        return onnxSession;
-    } catch (error) {
+            console.log("✓ Model loaded successfully");
+            console.log("  Input names:", onnxSession.inputNames);
+            console.log("  Output names:", onnxSession.outputNames);
+
+            return onnxSession;
+        } catch (sessionError: any) {
+            // Log detailed error information
+            console.error("InferenceSession.create failed:", {
+                error: sessionError,
+                message: sessionError?.message,
+                code: sessionError?.code,
+                name: sessionError?.name,
+                stack: sessionError?.stack
+            });
+            throw sessionError;
+        }
+    } catch (error: any) {
         console.error("Error loading ONNX model:", error);
 
         // Provide more helpful error messages
@@ -137,9 +141,15 @@ async function loadModel() {
                 errorMessage = "Erreur lors du chargement des fichiers WebAssembly. Veuillez réessayer.";
             } else if (errMsg.includes('not accessible') || errMsg.includes('404')) {
                 errorMessage = "Le fichier du modèle est introuvable. Assurez-vous que best.onnx existe dans public/models/";
+            } else if (errMsg.includes('memory') || errMsg.includes('oom')) {
+                errorMessage = "Mémoire insuffisante pour charger le modèle. Fermez d'autres onglets et réessayez.";
+            } else if ((error as any).code || typeof error === 'number') {
+                errorMessage = `Erreur ONNX Runtime (code: ${(error as any).code || error}). Le modèle pourrait être incompatible avec cette version d'ONNX Runtime.`;
             } else {
                 errorMessage = `Erreur de chargement du modèle: ${error.message}`;
             }
+        } else if (typeof error === 'number') {
+            errorMessage = `Erreur ONNX Runtime (code: ${error}). Le modèle pourrait être corrompu ou incompatible.`;
         }
 
         throw new Error(errorMessage);
