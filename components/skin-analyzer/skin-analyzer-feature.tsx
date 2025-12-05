@@ -16,8 +16,8 @@ import type { DetectionRaw, MappedDetection, GroupedDetection, Product } from "@
 
 // ----------------- Config -----------------
 const INPUT_SIZE = 640;
-const CONF_THRESHOLD = 0.1;
-const IOU_THRESHOLD = 0.4;
+const CONF_THRESHOLD = 0.15;
+const IOU_THRESHOLD = 0.45;
 
 const CLASS_NAMES = [
     "Acné",
