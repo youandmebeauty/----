@@ -128,8 +128,8 @@ function EditProductContent() {
         stock: Number.parseInt(formData.stock),
         featured: formData.featured,
         ingredients: formData.ingredients ? formData.ingredients.split(",").map((i) => i.trim()) : [],
-        skinType: formData.skinType.length > 0 ? formData.skinType : undefined,
-        hairType: formData.hairType.length > 0 ? formData.hairType : undefined,
+        skinType: formData.skinType,
+        hairType: formData.hairType,
       }
 
       await updateProduct(product.id, productData)
