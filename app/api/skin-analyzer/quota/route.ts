@@ -4,19 +4,21 @@ import { Timestamp } from "firebase-admin/firestore";
 
 const MAX_SCANS_PER_DAY = 3;
 
-function getClientIP(request: NextRequest): string {
-  return (
-    request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
+function getClientIdentifier(request: NextRequest): string {
+  const deviceId = request.headers.get("x-device-id");
+  if (deviceId) return `device_${deviceId}`;
+
+  // Fallback to IP if no device ID (though client should always send it now)
+  return request.headers.get("x-forwarded-for")?.split(",")[0].trim() ||
     request.headers.get("x-real-ip") ||
-    "unknown"
-  );
+    "unknown_ip";
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const ip = getClientIP(request);
+    const identifier = getClientIdentifier(request);
     const quotaRef = adminDb.collection("skin_analyzer_quota");
-    const docRef = quotaRef.doc(ip);
+    const docRef = quotaRef.doc(identifier);
 
     const result = await adminDb.runTransaction(async (transaction) => {
       const doc = await transaction.get(docRef);
@@ -33,8 +35,8 @@ export async function POST(request: NextRequest) {
       if (lastUpdated) {
         const lastDate = lastUpdated.toDate();
         const now = new Date();
-        
-        const isSameDay = 
+
+        const isSameDay =
           lastDate.getUTCFullYear() === now.getUTCFullYear() &&
           lastDate.getUTCMonth() === now.getUTCMonth() &&
           lastDate.getUTCDate() === now.getUTCDate();
@@ -51,7 +53,7 @@ export async function POST(request: NextRequest) {
       transaction.set(
         docRef,
         {
-          ip,
+          identifier,
           count: currentCount + 1,
           lastUpdated: Timestamp.now(),
           userAgent: request.headers.get("user-agent") || "",

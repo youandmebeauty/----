@@ -332,6 +332,16 @@ export default function SkinAnalyzerFeature() {
         loadONNXRuntime().catch(console.error);
     }, []);
 
+    const getDeviceId = () => {
+        if (typeof window === 'undefined') return ''; // Safety for SSR
+        let deviceId = localStorage.getItem('skin_analyzer_device_id');
+        if (!deviceId) {
+            deviceId = crypto.randomUUID();
+            localStorage.setItem('skin_analyzer_device_id', deviceId);
+        }
+        return deviceId;
+    };
+
     // ----------------- Inference -----------------
     async function analyzeDataUrl(dataUrl: string) {
         setStep("analyzing");
@@ -347,6 +357,9 @@ export default function SkinAnalyzerFeature() {
             // Check Quota
             const quotaResponse = await fetch("/api/skin-analyzer/quota", {
                 method: "POST",
+                headers: {
+                    'x-device-id': getDeviceId()
+                }
             });
 
             const quotaResult = await quotaResponse.json();
