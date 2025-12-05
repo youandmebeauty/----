@@ -58,7 +58,6 @@ async function initializeONNX() {
         // Use CDN - this avoids all webpack bundling issues
         ort.env.wasm.wasmPaths = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.23.2/dist/';
         
-        console.log("ONNX Runtime configuration set");
     } catch (error) {
         console.error("Failed to initialize ONNX Runtime:", error);
         throw error;
@@ -72,36 +71,23 @@ async function loadModel() {
         await initializeONNX();
 
         const modelPath = "/models/best.onnx";
-        console.log("Attempting to load model from:", modelPath);
 
         // First, check if the model file exists and is accessible
         try {
             const testResponse = await fetch(modelPath, { method: 'HEAD' });
-            console.log("Model file check:", {
-                status: testResponse.status,
-                statusText: testResponse.statusText,
-                contentType: testResponse.headers.get('content-type'),
-                contentLength: testResponse.headers.get('content-length')
-            });
 
             if (!testResponse.ok) {
                 throw new Error(`Model file not accessible: ${testResponse.status} ${testResponse.statusText}`);
             }
         } catch (fetchError) {
-            console.error("Failed to fetch model file:", fetchError);
             throw new Error("Le fichier du modèle n'est pas accessible. Veuillez vérifier que best.onnx existe dans public/models/");
         }
 
         // Load ONNX model with explicit configuration
-        console.log("Loading ONNX model...");
         onnxSession = await ort.InferenceSession.create(modelPath, {
             executionProviders: ['wasm'],
             graphOptimizationLevel: 'all',
         });
-
-        console.log("✓ Model loaded successfully");
-        console.log("  Input names:", onnxSession.inputNames);
-        console.log("  Output names:", onnxSession.outputNames);
 
         return onnxSession;
     } catch (error) {
@@ -195,9 +181,6 @@ function parseYoloOutput(data: Float32Array, shape: number[], confThreshold = CO
     const numClasses = CLASS_NAMES.length;
     const channels = 4 + numClasses;
 
-    console.log("Model Output Shape:", shape);
-    console.log("Model Output Data Length:", data.length);
-
     let isChannelFirst = false;
     let numAnchors = 0;
 
@@ -217,8 +200,6 @@ function parseYoloOutput(data: Float32Array, shape: number[], confThreshold = CO
         numAnchors = data.length / channels;
         isChannelFirst = false;
     }
-
-    console.log(`Parsing Output: Anchors=${numAnchors}, Channels=${channels}, Layout=${isChannelFirst ? "[1, C, A]" : "[1, A, C]"}`);
 
     const dets: DetectionRaw[] = [];
 
@@ -274,7 +255,6 @@ function parseYoloOutput(data: Float32Array, shape: number[], confThreshold = CO
         }
     }
 
-    console.log(`Found ${dets.length} detections above threshold ${confThreshold}`);
     return dets;
 }
 
@@ -333,7 +313,6 @@ export default function SkinAnalyzerFeature() {
             await initializeONNX();
 
             // Check Quota
-            console.log("Checking quota...");
             const quotaResponse = await fetch("/api/skin-analyzer/quota", {
                 method: "POST",
             });
@@ -343,15 +322,11 @@ export default function SkinAnalyzerFeature() {
             if (!quotaResponse.ok) {
                 throw new Error(quotaResult.error || "Quota exceeded");
             }
-            console.log("Quota check passed");
 
             // load model
-            console.log("Loading ONNX model...");
             const session = await loadModel();
-            console.log("Model loaded successfully");
 
             // create image element
-            console.log("Loading image...");
             const img = new Image();
             img.crossOrigin = "anonymous";
             img.src = dataUrl;
@@ -359,29 +334,19 @@ export default function SkinAnalyzerFeature() {
                 img.onload = () => res();
                 img.onerror = () => rej(new Error("Failed to load image"));
             });
-            console.log("Image loaded successfully");
 
             // preprocess
-            console.log("Preprocessing image...");
             const inputData = preprocessImageToTensor(img);
-            console.log("Input Data Length:", inputData.length);
 
             // Create tensor - ONNX expects CHW format: [batch, channels, height, width]
-            console.log("Creating input tensor...");
             const inputTensor = new ort.Tensor('float32', inputData, [1, 3, INPUT_SIZE, INPUT_SIZE]);
-            console.log("Input tensor created");
 
             // run inference
-            console.log("Running inference...");
             const feeds: Record<string, any> = {};
             feeds[session.inputNames[0]] = inputTensor;
 
             const results = await session.run(feeds);
-            console.log("Inference complete");
             const outputTensor = results[session.outputNames[0]];
-
-            console.log("Output Tensor Shape:", outputTensor.dims);
-            console.log("Output Tensor Data Length:", outputTensor.data.length);
 
             const rawDetections = parseYoloOutput(
                 outputTensor.data as Float32Array,

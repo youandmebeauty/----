@@ -90,8 +90,6 @@ export async function POST(request: NextRequest) {
     const transporter = createTransporter()
 
     if (!transporter) {
-      // Log pour dev
-      console.log("📧 Contact (Simulé):", { name, email, subject })
       return NextResponse.json({
         success: true,
         message: "Votre message a été reçu (Mode Dev).",

@@ -236,7 +236,6 @@ export async function getProductsForSkinConcern(
                 product,
                 score: calculateRelevanceScore(product, mapping.keywords),
             }))
-        console.log(`Found ${scoredProducts.length} scored products for ${concernType}`)
         
         // Return top N products
         return scoredProducts.slice(0, limit).map((item) => item.product)
