@@ -134,9 +134,9 @@ export function Header() {
                     {/* Logo - Always visible on mobile */}
                     <Link href="/" className="flex items-center space-x-3 flex-shrink-0">
                       <img
-                        src={theme == "light" ? "/logo-light.svg" : "/logo-white.svg"}
+                        src={theme == "light" ? "/logo-light.webp" : "/logo-white.webp"}
                         alt="You&Me Beauty Logo"
-                        className="h-14 md:h-16 w-auto"
+                        className="h-10 md:h-12 w-auto"
                       />
                     </Link>
 

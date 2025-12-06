@@ -7,14 +7,14 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ["placeholder.svg"],
+    domains: ["placeholder.svg", "cloudinary.com", "res.cloudinary.com"],
     remotePatterns: [
       {
         protocol: "https",
         hostname: "**",
       },
     ],
-    unoptimized: true,
+    unoptimized: false,
   },
   experimental: {
     serverActions: {

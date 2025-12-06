@@ -139,11 +139,11 @@ export function WhyChooseUs() {
                     <div className="absolute inset-0 bg-[url('/hero-beauty.png')] bg-cover bg-center opacity-10 dark:opacity-5"></div>
 
                     {/* Logo Background - Integrated as Watermark */}
-                    <div className="absolute inset-0 -mr-40 flex items-center justify-end">
+                    <div className="absolute inset-0 mr-20 flex items-center justify-end">
                         <img
-                            src={theme === "light" ? "/logo-light.svg" : "/logo-white.svg"}
+                            src={theme === "light" ? "/logo-light.webp" : "/logo-white.webp"}
                             alt="Youme Beauty Logo Background"
-                            className="h-[1200px] lg:h-[1000px] w-auto opacity-[0.08] dark:opacity-[0.05] pointer-events-none"
+                            className="h-[1000px] lg:h-[800px] w-auto opacity-[0.08] dark:opacity-[0.05] pointer-events-none"
                         />
                     </div>
 
@@ -175,14 +175,14 @@ export function WhyChooseUs() {
                             <div className="flex flex-col sm:flex-row gap-4">
                                 <Link
                                     href="/shop"
-                                    className="group inline-flex items-center justify-center gap-3 px-8 py-4 bg-primary text-white text-sm uppercase tracking-widest hover:bg-primary/90 hover:gap-4 transition-all duration-300 shadow-lg hover:shadow-xl"
+                                    className="group inline-flex items-center justify-center rounded-md gap-3 px-8 py-4 bg-primary text-white text-sm uppercase tracking-widest hover:bg-primary/90 hover:gap-4 transition-all duration-300 shadow-lg hover:shadow-xl"
                                 >
                                     Découvrir la Boutique
                                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
                                 </Link>
                                 <Link
                                     href="/skin-analyzer"
-                                    className="group inline-flex items-center justify-center gap-3 px-8 py-4 border-2 border-primary/30 bg-background/50 backdrop-blur-sm text-foreground text-sm uppercase tracking-widest hover:bg-primary/10 hover:border-primary hover:gap-4 transition-all duration-300"
+                                    className="group inline-flex items-center justify-center rounded-md gap-3 px-8 py-4 border-2 border-primary/30 bg-background/50 backdrop-blur-sm text-foreground text-sm uppercase tracking-widest hover:bg-primary/10 hover:border-primary hover:gap-4 transition-all duration-300"
                                 >
                                     Analyser Ma Peau
                                     <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />

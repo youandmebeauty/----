@@ -5,7 +5,7 @@ import { Instagram, Facebook } from "lucide-react"
 import { useEffect, useState } from "react"
 import { useTheme } from "next-themes"
 import { ArrowUp } from "lucide-react"
-
+import Image from "next/image"
 // TikTok SVG Icon Component
 const TikTokIcon = () => (
   <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -36,40 +36,50 @@ export function Footer() {
         <div className="grid md:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="md:col-span-1 flex flex-col items-center">
-            <Link href="/" className="inline mb-6">
-              <span className="text-2xl font-bold tracking-wider text-foreground">You & Me Beauty</span>
+            <Link href="/" className="inline">
+              {/* <span className="text-2xl font-bold tracking-wider text-foreground">You & Me Beauty</span>
               <br />
-              <span className="text-sm font-light tracking-wider text-primary">The Beauty for you and me.</span>
+              <span className="text-sm font-light tracking-wider text-primary">The Beauty for you and me.</span> */}
+              <Image src={theme === "light" ? "/logo.webp" : "/logoB.webp"} alt="Logo" width={200} height={200} />
             </Link>
             {/* Social Media Links */}
             <div className="flex space-x-4 mt-4">
-              <a
-                href="https://instagram.com/youme_beauty_sfax"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all duration-300"
-              >
-                <Instagram className="h-5 w-5" />
-                <span className="sr-only">Instagram</span>
-              </a>
-              <a
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all duration-300"
-              >
-                <Facebook className="h-5 w-5" />
-                <span className="sr-only">Facebook</span>
-              </a>
-              <a
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all duration-300"
-              >
-                <TikTokIcon />
-                <span className="sr-only">TikTok</span>
-              </a>
+<a
+  href="https://instagram.com/youme_beauty_sfax"
+  target="_blank"
+  rel="noopener noreferrer"
+  className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center ${
+    theme === "light" ? "text-primary" : "text-muted-foreground"
+  } hover:bg-primary hover:text-white transition-all duration-300`}
+>
+  <Instagram className="h-5 w-5" />
+  <span className="sr-only">Instagram</span>
+</a>
+
+<a
+  href="#"
+  target="_blank"
+  rel="noopener noreferrer"
+  className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center ${
+    theme === "light" ? "text-primary" : "text-muted-foreground"
+  } hover:bg-primary hover:text-white transition-all duration-300`}
+>
+  <Facebook className="h-5 w-5" />
+  <span className="sr-only">Facebook</span>
+</a>
+
+<a
+  href="#"
+  target="_blank"
+  rel="noopener noreferrer"
+  className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center ${
+    theme === "light" ? "text-primary" : "text-muted-foreground"
+  } hover:bg-primary hover:text-white transition-all duration-300`}
+>
+  <TikTokIcon />
+  <span className="sr-only">TikTok</span>
+</a>
+
             </div>
           </div>
 

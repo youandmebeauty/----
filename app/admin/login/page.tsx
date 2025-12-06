@@ -59,7 +59,7 @@ export default function AdminLoginPage() {
         <CardHeader className="text-center space-y-4 pb-8">
           <div className="mx-auto w-24 h-24 relative mb-4">
             <img
-              src="/logo-light.svg"
+              src="/logo-light.webp"
               alt="you&me Beauty Logo"
               className="w-full h-full object-contain"
             />
