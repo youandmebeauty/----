@@ -59,7 +59,7 @@ export function Header() {
       <motion.div
         initial={false}
         animate={{
-          scale: scrolled ? 0.98 : 1,
+          scale: scrolled ? 0.95 : 1,
           y: scrolled ? -8 : 0,
         }}
         transition={{
@@ -83,7 +83,7 @@ export function Header() {
           backgroundOpacity={0.1}
           mixBlendMode="screen"
           width="100%"
-          height="80px"
+          height="70px"
           borderRadius={50}
           borderWidth={0.07}
         >

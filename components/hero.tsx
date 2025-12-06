@@ -16,7 +16,7 @@ export function Hero() {
                     <div className="max-w-2xl">
                         <div className="inline-flex items-center gap-2 mb-8">
                             <span className="h-px w-8 bg-primary"></span>
-                            <span className="text-sm font-medium tracking-widest uppercase text-primary">Premium Beauty Collection</span>
+                            <span className="text-sm font-medium tracking-widest uppercase text-primary">Sélection Beauté Premium</span>
                         </div>
 
                         <h1 className="mb-6 text-5xl font-bold tracking-tight text-foreground md:text-7xl">
@@ -26,18 +26,18 @@ export function Hero() {
                         </h1>
 
                         <p className="mb-8 text-lg text-muted-foreground md:text-xl leading-relaxed max-w-lg">
-                            Découvrez notre gamme exclusive de soins pour la peau, conçue pour révéler votre éclat naturel avec des ingrédients purs et efficaces.
+                            L'alliance parfaite entre marques de prestige et conseils d'experts. Découvrez une sélection exclusive de cosmétiques authentiques pour révéler votre beauté unique.
                         </p>
 
                         <div className="flex flex-col gap-4 sm:flex-row">
                             <Link href="/shop">
                                 <Button size="lg" className="rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 h-14 px-8 text-lg">
-                                    Découvrir la Collection
+                                    Explorer la Boutique
                                 </Button>
                             </Link>
                             <Link href="/skin-analyzer">
                                 <Button size="lg" variant="outline" className="rounded-xl border-2 h-14 px-8 text-lg hover:bg-secondary/50">
-                                    Analyseur de Peau
+                                    Diagnostic de Peau IA
                                 </Button>
                             </Link>
                         </div>
@@ -54,6 +54,6 @@ export function Hero() {
             <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-primary/20 blur-3xl" />
             <div className="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-accent/10 blur-3xl" />
         </div>
-        
+
     )
 }

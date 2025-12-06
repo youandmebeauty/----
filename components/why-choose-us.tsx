@@ -30,7 +30,7 @@ const values = [
     {
         icon: Sparkles,
         title: "Nouveautés",
-        description: "Les dernières tendances et nouveaux produits beauté ajoutés régulièrement à notre collection",
+        description: "Les dernières tendances et nouveaux produits beauté ajoutés régulièrement à notre catalogue",
         gradient: "from-violet-500/10 via-purple-500/10 to-fuchsia-500/10",
         iconBg: "bg-gradient-to-br from-violet-500/20 to-purple-500/20",
     },
@@ -150,14 +150,13 @@ export function WhyChooseUs() {
                     {/* Animated gradient orbs */}
                     <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
                     <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-
                     <div className="relative z-10 p-12 md:p-16 lg:p-20">
                         <div className="max-w-2xl space-y-8">
                             <div className="space-y-6">
                                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/20 rounded-full">
                                     <Sparkles className="w-4 h-4 text-primary" />
                                     <span className="text-xs font-medium tracking-widest text-primary uppercase">
-                                        Collection Exclusive
+                                        Sélection Exclusive
                                     </span>
                                 </div>
 
@@ -189,10 +188,10 @@ export function WhyChooseUs() {
                                     <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
                                 </Link>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+                        </div >
+                    </div >
+                </div >
+            </div >
+        </section >
     )
 }

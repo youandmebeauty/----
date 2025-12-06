@@ -53,7 +53,7 @@ export function FeaturedProducts() {
           <div className="max-w-xl">
             <div className="inline-flex items-center gap-2">
               <span className="h-px w-8 bg-primary"></span>
-              <span className="text-sm font-medium tracking-widest uppercase text-primary">Collection Exclusive</span>
+              <span className="text-sm font-medium tracking-widest uppercase text-primary">Sélection Exclusive</span>
             </div>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
               Produits Vedettes
