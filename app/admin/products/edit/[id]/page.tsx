@@ -15,6 +15,7 @@ import { useToast } from "@/hooks/use-toast"
 import { getProductById, updateProduct, deleteProduct } from "@/lib/services/product-service"
 import type { Product } from "@/lib/models"
 import { ArrowLeft, Trash2, Image as ImageIcon, X } from "lucide-react"
+import { LoadingAnimation } from "@/components/ui/loading-animation"
 import { CldUploadWidget } from 'next-cloudinary';
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 
@@ -185,7 +186,7 @@ function EditProductContent() {
       <div className="min-h-screen bg-background">
         <main className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            <LoadingAnimation size={140} className="text-primary" />
           </div>
         </main>
       </div>

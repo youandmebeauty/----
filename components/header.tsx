@@ -141,12 +141,12 @@ export function Header() {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden md:flex items-center space-x-8 lg:space-x-12">
+                    <nav className="hidden lg:flex items-center space-x-8 lg:space-x-12">
                       {navigation.map((item) => (
                         <Link
                           key={item.name}
                           href={item.href}
-                          className="text-sm font-bold uppercase tracking-widest text-foreground hover:text-primary transition-colors whitespace-nowrap"
+                          className="text-sm font-medium uppercase text-foreground hover:text-primary transition-colors whitespace-nowrap"
                         >
                           {item.name}
                         </Link>
@@ -154,7 +154,7 @@ export function Header() {
                     </nav>
 
                     {/* Actions */}
-                    <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
+                    <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4 lg:space-x-6">
                       {/* Search Trigger */}
                       <Button 
                         variant="ghost" 
@@ -203,7 +203,7 @@ export function Header() {
                       {/* Mobile Menu */}
                       <Sheet open={isOpen} onOpenChange={setIsOpen}>
                         <SheetTrigger asChild>
-                          <Button variant="ghost" size="icon" className="md:hidden hover:bg-transparent hover:text-primary h-9 w-9 sm:h-10 sm:w-10">
+                          <Button variant="ghost" size="icon" className="lg:hidden hover:bg-transparent hover:text-primary h-9 w-9 sm:h-10 sm:w-10">
                             <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
                             <span className="sr-only">Menu</span>
                           </Button>
@@ -253,7 +253,7 @@ export function Header() {
                                   >
                                     <Link
                                       href={item.href}
-                                      className="text-2xl font-bold uppercase tracking-tight text-white/90 hover:text-primary active:scale-95 transition-all block"
+                                      className="text-2xl font-semibold uppercase tracking-tight text-white/90 hover:text-primary active:scale-95 transition-all block"
                                       onClick={() => setIsOpen(false)}
                                     >
                                       {item.name}

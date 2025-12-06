@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast"
 import { getOrderById, updateOrderStatus } from "@/lib/services/order-service"
 import type { Order } from "@/lib/models"
 import { ArrowLeft, Package, User, MapPin, Phone, Mail } from "lucide-react"
+import { LoadingAnimation } from "@/components/ui/loading-animation"
 
 function OrderDetailsContent() {
   const params = useParams()
@@ -78,7 +79,7 @@ function OrderDetailsContent() {
       <div className="min-h-screen bg-background">
         <main className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            <LoadingAnimation size={140} className="text-primary" />
           </div>
         </main>
       </div>
@@ -118,12 +119,12 @@ function OrderDetailsContent() {
             <Badge
               variant="outline"
               className={`text-sm px-4 py-1.5 rounded-full ${order.status === "pending"
-                  ? "border-destructive text-destructive bg-destructive/5"
-                  : order.status === "processing"
-                    ? "border-blue-500 text-blue-500 bg-blue-500/5"
-                    : order.status === "shipped"
-                      ? "border-orange-500 text-orange-500 bg-orange-500/5"
-                      : "border-green-500 text-green-500 bg-green-500/5"
+                ? "border-destructive text-destructive bg-destructive/5"
+                : order.status === "processing"
+                  ? "border-blue-500 text-blue-500 bg-blue-500/5"
+                  : order.status === "shipped"
+                    ? "border-orange-500 text-orange-500 bg-orange-500/5"
+                    : "border-green-500 text-green-500 bg-green-500/5"
                 }`}
             >
               {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
@@ -244,12 +245,12 @@ function OrderDetailsContent() {
                     <Badge
                       variant="outline"
                       className={`text-sm px-3 py-1 rounded-full ${order.status === "pending"
-                          ? "border-destructive text-destructive bg-destructive/5"
-                          : order.status === "processing"
-                            ? "border-blue-500 text-blue-500 bg-blue-500/5"
-                            : order.status === "shipped"
-                              ? "border-orange-500 text-orange-500 bg-orange-500/5"
-                              : "border-green-500 text-green-500 bg-green-500/5"
+                        ? "border-destructive text-destructive bg-destructive/5"
+                        : order.status === "processing"
+                          ? "border-blue-500 text-blue-500 bg-blue-500/5"
+                          : order.status === "shipped"
+                            ? "border-orange-500 text-orange-500 bg-orange-500/5"
+                            : "border-green-500 text-green-500 bg-green-500/5"
                         }`}
                     >
                       {order.status.charAt(0).toUpperCase() + order.status.slice(1)}

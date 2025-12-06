@@ -1,7 +1,8 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Loader2 } from "lucide-react";
+import { LoadingAnimation } from "@/components/ui/loading-animation";
+// Remove Loader2 import or keep if used elsewhere (it's not used elsewhere in this file)
 
 const SkinAnalyzerFeature = dynamic(
   () => import("@/components/skin-analyzer/skin-analyzer-feature"),
@@ -9,7 +10,7 @@ const SkinAnalyzerFeature = dynamic(
     ssr: false,
     loading: () => (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <LoadingAnimation size={100} className="text-primary" />
       </div>
     ),
   }

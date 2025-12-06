@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useCart } from "@/components/cart-provider"
+import { LoadingAnimation } from "@/components/ui/loading-animation"
 import { useToast } from "@/hooks/use-toast"
 import { createOrder } from "@/lib/services/order-service"
 import { getProductById } from "@/lib/services/product-service"
@@ -152,7 +153,7 @@ export default function CartPage() {
 
         <main className="container mx-auto px-4 py-8">
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+            <LoadingAnimation size={140} className="text-primary" />
           </div>
         </main>
       </div>
@@ -434,7 +435,7 @@ export default function CartPage() {
                   <Button type="submit" className="w-full" size="lg" disabled={isCheckingOut}>
                     {isCheckingOut ? (
                       <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2"></div>
+                        <LoadingAnimation size={60} className="text-white mr-2" />
                         Traitement de la Commande...
                       </>
                     ) : (

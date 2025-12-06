@@ -5,12 +5,12 @@ import { useState, useEffect } from "react";
 import {
     Sparkles,
     AlertCircle,
-    Loader2,
     X,
 } from "lucide-react";
 import { CameraView } from "@/components/skin-analyzer/camera-view";
 import { UploadView } from "@/components/skin-analyzer/upload-view";
 import { AnalysisResults } from "@/components/skin-analyzer/analysis-results";
+import { LoadingAnimation } from "@/components/ui/loading-animation";
 import { getProductsForSkinConcern } from "@/lib/services/skin-product-matcher";
 import type { DetectionRaw, MappedDetection, GroupedDetection, Product } from "@/lib/skin-analyzer";
 
@@ -500,7 +500,7 @@ export default function SkinAnalyzerFeature() {
     if (!isClient) {
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <LoadingAnimation size={100} className="text-primary" />
             </div>
         );
     }
@@ -592,7 +592,7 @@ export default function SkinAnalyzerFeature() {
                                         className="w-full h-full object-cover opacity-50"
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                                        <Loader2 className="w-12 h-12 animate-spin text-white" />
+                                        <LoadingAnimation size={140} className="text-white" />
                                     </div>
                                 </div>
                             )}

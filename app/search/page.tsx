@@ -1,207 +1,353 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useSearchParams } from "next/navigation"
-import { Header } from "@/components/header"
-import { Footer } from "@/components/footer"
-import { ProductCard } from "@/components/product-card"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
+import { useState, useEffect, Suspense } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import { searchProducts } from "@/lib/services/product-service"
 import type { Product, SearchFilters } from "@/lib/models"
-import { SlidersHorizontal } from "lucide-react"
+import { SHOP_CATEGORIES } from "@/lib/category-data"
+import { Sparkles, User, Wind } from "lucide-react"
 
-export default function SearchPage() {
+// Components
+import { ShopHeader } from "@/components/shop/shop-header"
+import { ShopFilters } from "@/components/shop/shop-filters"
+import { ProductGrid } from "@/components/shop/product-grid"
+import { cn } from "@/lib/utils"
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog"
+
+function SearchContent() {
   const searchParams = useSearchParams()
-  const query = searchParams.get("q") || ""
-  const categoryParam = searchParams.get("category") || ""
-
+  const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [filters, setFilters] = useState<SearchFilters>({
-    category: categoryParam || undefined,
-    minPrice: undefined,
-    maxPrice: undefined,
-    sortBy: "newest",
-  })
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 200])
-  const [showFilters, setShowFilters] = useState(false)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [isRefetching, setIsRefetching] = useState(false)
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
+  const [expandedFilters, setExpandedFilters] = useState<string[]>(['category', 'skinType', 'hairType', 'price'])
+  const [hasDismissedSoinsModal, setHasDismissedSoinsModal] = useState(false)
 
-  const categories = ["makeup", "skincare", "fragrance", "tools"]
+  // Filter States
+  const [selectedCategory, setSelectedCategory] = useState<string>("all")
+  const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
+  const [selectedSkinTypes, setSelectedSkinTypes] = useState<string[]>([])
+  const [selectedHairTypes, setSelectedHairTypes] = useState<string[]>([])
+  const [priceRange, setPriceRange] = useState([0, 200])
+  const [sortBy, setSortBy] = useState("featured")
+  const [searchQuery, setSearchQuery] = useState("")
 
   useEffect(() => {
-    if (query || categoryParam) {
-      fetchProducts()
+    // In search page, we prioritize 'q' for the query
+    const category = searchParams.get("category") || "all"
+    const subcategory = searchParams.get("subcategory")
+    const search = searchParams.get("q") || searchParams.get("search") || ""
+
+    setSelectedCategory(category)
+    setSelectedSubcategory(subcategory || null)
+    setSearchQuery(search)
+  }, [searchParams])
+
+  useEffect(() => {
+    if (selectedCategory !== "soins") {
+      setHasDismissedSoinsModal(false)
     }
-  }, [query, categoryParam])
+  }, [selectedCategory])
 
-  const fetchProducts = async () => {
-    setLoading(true)
-    try {
-      const results = await searchProducts(query, filters)
-      setProducts(results)
-    } catch (error) {
-      console.error("Error searching products:", error)
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsRefetching(true)
+      try {
+        const filters: SearchFilters = {
+          minPrice: priceRange[0],
+          maxPrice: priceRange[1],
+        }
+
+        if (selectedCategory !== "all") filters.category = selectedCategory
+        if (selectedSubcategory) filters.subcategory = selectedSubcategory
+        if (selectedSkinTypes.length > 0) filters.skinType = selectedSkinTypes
+        if (selectedHairTypes.length > 0) filters.hairType = selectedHairTypes
+
+        if (sortBy !== "featured") {
+          filters.sortBy = sortBy as any
+        }
+
+        const productsData = await searchProducts(searchQuery, filters)
+        setProducts(productsData)
+      } catch (error) {
+        console.error("Error fetching products:", error)
+      } finally {
+        setIsInitialLoading(false)
+        setIsRefetching(false)
+      }
     }
+
+    const debounce = setTimeout(fetchProducts, 300)
+    return () => clearTimeout(debounce)
+  }, [selectedCategory, selectedSubcategory, selectedSkinTypes, selectedHairTypes, priceRange, sortBy, searchQuery])
+
+  const updateUrl = (params: URLSearchParams) => {
+    // Preserve the search query ('q') when updating filters
+    if (searchQuery) {
+      params.set('q', searchQuery)
+    }
+    router.push(`/search?${params.toString()}`)
   }
 
-  const handleFilterChange = (newFilters: Partial<SearchFilters>) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }))
+  const handleCategoryChange = (categoryId: string) => {
+    setSelectedCategory(categoryId)
+    setSelectedSubcategory(null)
+    setSelectedSkinTypes([])
+    setSelectedHairTypes([])
+
+    const params = new URLSearchParams() // Start fresh to avoid accumulation of unwanted params? Or preserve?
+    // Let's behave similarly to ShopPage but keep 'q'
+
+    // Actually, ShopPage does: new URLSearchParams(searchParams.toString())
+    const paramsCurrent = new URLSearchParams(searchParams.toString())
+
+    if (categoryId === "all") {
+      paramsCurrent.delete("category")
+    } else {
+      paramsCurrent.set("category", categoryId)
+    }
+    paramsCurrent.delete("subcategory")
+
+    // Ensure q is preserved (it should be since we extended searchParams)
+
+    router.push(`/search?${paramsCurrent.toString()}`)
   }
 
-  const handlePriceRangeChange = (value: number[]) => {
-    setPriceRange([value[0], value[1]])
+  const handleSubcategoryChange = (subcategoryId: string) => {
+    const params = new URLSearchParams(searchParams.toString())
+    if (selectedSubcategory === subcategoryId) {
+      setSelectedSubcategory(null)
+      params.delete("subcategory")
+    } else {
+      setSelectedSubcategory(subcategoryId)
+      params.set("subcategory", subcategoryId)
+    }
+    router.push(`/search?${params.toString()}`)
   }
 
-  const applyFilters = () => {
-    handleFilterChange({
-      minPrice: priceRange[0],
-      maxPrice: priceRange[1],
-    })
-    fetchProducts()
+  const toggleSkinType = (type: string) => {
+    setSelectedSkinTypes(prev =>
+      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+    )
   }
 
-  const resetFilters = () => {
+  const toggleHairType = (type: string) => {
+    setSelectedHairTypes(prev =>
+      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
+    )
+  }
+
+  const clearAllFilters = () => {
+    setSelectedCategory("all")
+    setSelectedSubcategory(null)
+    setSelectedSkinTypes([])
+    setSelectedHairTypes([])
     setPriceRange([0, 200])
-    setFilters({
-      category: undefined,
-      minPrice: undefined,
-      maxPrice: undefined,
-      sortBy: "newest",
-    })
-    fetchProducts()
+
+    // We should probably keep the search query though?
+    // ShopPage implementation clears everything state-wise.
   }
+
+  const activeFiltersCount =
+    (selectedCategory !== "all" ? 1 : 0) +
+    (selectedSubcategory ? 1 : 0) +
+    selectedSkinTypes.length +
+    selectedHairTypes.length +
+    (priceRange[0] !== 0 || priceRange[1] !== 200 ? 1 : 0)
+
+  const activeCategory = SHOP_CATEGORIES.find(c => c.id === selectedCategory)
+
+  const toggleFilterExpand = (filterId: string) => {
+    setExpandedFilters(prev =>
+      prev.includes(filterId) ? prev.filter(f => f !== filterId) : [...prev, filterId]
+    )
+  }
+
+  const filterProps = {
+    selectedCategory,
+    handleCategoryChange,
+    selectedSubcategory,
+    handleSubcategoryChange,
+    selectedSkinTypes,
+    toggleSkinType,
+    selectedHairTypes,
+    toggleHairType,
+    priceRange,
+    setPriceRange,
+    expandedFilters,
+    toggleFilterExpand
+  }
+
+  // Determine title based on search query
+  const pageTitle = searchQuery
+    ? `Résultats pour "${searchQuery}"`
+    : (selectedCategory === "all" ? "Tous les produits" : activeCategory?.label || "Recherche")
 
   return (
     <div className="min-h-screen bg-background">
+      <main className="container mx-auto px-4 lg:px-6 xl:px-8 py-8">
 
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">{query ? `Search results for "${query}"` : "All Products"}</h1>
-          <p className="text-muted-foreground">
-            {products.length} {products.length === 1 ? "product" : "products"} found
-          </p>
+        {/* Header & Controls */}
+        <div id="product-section" className="scroll-mt-24">
+          <ShopHeader
+            title={pageTitle}
+            productCount={products.length}
+            sortBy={sortBy}
+            setSortBy={setSortBy}
+            activeFiltersCount={activeFiltersCount}
+            clearAllFilters={clearAllFilters}
+            isFilterOpen={isFilterOpen}
+            setIsFilterOpen={setIsFilterOpen}
+            filterProps={filterProps}
+          />
         </div>
 
-        <div className="flex flex-col md:flex-row gap-8">
-          {/* Mobile Filter Toggle */}
-          <div className="md:hidden mb-4">
-            <Button variant="outline" onClick={() => setShowFilters(!showFilters)} className="w-full">
-              <SlidersHorizontal className="h-4 w-4 mr-2" />
-              {showFilters ? "Hide Filters" : "Show Filters"}
-            </Button>
-          </div>
-
-          {/* Filters Sidebar */}
-          <div className={`md:w-1/4 lg:w-1/5 space-y-6 ${showFilters ? "block" : "hidden md:block"}`}>
-            <div>
-              <h3 className="font-semibold mb-3">Categories</h3>
-              <div className="space-y-2">
-                <div className="flex items-center">
-                  <input
-                    type="radio"
-                    id="category-all"
-                    name="category"
-                    checked={!filters.category}
-                    onChange={() => handleFilterChange({ category: undefined })}
-                    className="mr-2"
-                  />
-                  <Label htmlFor="category-all">All Categories</Label>
-                </div>
-                {categories.map((category) => (
-                  <div key={category} className="flex items-center">
-                    <input
-                      type="radio"
-                      id={`category-${category}`}
-                      name="category"
-                      checked={filters.category === category}
-                      onChange={() => handleFilterChange({ category })}
-                      className="mr-2"
-                    />
-                    <Label htmlFor={`category-${category}`} className="capitalize">
-                      {category}
-                    </Label>
-                  </div>
-                ))}
-              </div>
+        <div className="flex gap-8 lg:gap-12 mt-8">
+          {/* Desktop Sidebar */}
+          <aside className="hidden lg:block w-64 flex-shrink-0">
+            <div className="sticky top-24">
+              <ShopFilters {...filterProps} />
             </div>
+          </aside>
 
-            <div>
-              <h3 className="font-semibold mb-3">Price Range</h3>
-              <div className="px-2">
-                <Slider
-                  defaultValue={[0, 200]}
-                  value={priceRange}
-                  min={0}
-                  max={200}
-                  step={5}
-                  onValueChange={handlePriceRangeChange}
-                  className="mb-6"
-                />
-                <div className="flex items-center justify-between">
-                  <span>{priceRange[0]} TND</span>
-                  <span>{priceRange[1]} TND</span>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-3">Sort By</h3>
-              <select
-                value={filters.sortBy}
-                onChange={(e) => handleFilterChange({ sortBy: e.target.value as SearchFilters["sortBy"] })}
-                className="w-full border rounded p-2"
-              >
-                <option value="newest">Newest</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="name-asc">Name: A to Z</option>
-                <option value="name-desc">Name: Z to A</option>
-              </select>
-            </div>
-
-            <div className="flex flex-col space-y-2">
-              <Button onClick={applyFilters}>Apply Filters</Button>
-              <Button variant="outline" onClick={resetFilters}>
-                Reset Filters
-              </Button>
-            </div>
-          </div>
-
-          {/* Product Grid */}
+          {/* Main Content */}
           <div className="flex-1">
-            {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="aspect-square bg-muted rounded-lg mb-4" />
-                    <div className="h-4 bg-muted rounded mb-2" />
-                    <div className="h-4 bg-muted rounded w-1/2" />
+            <div className={cn("transition-opacity duration-300", isRefetching ? "opacity-50" : "opacity-100")}>
+              {products.length === 0 && !isInitialLoading ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground text-lg mb-4">Aucun produit trouvé pour votre recherche.</p>
+                  <button onClick={clearAllFilters} className="text-primary hover:underline">
+                    Effacer les filtres
+                  </button>
+                </div>
+              ) : (
+                <ProductGrid
+                  products={products}
+                  loading={isInitialLoading}
+                  clearAllFilters={clearAllFilters}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Soins Subcategory Selection Modal */}
+        <Dialog
+          open={selectedCategory === "soins" && !selectedSubcategory && !hasDismissedSoinsModal}
+          onOpenChange={(open) => {
+            if (!open) {
+              setHasDismissedSoinsModal(true)
+            }
+          }}
+        >
+          <DialogContent className="sm:max-w-[600px]">
+            <DialogTitle className="text-center text-2xl font-bold mb-6">
+              Que recherchez-vous ?
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              Sélectionnez le type de soins que vous recherchez : visage, corps ou cheveux.
+            </DialogDescription>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <button
+                onClick={(e) => {
+                  e.currentTarget.blur()
+                  setHasDismissedSoinsModal(true)
+                  requestAnimationFrame(() => {
+                    setTimeout(() => handleSubcategoryChange("visage"), 250)
+                  })
+                }}
+                className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
+                type="button"
+              >
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Sparkles className="w-8 h-8 text-primary" />
+                </div>
+                <span className="font-semibold text-lg">Visage</span>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.currentTarget.blur()
+                  setHasDismissedSoinsModal(true)
+                  requestAnimationFrame(() => {
+                    setTimeout(() => handleSubcategoryChange("corps"), 250)
+                  })
+                }}
+                className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
+                type="button"
+              >
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <User className="w-8 h-8 text-primary" />
+                </div>
+                <span className="font-semibold text-lg">Corps</span>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.currentTarget.blur()
+                  setHasDismissedSoinsModal(true)
+                  requestAnimationFrame(() => {
+                    setTimeout(() => handleSubcategoryChange("cheveux"), 250)
+                  })
+                }}
+                className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
+                type="button"
+              >
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Wind className="w-8 h-8 text-primary" />
+                </div>
+                <span className="font-semibold text-lg">Cheveux</span>
+              </button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </main>
+    </div>
+  )
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-background">
+        <main className="container mx-auto px-4 lg:px-6 xl:px-8 py-8">
+          <div className="mb-8 lg:mb-12 space-y-2">
+            <div className="h-10 w-64 bg-muted animate-pulse" />
+            <div className="h-4 w-32 bg-muted animate-pulse" />
+          </div>
+          <div className="flex gap-8 lg:gap-12">
+            <aside className="hidden lg:block w-64 flex-shrink-0 space-y-8">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="space-y-4">
+                  <div className="h-6 w-full bg-muted animate-pulse" />
+                  <div className="space-y-2">
+                    {[...Array(3)].map((_, j) => (
+                      <div key={j} className="h-4 w-3/4 bg-muted animate-pulse" />
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </aside>
+            <div className="flex-1">
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 lg:gap-x-6 lg:gap-y-12">
+                {[...Array(8)].map((_, i) => (
+                  <div key={i} className="space-y-3 animate-pulse">
+                    <div className="aspect-[3/4] bg-muted" />
+                    <div className="h-3 bg-muted w-3/4" />
+                    <div className="h-3 bg-muted w-1/2" />
                   </div>
                 ))}
               </div>
-            ) : products.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No products found matching your criteria.</p>
-                <Button variant="outline" onClick={resetFilters} className="mt-4">
-                  Reset Filters
-                </Button>
-              </div>
-            )}
+            </div>
           </div>
-        </div>
-      </main>
-
-
-    </div>
+        </main>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   )
 }

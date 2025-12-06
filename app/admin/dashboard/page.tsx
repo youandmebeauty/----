@@ -18,6 +18,7 @@ import type { Product, Order } from "@/lib/models"
 import type { AnalyticsPeriod } from "@/lib/services/analytics-service"
 import { MetricsCard } from "@/components/admin/metrics-card"
 import { AnalyticsChart } from "@/components/admin/analytics-chart"
+import { LoadingAnimation } from "@/components/ui/loading-animation"
 function DashboardContent() {
   const router = useRouter()
   const { toast } = useToast()
@@ -102,7 +103,7 @@ function DashboardContent() {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <LoadingAnimation size={140} className="text-primary" />
       </div>
     )
   }

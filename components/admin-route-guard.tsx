@@ -6,6 +6,8 @@ import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
 
+import { LoadingAnimation } from "@/components/ui/loading-animation"
+
 interface AdminRouteGuardProps {
   children: React.ReactNode
 }
@@ -27,7 +29,7 @@ export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <LoadingAnimation size={140} className="text-primary" />
       </div>
     )
   }
