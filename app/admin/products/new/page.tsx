@@ -24,6 +24,7 @@ function AddProductContent() {
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
+    brand: "",
     price: "",
     category: "soins",
     subcategory: "",
@@ -71,6 +72,7 @@ function AddProductContent() {
     try {
       const productData: any = {
         name: formData.name,
+        brand: formData.brand || undefined,
         price: Number.parseFloat(formData.price),
         category: formData.category,
         subcategory: formData.subcategory,
@@ -141,6 +143,18 @@ function AddProductContent() {
                     onChange={handleInputChange}
                     required
                     placeholder="Entrez le nom du produit"
+                    className="bg-background/50"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="brand">Marque</Label>
+                  <Input
+                    id="brand"
+                    name="brand"
+                    value={formData.brand}
+                    onChange={handleInputChange}
+                    placeholder="Entrez la marque du produit"
                     className="bg-background/50"
                   />
                 </div>
