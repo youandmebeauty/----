@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useTheme } from "next-themes"
 import { Sparkles, Heart, Package, Award, Shield, Truck, ArrowRight } from "lucide-react"
 import { ScrollAnimation } from "./scroll-animation"
+import Image from "next/image"
 
 const values = [
     {
@@ -136,14 +137,16 @@ export function WhyChooseUs() {
                 {/* Enhanced CTA Section with Logo Background */}
                 <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 shadow-2xl">
                     {/* Background Pattern */}
-                    <div className="absolute inset-0 bg-[url('/hero-beauty.png')] bg-cover bg-center opacity-10 dark:opacity-5"></div>
+                    <div className="absolute inset-0 bg-[url('/hero-beauty.webp')] bg-cover bg-center opacity-10 dark:opacity-5"></div>
 
                     {/* Logo Background - Integrated as Watermark */}
                     <div className="absolute inset-0 mr-20 flex items-center justify-end">
-                        <img
+                        <Image
                             src={theme === "light" ? "/logo-light.webp" : "/logo-white.webp"}
                             alt="Youme Beauty Logo Background"
-                            className="h-[1000px] lg:h-[800px] w-auto opacity-[0.08] dark:opacity-[0.05] pointer-events-none"
+                            width={1000}
+                            height={800}
+                            className="opacity-[0.08] dark:opacity-[0.05] pointer-events-none"
                         />
                     </div>
 

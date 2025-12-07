@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen overflow-x-hidden">
+    <div className="min-h-screen overflow-hidden">
       <main>
         <ScrollAnimation variant="fadeIn" duration={0.8}>
           <Hero />
