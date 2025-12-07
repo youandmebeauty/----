@@ -40,7 +40,7 @@ export async function sendOrderConfirmationEmail(order: Order): Promise<boolean>
 
     // Send notification to admin
     const adminEmailSent = await sendEmail({
-      to: process.env.GMAIL_USER || "",
+      to: process.env.GMAIL_USER!,
       subject: `Nouvelle commande #${order.id}`,
       html: generateAdminEmailBody(order),
       type: "admin",
@@ -55,7 +55,7 @@ export async function sendOrderConfirmationEmail(order: Order): Promise<boolean>
 
 function generateCustomerEmailBody(order: Order): string {
   const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shippingCost = subtotal > 100 ? 0 : 8;
+  const shippingCost = subtotal > 200 ? 0 : 8;
 
   const itemsList = order.items
     .map(
@@ -72,25 +72,25 @@ function generateCustomerEmailBody(order: Order): string {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="background-color: #45062E; padding: 20px; text-align: center;">
-        <h1 style="color: white; margin: 0;">You&me Beauty</h1>
+        <h1 style="color: white; margin: 0;">You & Me Beauty</h1>
       </div>
       
       <div style="padding: 20px;">
-        <h2>Thank you for your order!</h2>
-        <p>Hello ${order.customerName},</p>
-        <p>We've received your order and are working on it now. Here's a summary of your purchase:</p>
+        <h2>Merci pour votre commande !</h2>
+        <p>Bonjour ${order.customerName},</p>
+        <p>Nous avons bien reçu votre commande et nous y travaillons actuellement. Voici un récapitulatif de votre achat :</p>
         
         <div style="margin: 20px 0;">
-          <h3>Order Summary</h3>
-          <p><strong>Order ID:</strong> #${order.id}</p>
-          <p><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+          <h3>Récapitulatif de la commande</h3>
+          <p><strong>Numéro de commande :</strong> #${order.id}</p>
+          <p><strong>Date de commande :</strong> ${new Date(order.createdAt).toLocaleDateString('fr-FR')}</p>
           
           <table style="width: 100%; border-collapse: collapse;">
             <thead>
               <tr style="background-color: #f8f8f8;">
-                <th style="padding: 10px; text-align: left;">Product</th>
-                <th style="padding: 10px; text-align: left;">Quantity</th>
-                <th style="padding: 10px; text-align: left;">Price</th>
+                <th style="padding: 10px; text-align: left;">Produit</th>
+                <th style="padding: 10px; text-align: left;">Quantité</th>
+                <th style="padding: 10px; text-align: left;">Prix</th>
                 <th style="padding: 10px; text-align: left;">Total</th>
               </tr>
             </thead>
@@ -99,16 +99,16 @@ function generateCustomerEmailBody(order: Order): string {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Subtotal:</strong></td>
+                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Sous-total :</strong></td>
                 <td style="padding: 10px;">${subtotal.toFixed(2)} TND</td>
               </tr>
               <tr>
-                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Shipping:</strong></td>
-                <td style="padding: 10px;">${shippingCost === 0 ? '<span style="color: #16a34a;">Free</span>' : `${shippingCost.toFixed(2)} TND`
+                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Livraison :</strong></td>
+                <td style="padding: 10px;">${shippingCost === 0 ? '<span style="color: #16a34a;">Gratuite</span>' : `${shippingCost.toFixed(2)} TND`
     }</td>
               </tr>
               <tr>
-                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Total:</strong></td>
+                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Total :</strong></td>
                 <td style="padding: 10px;"><strong>${order.total.toFixed(2)} TND</strong></td>
               </tr>
             </tfoot>
@@ -116,20 +116,20 @@ function generateCustomerEmailBody(order: Order): string {
         </div>
         
         <div style="margin: 20px 0;">
-          <h3>Shipping Address</h3>
+          <h3>Adresse de livraison</h3>
           <p>${order.customerName}<br>
           ${order.address}<br>
           ${order.city}, ${order.postalCode}<br>
-          ${order.country}</p>
+          ${order.gouvernorat}</p>
         </div>
         
-        <p>We'll send you another email when your order ships. If you have any questions, please contact our customer service team.</p>
+        <p>Nous vous enverrons un autre email lorsque votre commande sera expédiée. Si vous avez des questions, n'hésitez pas à contacter notre service client.</p>
         
-        <p>Thank you for shopping with You&me Beauty!</p>
+        <p>Merci d'avoir choisi You & Me Beauty !</p>
       </div>
       
       <div style="background-color: #f8f8f8; padding: 20px; text-align: center; font-size: 12px; color: #666;">
-        <p>© 2024 You&me Beauty. All rights reserved.</p>
+        <p>© 2024 You & Me Beauty. Tous droits réservés.</p>
         <p>123 Beauty Street, New York, NY 10001</p>
       </div>
     </div>
@@ -138,7 +138,7 @@ function generateCustomerEmailBody(order: Order): string {
 
 function generateAdminEmailBody(order: Order): string {
   const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const shippingCost = subtotal > 100 ? 0 : 8;
+  const shippingCost = subtotal > 200 ? 0 : 8;
 
   const itemsList = order.items
     .map(
@@ -155,25 +155,25 @@ function generateAdminEmailBody(order: Order): string {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="background-color: #45062E; padding: 20px; text-align: center;">
-        <h1 style="color: white; margin: 0;">You&me Beauty - New Order</h1>
+        <h1 style="color: white; margin: 0;">You&me Beauty - Nouvelle commande</h1>
       </div>
       
       <div style="padding: 20px;">
-        <h2>New Order Received</h2>
-        <p><strong>Order ID:</strong> #${order.id}</p>
-        <p><strong>Order Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
-        <p><strong>Customer:</strong> ${order.customerName}</p>
-        <p><strong>Email:</strong> ${order.email}</p>
-        <p><strong>Phone:</strong> ${order.phone || "Not provided"}</p>
+        <h2>Nouvelle commande reçue</h2>
+        <p><strong>Numéro de commande :</strong> #${order.id}</p>
+        <p><strong>Date de commande :</strong> ${new Date(order.createdAt).toLocaleDateString('fr-FR')}</p>
+        <p><strong>Client :</strong> ${order.customerName}</p>
+        <p><strong>Email :</strong> ${order.email}</p>
+        <p><strong>Téléphone :</strong> ${order.phone || "Non fourni"}</p>
         
         <div style="margin: 20px 0;">
-          <h3>Order Details</h3>
+          <h3>Détails de la commande</h3>
           <table style="width: 100%; border-collapse: collapse;">
             <thead>
               <tr style="background-color: #f8f8f8;">
-                <th style="padding: 10px; text-align: left;">Product</th>
-                <th style="padding: 10px; text-align: left;">Quantity</th>
-                <th style="padding: 10px; text-align: left;">Price</th>
+                <th style="padding: 10px; text-align: left;">Produit</th>
+                <th style="padding: 10px; text-align: left;">Quantité</th>
+                <th style="padding: 10px; text-align: left;">Prix</th>
                 <th style="padding: 10px; text-align: left;">Total</th>
               </tr>
             </thead>
@@ -182,16 +182,16 @@ function generateAdminEmailBody(order: Order): string {
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Subtotal:</strong></td>
+                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Sous-total :</strong></td>
                 <td style="padding: 10px;">${subtotal.toFixed(2)} TND</td>
               </tr>
               <tr>
-                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Shipping:</strong></td>
-                <td style="padding: 10px;">${shippingCost === 0 ? '<span style="color: #16a34a;">Free</span>' : `${shippingCost.toFixed(2)} TND`
+                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Livraison :</strong></td>
+                <td style="padding: 10px;">${shippingCost === 0 ? '<span style="color: #16a34a;">Gratuite</span>' : `${shippingCost.toFixed(2)} TND`
     }</td>
               </tr>
               <tr>
-                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Total:</strong></td>
+                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Total :</strong></td>
                 <td style="padding: 10px;"><strong>${order.total.toFixed(2)} TND</strong></td>
               </tr>
             </tfoot>
@@ -199,22 +199,22 @@ function generateAdminEmailBody(order: Order): string {
         </div>
         
         <div style="margin: 20px 0;">
-          <h3>Shipping Address</h3>
+          <h3>Adresse de livraison</h3>
           <p>${order.customerName}<br>
           ${order.address}<br>
           ${order.city}, ${order.postalCode}<br>
-          ${order.country}</p>
+          ${order.gouvernorat}</p>
         </div>
         
         ${order.notes
       ? `<div style="margin: 20px 0;">
-          <h3>Customer Notes</h3>
+          <h3>Notes du client</h3>
           <p>${order.notes}</p>
         </div>`
       : ""
     }
         
-        <p>Please process this order as soon as possible.</p>
+        <p>Veuillez traiter cette commande dans les plus brefs délais.</p>
       </div>
     </div>
   `;

@@ -30,7 +30,7 @@ export function ProductClient({ product }: ProductClientProps) {
         .reduce((sum, item) => sum + item.quantity, 0)
 
     const handleAddToCart = () => {
-        const remainingStock = product.stock - cartQuantity
+        const remainingStock = product.quantity - cartQuantity
 
         if (quantity > remainingStock) {
             toast({
@@ -62,7 +62,7 @@ export function ProductClient({ product }: ProductClientProps) {
         })
     }
 
-    const inStock = product.stock > cartQuantity
+    const inStock = product.quantity > cartQuantity
 
     return (
         <div className="min-h-screen bg-background">
@@ -104,6 +104,13 @@ export function ProductClient({ product }: ProductClientProps) {
                                 {product.name}
                             </h1>
 
+                            {/* Brand Name */}
+                            {product.brand && (
+                                <p className="text-lg text-muted-foreground font-light tracking-wide">
+                                    {product.brand}
+                                </p>
+                            )}
+
                             <p className="text-2xl md:text-3xl font-medium text-foreground">
                                 {product.price.toFixed(2)} TND
                             </p>
@@ -132,7 +139,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            onClick={() => setQuantity(Math.min(product.stock - cartQuantity, quantity + 1))}
+                                            onClick={() => setQuantity(Math.min(product.quantity - cartQuantity, quantity + 1))}
                                             className="h-10 w-10 rounded-none hover:bg-primary/40"
                                         >
                                             <Plus className="h-3 w-3" />
@@ -178,10 +185,10 @@ export function ProductClient({ product }: ProductClientProps) {
 
                                 <AccordionItem value="shipping" className="border-border/50">
                                     <AccordionTrigger className="text-sm uppercase tracking-widest font-medium hover:no-underline">
-                                        Shipping & Returns
+                                        Livraison & Retours
                                     </AccordionTrigger>
                                     <AccordionContent className="text-muted-foreground leading-relaxed font-light">
-                                        Free shipping on orders over 100 TND. Returns accepted within 30 days of purchase.
+                                        Livraison gratuite pour les commandes de plus de 200 TND. Les retours sont acceptés dans les 7 jours suivant l'achat.
                                     </AccordionContent>
                                 </AccordionItem>
                             </Accordion>

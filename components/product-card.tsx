@@ -6,15 +6,17 @@ import { Button } from "@/components/ui/button"
 import { useCart } from "./cart-provider"
 import { toast } from "@/components/ui/use-toast"
 import { cn } from "@/lib/utils"
+import { ShoppingBag } from "lucide-react"
 
 interface Product {
   id: string
   name: string
+  brand?: string
   price: number
   image: string
   category: string
   description: string
-  stock: number
+  quantity: number
 }
 
 interface ProductCardProps {
@@ -31,10 +33,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
     .reduce((sum, item) => sum + item.quantity, 0)
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault() // Prevent navigation if clicking the button
+    e.preventDefault()
     e.stopPropagation()
 
-    const remainingStock = product.stock - cartQuantity
+    const remainingStock = product.quantity - cartQuantity
     const quantityToAdd = 1
 
     if (quantityToAdd > remainingStock) {
@@ -58,66 +60,76 @@ export function ProductCard({ product, className }: ProductCardProps) {
     })
   }
 
-  const isOutOfStock = product.stock <= cartQuantity
+  const isOutOfStock = product.quantity <= cartQuantity
 
   return (
-    <div className={cn("group relative flex flex-col space-y-4", className)}>
-      {/* Image Container */}
-      <Link href={`/product/${product.id}`} className="block relative aspect-[4/5] overflow-hidden bg-secondary/20">
-        <Image
-          src={product.image || "/placeholder.svg"}
-          alt={product.name}
-          fill
-          className="rounded-xl object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
+    <Link 
+      href={`/product/${product.id}`}
+      className={cn("group block", className)}
+    >
+      <div className="relative">
+        {/* Image Container */}
+        <div className="relative aspect-[3/4] overflow-hidden bg-secondary/10 rounded-sm">
+          <Image
+            src={product.image || "/placeholder.svg"}
+            alt={product.name}
+            fill
+            className="object-cover transition-all duration-700 ease-out group-hover:scale-[1.03]"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
 
-        {/* Overlay / Quick Action */}
-        <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          {/* Gradient Overlay on Hover */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-        {/* Stock Badge (Minimal) */}
-        {isOutOfStock && (
-          <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 text-[10px] uppercase tracking-widest font-medium text-destructive">
-            Sold Out
-          </div>
-        )}
-      </Link>
+          {/* Stock Badge */}
+          {isOutOfStock && (
+            <div className="absolute top-3 left-3 bg-background/95 backdrop-blur-sm px-3 py-1.5 rounded-full">
+              <span className="text-[10px] uppercase tracking-wider font-semibold text-destructive">
+                Épuisé
+              </span>
+            </div>
+          )}
 
-      {/* Content */}
-      <div className="flex flex-col space-y-1">
-        <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+          {/* Quick Add Button - Appears on Hover */}
+          {!isOutOfStock && (
+            <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+              <Button
+                onClick={handleAddToCart}
+                className="w-full h-11 bg-background/95 backdrop-blur-sm hover:bg-primary text-foreground border border-border/50 rounded-full shadow-lg"
+                variant="outline"
+              >
+                <ShoppingBag className="h-4 w-4 mr-2" />
+                <span className="text-xs uppercase tracking-wider font-medium">Ajouter au panier</span>
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Product Info */}
+        <div className="mt-4 space-y-2">
+          {/* Brand */}
+          {product.brand && (
+            <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground/80 font-medium">
+              {product.brand}
+            </p>
+          )}
+
+          {/* Product Name */}
+          <h3 className="font-serif text-base leading-snug text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-2">
+            {product.name}
+          </h3>
+
+          {/* Price & Category */}
+          <div className="flex items-center justify-between pt-1">
+            <span className="text-sm font-semibold text-foreground tabular-nums">
+              {product.price.toFixed(2)} <span className="text-xs font-normal">TND</span>
+            </span>
+            <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60">
               {product.category}
             </span>
-            <Link href={`/product/${product.id}`}>
-              <h3 className="font-serif text-lg leading-tight text-foreground group-hover:text-primary transition-colors duration-300">
-                {product.name}
-              </h3>
-            </Link>
           </div>
-          <span className="text-sm font-medium text-foreground tabular-nums">
-            {product.price.toFixed(2)} TND
-          </span>
-        </div>
-
-        {/* Description - Optional, kept minimal */}
-        <p className="text-xs text-muted-foreground line-clamp-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 h-4">
-          {product.description}
-        </p>
-
-        {/* Add to Cart Button - Appears on hover or always visible but subtle */}
-        <div className="pt-2 opacity-0 group-hover:opacity-100 transition-all duration-500 transform translate-y-2 group-hover:translate-y-0">
-          <Button
-            onClick={handleAddToCart}
-            disabled={isOutOfStock}
-            variant="outline"
-            className="w-full rounded-none border-foreground/20 hover:bg-foreground hover:text-background hover:border-foreground transition-all duration-300 h-9 text-xs uppercase tracking-widest"
-          >
-            {isOutOfStock ? "Rupture de stock" : "Ajouter au panier"}
-          </Button>
         </div>
       </div>
-    </div>
+    </Link>
   )
 }

@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { getOrderById, updateOrderStatus } from "@/lib/services/order-service"
 import type { Order } from "@/lib/models"
-import { ArrowLeft, Package, User, MapPin, Phone, Mail } from "lucide-react"
+import { ArrowLeft, Package, User, MapPin, Phone, Mail, AlertTriangle } from "lucide-react"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
 
 function OrderDetailsContent() {
@@ -59,9 +59,18 @@ function OrderDetailsContent() {
     try {
       await updateOrderStatus(order.id, newStatus)
       setOrder((prev) => (prev ? { ...prev, status: newStatus } : null))
+      
+      const statusMessages: Record<Order["status"], string> = {
+        pending: "En attente",
+        processing: "En traitement",
+        shipped: "Expédié",
+        delivered: "Livré",
+        cancelled: "Annulé (stock restauré)"
+      }
+      
       toast({
         title: "Commande mise à jour",
-        description: `Statut de la commande changé en ${newStatus}.`,
+        description: `Statut de la commande changé en ${statusMessages[newStatus]}.`,
       })
     } catch (error) {
       toast({
@@ -71,6 +80,23 @@ function OrderDetailsContent() {
       })
     } finally {
       setUpdating(false)
+    }
+  }
+
+  const getStatusColor = (status: Order["status"]) => {
+    switch (status) {
+      case "pending":
+        return "border-yellow-500 text-yellow-500 bg-yellow-500/5"
+      case "processing":
+        return "border-blue-500 text-blue-500 bg-blue-500/5"
+      case "shipped":
+        return "border-orange-500 text-orange-500 bg-orange-500/5"
+      case "delivered":
+        return "border-green-500 text-green-500 bg-green-500/5"
+      case "cancelled":
+        return "border-red-500 text-red-500 bg-red-500/5"
+      default:
+        return "border-gray-500 text-gray-500 bg-gray-500/5"
     }
   }
 
@@ -116,17 +142,7 @@ function OrderDetailsContent() {
                 Détails de la commande #{order.id.slice(0, 8)}
               </h1>
             </div>
-            <Badge
-              variant="outline"
-              className={`text-sm px-4 py-1.5 rounded-full ${order.status === "pending"
-                ? "border-destructive text-destructive bg-destructive/5"
-                : order.status === "processing"
-                  ? "border-blue-500 text-blue-500 bg-blue-500/5"
-                  : order.status === "shipped"
-                    ? "border-orange-500 text-orange-500 bg-orange-500/5"
-                    : "border-green-500 text-green-500 bg-green-500/5"
-                }`}
-            >
+            <Badge variant="outline" className={`text-sm px-4 py-1.5 rounded-full ${getStatusColor(order.status)}`}>
               {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
             </Badge>
           </div>
@@ -229,7 +245,7 @@ function OrderDetailsContent() {
                     <p className="text-muted-foreground">
                       {order.city}, {order.postalCode}
                     </p>
-                    <p className="text-muted-foreground">{order.country}</p>
+                    <p className="text-muted-foreground">{order.gouvernorat}</p>
                   </div>
                 </CardContent>
               </Card>
@@ -242,17 +258,7 @@ function OrderDetailsContent() {
                 <CardContent className="space-y-4">
                   <div>
                     <p className="text-sm text-muted-foreground mb-2">Statut actuel:</p>
-                    <Badge
-                      variant="outline"
-                      className={`text-sm px-3 py-1 rounded-full ${order.status === "pending"
-                        ? "border-destructive text-destructive bg-destructive/5"
-                        : order.status === "processing"
-                          ? "border-blue-500 text-blue-500 bg-blue-500/5"
-                          : order.status === "shipped"
-                            ? "border-orange-500 text-orange-500 bg-orange-500/5"
-                            : "border-green-500 text-green-500 bg-green-500/5"
-                        }`}
-                    >
+                    <Badge variant="outline" className={`text-sm px-3 py-1 rounded-full ${getStatusColor(order.status)}`}>
                       {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                     </Badge>
                   </div>
@@ -265,15 +271,36 @@ function OrderDetailsContent() {
                           key={status}
                           variant={order.status === status ? "default" : "outline"}
                           size="sm"
-                          className={`w-full justify-start rounded-full ${order.status !== status ? "bg-background/50 border-border/50 hover:bg-primary/10 hover:text-primary" : ""}`}
+                          className={`w-full justify-start rounded-full ${
+                            order.status !== status ? "bg-background/50 border-border/50 hover:bg-primary/10 hover:text-primary" : ""
+                          }`}
                           onClick={() => handleStatusUpdate(status)}
-                          disabled={updating || order.status === status}
+                          disabled={updating || order.status === status || order.status === "cancelled"}
                         >
                           {status.charAt(0).toUpperCase() + status.slice(1)}
                         </Button>
                       ))}
                     </div>
                   </div>
+
+                  {/* Cancel Order Button */}
+                  {order.status !== "cancelled" && (
+                    <div className="pt-4 border-t border-border/50">
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        className="w-full rounded-full"
+                        onClick={() => handleStatusUpdate("cancelled")}
+                        disabled={updating}
+                      >
+                        <AlertTriangle className="h-4 w-4 mr-2" />
+                        Annuler la commande
+                      </Button>
+                      <p className="text-xs text-muted-foreground mt-2 text-center">
+                        Le stock sera automatiquement restauré
+                      </p>
+                    </div>
+                  )}
 
                   <div className="pt-4 border-t border-border/50">
                     <p className="text-sm text-muted-foreground">

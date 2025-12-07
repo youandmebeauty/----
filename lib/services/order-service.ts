@@ -79,9 +79,37 @@ export async function createOrder(order: Omit<Order, "id" | "createdAt" | "statu
   if (!firestoreModule || !db) throw new Error("Firestore not available")
 
   try {
+    // VALIDATE AND REDUCE STOCK BEFORE CREATING ORDER
+    console.log("Validating stock for order items:", order.items)
+    
+    for (const item of order.items) {
+      if (!item.id || !item.quantity || item.quantity <= 0) {
+        throw new Error(`Invalid item: ${item.name || 'Unknown'}`)
+      }
+
+      const product = await getProductById(item.id)
+      
+      if (!product) {
+        throw new Error(`Product not found: ${item.name}`)
+      }
+
+      if (product.quantity === undefined || product.quantity < item.quantity) {
+        throw new Error(
+          `Stock insuffisant pour ${item.name}. ` +
+          `Demandé: ${item.quantity}, Disponible: ${product.quantity ?? 0}`
+        )
+      }
+
+      // Reduce stock immediately
+      const newStock = product.quantity - item.quantity
+      console.log(`Reducing stock for ${item.id} (${item.name}): ${product.quantity} -> ${newStock}`)
+      await updateProductStock(item.id, newStock)
+    }
+
+    // Create order after stock is successfully reduced
     const orderData = {
       ...order,
-      status: "pending",
+      status: "pending" as const,
       createdAt: firestoreModule.serverTimestamp(),
     }
 
@@ -92,6 +120,8 @@ export async function createOrder(order: Omit<Order, "id" | "createdAt" | "statu
       ...orderData,
       createdAt: new Date().toISOString(),
     } as Order
+
+    console.log(`Order created successfully: ${newOrder.id}`)
 
     // Send confirmation emails
     try {
@@ -125,37 +155,39 @@ export async function updateOrderStatus(id: string, status: Order["status"]): Pr
     }
 
     const orderData = orderDoc.data() as Order
-    console.debug(`Updating order ${id} to status: ${status}, items:`, orderData.items)
+    const previousStatus = orderData.status
 
-    // Update order status
+    console.log(`Updating order ${id} from ${previousStatus} to ${status}`)
+
+    // Update order status in database
     await firestoreModule.updateDoc(orderRef, { status })
 
-    // If status is changed to "shipped" or "delivered", update product stock
-    if (status === "shipped" || status === "delivered") {
+    // Handle stock restoration if order is cancelled
+    if (status === "cancelled" && previousStatus !== "cancelled") {
+      console.log(`Restoring stock for cancelled order ${id}`)
+      
       if (!orderData.items || !Array.isArray(orderData.items)) {
         console.warn(`Order ${id} has no valid items array`)
-        throw new Error("Invalid order items")
-      }
-
-      for (const item of orderData.items) {
-        if (!item.id || !item.quantity || item.quantity <= 0) {
-          console.warn(`Invalid item in order ${id}:`, item)
-          continue
-        }
-
-        try {
-          const product = await getProductById(item.id)
-          if (product && product.stock !== undefined) {
-            console.debug(`Product ${item.id} current stock: ${product.stock}, reducing by: ${item.quantity}`)
-            const newStock = Math.max(0, product.stock - item.quantity)
-            await updateProductStock(item.id, newStock)
-            console.debug(`Product ${item.id} stock updated to: ${newStock}`)
-          } else {
-            console.warn(`Product ${item.id} not found or has no stock value`)
+      } else {
+        for (const item of orderData.items) {
+          if (!item.id || !item.quantity || item.quantity <= 0) {
+            console.warn(`Invalid item in order ${id}:`, item)
+            continue
           }
-        } catch (stockError) {
-          console.error(`Error updating stock for product ${item.id}:`, stockError)
-          // Continue with other items even if one fails
+
+          try {
+            const product = await getProductById(item.id)
+            if (product && product.quantity !== undefined) {
+              const newStock = product.quantity + item.quantity
+              await updateProductStock(item.id, newStock)
+              console.log(`Product ${item.id} (${item.name}) stock restored: ${product.quantity} -> ${newStock}`)
+            } else {
+              console.warn(`Product ${item.id} not found or has no stock value`)
+            }
+          } catch (stockError) {
+            console.error(`Error restoring stock for product ${item.id}:`, stockError)
+            // Continue with other items even if one fails
+          }
         }
       }
     }

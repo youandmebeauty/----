@@ -1,3 +1,4 @@
+// metrics-card.tsx
 "use client"
 
 import { TrendingUp, TrendingDown } from "lucide-react"
@@ -15,17 +16,17 @@ export function MetricsCard({ title, value, change, icon, format = "number" }: M
     const isPositive = change !== undefined && change >= 0
 
     return (
-        <Card className="bg-background/50 backdrop-blur-sm border-border/50">
+        <Card className="bg-background/50 backdrop-blur-sm border-border/50 shadow-sm hover:shadow-md transition-all duration-300">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                     {title}
                 </CardTitle>
-                <div className="text-muted-foreground">
+                <div className="text-primary">
                     {icon}
                 </div>
             </CardHeader>
             <CardContent>
-                <div className="text-2xl font-bold">{value}</div>
+                <div className="text-2xl font-serif font-medium">{value}</div>
                 {change !== undefined && (
                     <p className={`text-xs flex items-center gap-1 mt-1 ${isPositive ? "text-green-600" : "text-red-600"}`}>
                         {isPositive ? (

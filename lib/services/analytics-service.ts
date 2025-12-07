@@ -1,4 +1,4 @@
-import type { Product } from "@/lib/models"
+import type { Product, Order } from "@/lib/models"
 
 export interface OrderAnalytics {
     totalRevenue: number
@@ -57,6 +57,15 @@ const initFirestore = async () => {
 const ORDERS_COLLECTION = "orders"
 
 /**
+ * Filter orders to only include shipped and delivered orders for revenue calculations
+ */
+function filterFulfilledOrders(orders: any[]): any[] {
+    return orders.filter((order) => 
+        order.status === "shipped" || order.status === "delivered"
+    )
+}
+
+/**
  * Get analytics data for different time periods
  */
 export async function getAnalytics(): Promise<AnalyticsPeriod> {
@@ -75,27 +84,30 @@ export async function getAnalytics(): Promise<AnalyticsPeriod> {
         const ordersRef = firestoreModule.collection(db, ORDERS_COLLECTION)
         const snapshot = await firestoreModule.getDocs(ordersRef)
 
-        const orders = snapshot.docs.map((doc: any) => ({
+        const allOrders = snapshot.docs.map((doc: any) => ({
             id: doc.id,
             ...doc.data(),
             createdAt: doc.data().createdAt?.toDate?.() || new Date(doc.data().createdAt),
         }))
+
+        // Filter to only fulfilled orders (shipped or delivered)
+        const fulfilledOrders = filterFulfilledOrders(allOrders)
 
         const now = new Date()
         const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
         const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
 
-        // Calculate analytics for different periods
-        const today = calculatePeriodAnalytics(orders, todayStart)
-        const week = calculatePeriodAnalytics(orders, weekStart)
-        const month = calculatePeriodAnalytics(orders, monthStart)
+        // Calculate analytics for different periods (using fulfilled orders only)
+        const today = calculatePeriodAnalytics(fulfilledOrders, todayStart)
+        const week = calculatePeriodAnalytics(fulfilledOrders, weekStart)
+        const month = calculatePeriodAnalytics(fulfilledOrders, monthStart)
 
-        // Generate sales chart data for the last 7 days
-        const salesChart = generateSalesChart(orders, 7)
+        // Generate sales chart data for the last 7 days (fulfilled orders only)
+        const salesChart = generateSalesChart(fulfilledOrders, 7)
 
-        // Get top 5 products
-        const topProducts = getTopProducts(orders, 5)
+        // Get top 5 products (from fulfilled orders only)
+        const topProducts = getTopProducts(fulfilledOrders, 5)
 
         return {
             today,
@@ -161,13 +173,22 @@ function getTopProducts(orders: any[], limit: number): TopProduct[] {
 
     orders.forEach((order) => {
         order.items?.forEach((item: any) => {
-            const existing = productMap.get(item.productId)
+            // Use item.id as the key (consistent with your Order model)
+            const productId = item.id || item.productId
+            const existing = productMap.get(productId)
+            
             if (existing) {
                 existing.totalSold += item.quantity
                 existing.revenue += item.price * item.quantity
             } else {
-                productMap.set(item.productId, {
-                    product: item,
+                productMap.set(productId, {
+                    product: {
+                        id: productId,
+                        name: item.name,
+                        price: item.price,
+                        image: item.image,
+                        category: item.category || "unknown",
+                    },
                     totalSold: item.quantity,
                     revenue: item.price * item.quantity,
                 })

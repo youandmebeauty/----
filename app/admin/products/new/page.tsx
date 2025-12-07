@@ -148,12 +148,13 @@ function AddProductContent() {
                 </div>
 
                 <div>
-                  <Label htmlFor="brand">Marque</Label>
+                  <Label htmlFor="brand">Marque *</Label>
                   <Input
                     id="brand"
                     name="brand"
                     value={formData.brand}
                     onChange={handleInputChange}
+                    required
                     placeholder="Entrez la marque du produit"
                     className="bg-background/50"
                   />

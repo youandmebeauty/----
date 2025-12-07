@@ -15,7 +15,7 @@ export interface Product {
   ingredients?: string[]
   rating?: number
   reviews?: number
-  stock: number
+  quantity: number
   featured?: boolean
   createdAt: Date | string
   updatedAt: Date | string
@@ -29,10 +29,10 @@ export interface Order {
   address: string
   city: string
   postalCode: string
-  country: string
+  gouvernorat: string
   items: OrderItem[]
   total: number
-  status: "pending" | "processing" | "shipped" | "delivered"
+  status: "pending" | "processing" | "shipped" | "delivered" | "cancelled"
   notes?: string
   createdAt: Date | string
 }

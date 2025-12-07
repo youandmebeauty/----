@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     // Email options
     const mailOptions = {
       from: {
-        name: "you&me Beauty",
+        name: "You & Me Beauty",
         address: process.env.GMAIL_USER!,
       },
       to: to,

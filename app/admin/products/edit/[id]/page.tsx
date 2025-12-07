@@ -28,13 +28,14 @@ function EditProductContent() {
   const [product, setProduct] = useState<Product | null>(null)
   const [formData, setFormData] = useState({
     name: "",
+    brand: "",
     price: "",
     category: "",
     subcategory: "",
     description: "",
     longDescription: "",
     image: "",
-    stock: "",
+    quantity: "",
     featured: false,
     ingredients: "",
     skinType: [] as string[],
@@ -54,13 +55,14 @@ function EditProductContent() {
         setProduct(productData)
         setFormData({
           name: productData.name,
+          brand: productData.brand || "",
           price: productData.price.toString(),
           category: productData.category,
           subcategory: productData.subcategory || "",
           description: productData.description,
           longDescription: productData.longDescription || "",
           image: productData.image,
-          stock: productData.stock.toString(),
+          quantity: productData.quantity.toString(),
           featured: productData.featured || false,
           ingredients: productData.ingredients?.join(", ") || "",
           skinType: productData.skinType || [],
@@ -120,13 +122,14 @@ function EditProductContent() {
     try {
       const productData = {
         name: formData.name,
+        brand: formData.brand,
         price: Number.parseFloat(formData.price),
         category: formData.category,
         subcategory: formData.subcategory,
         description: formData.description,
         longDescription: formData.longDescription || formData.description,
         image: formData.image,
-        stock: Number.parseInt(formData.stock),
+        quantity: Number.parseInt(formData.quantity),
         featured: formData.featured,
         ingredients: formData.ingredients ? formData.ingredients.split(",").map((i) => i.trim()) : [],
         skinType: formData.skinType,
@@ -235,6 +238,19 @@ function EditProductContent() {
                   />
                 </div>
 
+                <div>
+                  <Label htmlFor="brand">Marque *</Label>
+                  <Input
+                    id="brand"
+                    name="brand"
+                    value={formData.brand}
+                    onChange={handleInputChange}
+                    required
+                    placeholder="Entrez la marque du produit"
+                    className="bg-background/50"
+                  />
+                </div>
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="price">Prix *</Label>
@@ -258,7 +274,7 @@ function EditProductContent() {
                       name="stock"
                       type="number"
                       min="0"
-                      value={formData.stock}
+                      value={formData.quantity}
                       onChange={handleInputChange}
                       required
                       placeholder="0"

@@ -171,7 +171,7 @@ export default function ContactPage() {
                     Livraison et retours
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground pb-4">
-                    Nous livrons partout en Tunisie sous 2 à 4 jours ouvrables. Les retours sont gratuits sous 14 jours si le produit n'a pas été ouvert.
+                    Nous livrons partout en Tunisie sous 2 à 4 jours ouvrables. Les retours sont gratuits sous 7 jours si le produit n'a pas été ouvert.
                   </AccordionContent>
                 </AccordionItem>
                 <AccordionItem value="item-2" className="border-b border-border/50">

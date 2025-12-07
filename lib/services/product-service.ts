@@ -398,7 +398,7 @@ export async function deleteProduct(id: string): Promise<void> {
   }
 }
 
-export async function updateProductStock(id: string, stock: number): Promise<void> {
+export async function updateProductStock(id: string, quantity: number): Promise<void> {
   await initFirestore()
   if (!firestoreModule || !db) {
     console.error("Firestore not initialized")
@@ -414,8 +414,8 @@ export async function updateProductStock(id: string, stock: number): Promise<voi
       throw new Error("Product not found")
     }
 
-    await firestoreModule.updateDoc(productRef, { stock })
-    console.debug(`Product ${id} stock updated to ${stock}`)
+    await firestoreModule.updateDoc(productRef, { quantity })
+    console.debug(`Product ${id} stock updated to ${quantity}`)
   } catch (error) {
     console.error("Error updating product stock:", error)
     throw error

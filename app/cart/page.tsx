@@ -31,7 +31,7 @@ export default function CartPage() {
     address: "",
     city: "",
     postalCode: "",
-    country: "",
+    gouvernorat: "",
     notes: "",
   })
 
@@ -42,7 +42,7 @@ export default function CartPage() {
       for (const item of items) {
         try {
           const product = await getProductById(item.id)
-          stocks[item.id] = typeof product?.stock === 'number' && product.stock >= 0 ? product.stock : 0
+          stocks[item.id] = typeof product?.quantity === 'number' && product.quantity >= 0 ? product.quantity : 0
         } catch (error) {
           console.error(`Error fetching stock for product ${item.id}:`, error)
           stocks[item.id] = 0 // Default to 0 if fetch fails
@@ -113,7 +113,7 @@ export default function CartPage() {
         image: item.image,
       }))
 
-      const finalTotal = total > 100 ? total : total + 8
+      const finalTotal = total > 200 ? total : total + 8
 
       await createOrder({
         customerName: orderForm.name,
@@ -122,7 +122,7 @@ export default function CartPage() {
         address: orderForm.address,
         city: orderForm.city,
         postalCode: orderForm.postalCode,
-        country: orderForm.country,
+        gouvernorat: orderForm.gouvernorat,
         notes: orderForm.notes,
         items: orderItems,
         total: finalTotal,
@@ -147,22 +147,22 @@ export default function CartPage() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-background">
+if (isLoading) {
+  return (
+    <div className="min-h-screen bg-background">
+      <main className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
+        </div>
+      </main>
+    </div>
+  );
+}
 
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center py-12">
-            <LoadingAnimation size={140} className="text-primary" />
-          </div>
-        </main>
-      </div>
-    )
-  }
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="bg-background">
 
         <main className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
@@ -294,7 +294,7 @@ export default function CartPage() {
                 <div className="flex justify-between text-base">
                   <span>Livraison</span>
                   <span className="font-medium">
-                    {total > 100 ? (
+                    {total > 200 ? (
                       <span className="text-green-600">Gratuit</span>
                     ) : (
                       "8.00 TND"
@@ -305,7 +305,7 @@ export default function CartPage() {
                   <div className="flex justify-between text-xl font-bold">
                     <span>Total</span>
                     <span className="text-primary">
-                      {(total > 100 ? total : total + 8).toFixed(2)} TND
+                      {(total > 200 ? total : total + 8).toFixed(2)} TND
                     </span>
                   </div>
                 </div>
@@ -388,7 +388,7 @@ export default function CartPage() {
                         value={orderForm.city}
                         onChange={handleInputChange}
                         required
-                        placeholder="Paris"
+                        placeholder="Lafrane"
                       />
                     </div>
                     <div>
@@ -401,22 +401,22 @@ export default function CartPage() {
                         value={orderForm.postalCode}
                         onChange={handleInputChange}
                         required
-                        placeholder="75001"
+                        placeholder="3000"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="country">
-                      Pays <span className="text-destructive">*</span>
+                    <Label htmlFor="gouvernorat">
+                      Gouvernorat <span className="text-destructive">*</span>
                     </Label>
                     <Input
-                      id="country"
-                      name="country"
-                      value={orderForm.country}
+                      id="gouvernorat"
+                      name="gouvernorat"
+                      value={orderForm.gouvernorat}
                       onChange={handleInputChange}
                       required
-                      placeholder="France"
+                      placeholder="Sfax"
                     />
                   </div>
 
@@ -439,7 +439,7 @@ export default function CartPage() {
                         Traitement de la Commande...
                       </>
                     ) : (
-                      `Passer la Commande - ${(total > 100 ? total : total + 8).toFixed(2)} TND`
+                      `Passer la Commande - ${(total > 200 ? total : total + 8).toFixed(2)} TND`
                     )}
                   </Button>
 

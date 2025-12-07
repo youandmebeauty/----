@@ -179,7 +179,7 @@ function generateCustomerEmailBody({ name, subject }: any): string {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="background-color: #45062E; padding: 20px; text-align: center;">
-        <h1 style="color: white; margin: 0;">You&me Beauty</h1>
+        <h1 style="color: white; margin: 0;">You & Me Beauty</h1>
       </div>
       
       <div style="padding: 30px; background-color: #f9f9f9;">
@@ -189,7 +189,7 @@ function generateCustomerEmailBody({ name, subject }: any): string {
           <p style="margin: 0 0 15px 0; font-size: 16px;">Cher(e) ${name},</p>
           
           <p style="margin: 0 0 15px 0; line-height: 1.6;">
-            Merci d'avoir contacté You&me Beauty! Nous avons bien reçu votre message concernant 
+            Merci d'avoir contacté You & Me Beauty! Nous avons bien reçu votre message concernant 
             "<strong>${subject}</strong>".
           </p>
         </div>

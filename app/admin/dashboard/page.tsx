@@ -19,6 +19,7 @@ import type { AnalyticsPeriod } from "@/lib/services/analytics-service"
 import { MetricsCard } from "@/components/admin/metrics-card"
 import { AnalyticsChart } from "@/components/admin/analytics-chart"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
+
 function DashboardContent() {
   const router = useRouter()
   const { toast } = useToast()
@@ -53,11 +54,15 @@ function DashboardContent() {
       setOrders(ordersData)
       setAnalytics(analyticsData)
 
-      // Calculate stats
+      // Calculate stats - only count revenue from shipped and delivered orders
+      const fulfilledOrders = ordersData.filter(
+        (order) => order.status === "shipped" || order.status === "delivered"
+      )
+
       setStats({
         totalProducts: productsData.length,
         totalOrders: ordersData.length,
-        totalRevenue: ordersData.reduce((sum, order) => sum + order.total, 0),
+        totalRevenue: fulfilledOrders.reduce((sum, order) => sum + order.total, 0),
         pendingOrders: ordersData.filter((order) => order.status === "pending").length,
       })
     } catch (error) {
@@ -79,12 +84,17 @@ function DashboardContent() {
       // Update local state
       setOrders((prev) => prev.map((order) => (order.id === orderId ? { ...order, status: newStatus } : order)))
 
-      // Update pending orders count
+      // Recalculate stats after status update
+      const updatedOrders = orders.map((order) => (order.id === orderId ? { ...order, status: newStatus } : order))
+      
+      const fulfilledOrders = updatedOrders.filter(
+        (order) => order.status === "shipped" || order.status === "delivered"
+      )
+
       setStats((prev) => ({
         ...prev,
-        pendingOrders: orders.filter((order) =>
-          order.id === orderId ? newStatus === "pending" : order.status === "pending",
-        ).length,
+        totalRevenue: fulfilledOrders.reduce((sum, order) => sum + order.total, 0),
+        pendingOrders: updatedOrders.filter((order) => order.status === "pending").length,
       }))
 
       toast({
@@ -97,6 +107,23 @@ function DashboardContent() {
         description: "Échec de la mise à jour du statut de la commande.",
         variant: "destructive",
       })
+    }
+  }
+
+  const getStatusColor = (status: Order["status"]) => {
+    switch (status) {
+      case "pending":
+        return "border-yellow-500 text-yellow-500 bg-yellow-500/5"
+      case "processing":
+        return "border-blue-500 text-blue-500 bg-blue-500/5"
+      case "shipped":
+        return "border-orange-500 text-orange-500 bg-orange-500/5"
+      case "delivered":
+        return "border-green-500 text-green-500 bg-green-500/5"
+      case "cancelled":
+        return "border-red-500 text-red-500 bg-red-500/5"
+      default:
+        return "border-gray-500 text-gray-500 bg-gray-500/5"
     }
   }
 
@@ -155,6 +182,7 @@ function DashboardContent() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-serif font-medium">{stats.totalRevenue.toFixed(2)} TND</div>
+                <p className="text-xs text-muted-foreground mt-1">Expédiées & Livrées uniquement</p>
               </CardContent>
             </Card>
 
@@ -266,17 +294,7 @@ function DashboardContent() {
                             <TableCell>{order.email}</TableCell>
                             <TableCell>{order.total.toFixed(2)} TND</TableCell>
                             <TableCell>
-                              <Badge
-                                variant="outline"
-                                className={`rounded-full px-3 py-1 ${order.status === "pending"
-                                  ? "border-destructive text-destructive bg-destructive/5"
-                                  : order.status === "processing"
-                                    ? "border-blue-500 text-blue-500 bg-blue-500/5"
-                                    : order.status === "shipped"
-                                      ? "border-orange-500 text-orange-500 bg-orange-500/5"
-                                      : "border-green-500 text-green-500 bg-green-500/5"
-                                  }`}
-                              >
+                              <Badge variant="outline" className={`rounded-full px-3 py-1 ${getStatusColor(order.status)}`}>
                                 {order.status}
                               </Badge>
                             </TableCell>
@@ -298,11 +316,13 @@ function DashboardContent() {
                                 value={order.status}
                                 onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value as Order["status"])}
                                 className="text-sm bg-transparent border border-border rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-primary"
+                                disabled={order.status === "cancelled"}
                               >
                                 <option value="pending">En attente</option>
                                 <option value="processing">En traitement</option>
                                 <option value="shipped">Expédié</option>
                                 <option value="delivered">Livré</option>
+                                <option value="cancelled">Annulé</option>
                               </select>
                             </TableCell>
                           </TableRow>
@@ -351,18 +371,18 @@ function DashboardContent() {
                               </Badge>
                             </TableCell>
                             <TableCell>{product.price.toFixed(2)} TND</TableCell>
-                            <TableCell>{product.stock}</TableCell>
+                            <TableCell>{product.quantity}</TableCell>
                             <TableCell>
                               <Badge
                                 variant="outline"
-                                className={`rounded-full px-3 py-1 ${product.stock > 10
+                                className={`rounded-full px-3 py-1 ${product.quantity > 10
                                   ? "border-green-500 text-green-500 bg-green-500/5"
-                                  : product.stock > 0
+                                  : product.quantity > 0
                                     ? "border-orange-500 text-orange-500 bg-orange-500/5"
                                     : "border-destructive text-destructive bg-destructive/5"
                                   }`}
                               >
-                                {product.stock > 10 ? "En stock" : product.stock > 0 ? "Stock faible" : "Rupture de stock"}
+                                {product.quantity > 10 ? "En stock" : product.quantity > 0 ? "Stock faible" : "Rupture de stock"}
                               </Badge>
                             </TableCell>
                             <TableCell>
