@@ -139,6 +139,7 @@ export async function getFeaturedProducts(limitCount = 4): Promise<Product[]> {
 export async function getRelatedProducts(
   productId: string,
   category: string,
+  brand: string,
   subcategory?: string,
   limitCount = 4
 ): Promise<Product[]> {
@@ -146,27 +147,49 @@ export async function getRelatedProducts(
   if (typeof window === "undefined") {
     try {
       const { adminDb } = await import("@/lib/firebase-admin")
-      let query = adminDb.collection(PRODUCTS_COLLECTION).where("category", "==", category)
-
-      if (subcategory) {
-        query = query.where("subcategory", "==", subcategory)
-      }
-
-      const snapshot = await query.orderBy("createdAt", "desc").limit(limitCount + 5).get()
-
-      // Filter out current product and serialize
-      const products = snapshot.docs
-        .filter((doc) => doc.id !== productId)
-        .slice(0, limitCount)
+      
+      // First, try to get products of the same brand
+      let brandQuery = adminDb.collection(PRODUCTS_COLLECTION).where("brand", "==", brand)
+      const brandSnapshot = await brandQuery.orderBy("createdAt", "desc").limit(limitCount * 2).get()
+      
+      let products: Product[] = brandSnapshot.docs
         .map((doc) => {
           const data = doc.data()
           return JSON.parse(JSON.stringify({
             id: doc.id,
             ...data,
-          }))
-        }) as Product[]
-
-      return products
+          })) as Product
+        })
+        .filter((product: Product) => product.id !== productId)
+      
+      // If we don't have enough products from the same brand, get products from the same category
+      if (products.length < limitCount) {
+        let categoryQuery = adminDb.collection(PRODUCTS_COLLECTION).where("category", "==", category)
+        
+        if (subcategory) {
+          categoryQuery = categoryQuery.where("subcategory", "==", subcategory)
+        }
+        
+        const categorySnapshot = await categoryQuery.orderBy("createdAt", "desc").limit(limitCount * 3).get()
+        
+        const categoryProducts = categorySnapshot.docs
+          .map((doc) => {
+            const data = doc.data()
+            return JSON.parse(JSON.stringify({
+              id: doc.id,
+              ...data,
+            })) as Product
+          })
+          .filter((product: Product) => 
+            product.id !== productId && 
+            product.brand !== brand && // Exclude products from the same brand (already included)
+            !products.some(p => p.id === product.id) // Avoid duplicates
+          )
+        
+        products = [...products, ...categoryProducts]
+      }
+      
+      return products.slice(0, limitCount)
     } catch (error) {
       console.error("Error fetching related products (server):", error)
       return []
@@ -178,29 +201,56 @@ export async function getRelatedProducts(
   if (!firestoreModule || !db) return []
 
   try {
-    const productsRef = firestoreModule.collection(db, PRODUCTS_COLLECTION)
-    const constraints: any[] = [
-      firestoreModule.where("category", "==", category),
+    // First, try to get products of the same brand
+    const brandRef = firestoreModule.collection(db, PRODUCTS_COLLECTION)
+    const brandConstraints: any[] = [
+      firestoreModule.where("brand", "==", brand),
+      firestoreModule.orderBy("createdAt", "desc"),
+      firestoreModule.limit(limitCount * 2),
     ]
-
-    if (subcategory) {
-      constraints.push(firestoreModule.where("subcategory", "==", subcategory))
-    }
-
-    constraints.push(firestoreModule.orderBy("createdAt", "desc"))
-    constraints.push(firestoreModule.limit(limitCount + 5))
-
-    const q = firestoreModule.query(productsRef, ...constraints)
-    const snapshot = await firestoreModule.getDocs(q)
-
-    // Filter out current product and limit results
-    return snapshot.docs
+    
+    const brandQuery = firestoreModule.query(brandRef, ...brandConstraints)
+    const brandSnapshot = await firestoreModule.getDocs(brandQuery)
+    
+    let products: Product[] = brandSnapshot.docs
       .map((doc: any) => ({
         id: doc.id,
         ...doc.data(),
-      }) as Product)
+      } as Product))
       .filter((product: Product) => product.id !== productId)
-      .slice(0, limitCount)
+    
+    // If we don't have enough products from the same brand, get products from the same category
+    if (products.length < limitCount) {
+      const categoryRef = firestoreModule.collection(db, PRODUCTS_COLLECTION)
+      const categoryConstraints: any[] = [
+        firestoreModule.where("category", "==", category),
+      ]
+      
+      if (subcategory) {
+        categoryConstraints.push(firestoreModule.where("subcategory", "==", subcategory))
+      }
+      
+      categoryConstraints.push(firestoreModule.orderBy("createdAt", "desc"))
+      categoryConstraints.push(firestoreModule.limit(limitCount * 3))
+      
+      const categoryQuery = firestoreModule.query(categoryRef, ...categoryConstraints)
+      const categorySnapshot = await firestoreModule.getDocs(categoryQuery)
+      
+      const categoryProducts = categorySnapshot.docs
+        .map((doc: any) => ({
+          id: doc.id,
+          ...doc.data(),
+        } as Product))
+        .filter((product: Product) => 
+          product.id !== productId && 
+          product.brand !== brand && // Exclude products from the same brand (already included)
+          !products.some(p => p.id === product.id) // Avoid duplicates
+        )
+      
+      products = [...products, ...categoryProducts]
+    }
+    
+    return products.slice(0, limitCount)
   } catch (error) {
     console.error("Error fetching related products (client):", error)
     return []

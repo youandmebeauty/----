@@ -44,10 +44,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
     notFound()
   }
 
-  // Fetch related products
+  // Fetch related products (same category and brand)
   const relatedProducts = await getRelatedProducts(
     product.id,
     product.category,
+    product.brand,
     product.subcategory,
     4
   )
@@ -55,7 +56,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <>
       <ProductClient product={product} />
-      <RelatedProducts products={relatedProducts} />
+      <RelatedProducts products={relatedProducts} currentProduct={product} />
     </>
   )
 }
