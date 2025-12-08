@@ -11,12 +11,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useCart } from "@/components/cart-provider"
-import { LoadingAnimation } from "@/components/ui/loading-animation"
 import { useToast } from "@/hooks/use-toast"
 import { createOrder } from "@/lib/services/order-service"
 import { getProductById } from "@/lib/services/product-service"
-import type { OrderItem } from "@/lib/models"
-import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react"
+import { getPromoCodeByCode } from "@/lib/services/promo-code-service"
+import type { OrderItem, PromoCode } from "@/lib/models"
+import { Minus, Plus, Trash2, ShoppingBag, Tag, Check, X } from "lucide-react"
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, clearCart, total, isLoading } = useCart()
@@ -24,6 +24,13 @@ export default function CartPage() {
   const router = useRouter()
   const [isCheckingOut, setIsCheckingOut] = useState(false)
   const [productStocks, setProductStocks] = useState<{ [id: string]: number }>({})
+  
+  // Promo code state
+  const [promoCode, setPromoCode] = useState("")
+  const [appliedPromo, setAppliedPromo] = useState<PromoCode | null>(null)
+  const [promoError, setPromoError] = useState("")
+  const [isValidatingPromo, setIsValidatingPromo] = useState(false)
+  
   const [orderForm, setOrderForm] = useState({
     name: "",
     email: "",
@@ -45,7 +52,7 @@ export default function CartPage() {
           stocks[item.id] = typeof product?.quantity === 'number' && product.quantity >= 0 ? product.quantity : 0
         } catch (error) {
           console.error(`Error fetching stock for product ${item.id}:`, error)
-          stocks[item.id] = 0 // Default to 0 if fetch fails
+          stocks[item.id] = 0
         }
       }
       setProductStocks(stocks)
@@ -56,13 +63,115 @@ export default function CartPage() {
     }
   }, [items])
 
+
+  // Calculate discount based on applied promo
+  const calculateDiscount = () => {
+    if (!appliedPromo) return 0
+
+    if (appliedPromo.minPurchase && total < appliedPromo.minPurchase) {
+      return 0
+    }
+
+    if (appliedPromo.type === 'percentage') {
+      return (total * appliedPromo.value) / 100
+    } else {
+      return appliedPromo.value
+    }
+  }
+
+  // Calculate shipping cost (free if total > 200 or if FREESHIP promo is applied)
+  const calculateShipping = () => {
+    if (total > 200) return 0
+    if (appliedPromo?.code === "FREESHIP") return 0
+    return 8
+  }
+
+  const discount = calculateDiscount()
+  const shipping = calculateShipping()
+  const finalTotal = total - discount + shipping
+
+  // Validate and apply promo code
+  const handleApplyPromo = async () => {
+    if (!promoCode.trim()) {
+      setPromoError("Veuillez entrer un code promo")
+      return
+    }
+
+    setIsValidatingPromo(true)
+    setPromoError("")
+
+    try {
+      const foundPromo = await getPromoCodeByCode(promoCode)
+
+      if (!foundPromo) {
+        setPromoError("Code promo invalide")
+        setIsValidatingPromo(false)
+        return
+      }
+
+      // Check if promo is active
+      if (foundPromo.active === false) {
+        setPromoError("Ce code promo n'est plus actif")
+        setIsValidatingPromo(false)
+        return
+      }
+
+      // Check expiry date
+      const expiryDate = foundPromo.expiryDate 
+        ? (typeof foundPromo.expiryDate === 'string' ? new Date(foundPromo.expiryDate) : foundPromo.expiryDate)
+        : null
+      if (expiryDate && new Date() > expiryDate) {
+        setPromoError("Ce code promo a expiré")
+        setIsValidatingPromo(false)
+        return
+      }
+
+      // Check usage limit
+      if (foundPromo.usageLimit && foundPromo.usedCount && foundPromo.usedCount >= foundPromo.usageLimit) {
+        setPromoError("Ce code promo a atteint sa limite d'utilisation")
+        setIsValidatingPromo(false)
+        return
+      }
+
+      // Check minimum purchase
+      if (foundPromo.minPurchase && total < foundPromo.minPurchase) {
+        setPromoError(`Commande minimum de ${foundPromo.minPurchase} TND requise`)
+        setIsValidatingPromo(false)
+        return
+      }
+
+      setAppliedPromo(foundPromo)
+      setPromoError("")
+      setIsValidatingPromo(false)
+      
+      toast({
+        title: "Code promo appliqué!",
+        description: foundPromo.description || `Code ${foundPromo.code} appliqué avec succès`,
+      })
+    } catch (error) {
+      console.error("Error validating promo code:", error)
+      setPromoError("Erreur lors de la validation du code promo")
+      setIsValidatingPromo(false)
+    }
+  }
+
+  // Remove applied promo
+  const handleRemovePromo = () => {
+    setAppliedPromo(null)
+    setPromoCode("")
+    setPromoError("")
+    toast({
+      title: "Code promo retiré",
+      description: "Le code promo a été retiré de votre commande",
+    })
+  }
+
   const handleQuantityChange = (id: string, newQuantity: number) => {
     const item = items.find((item) => item.id === id)
     if (!item) return
 
     const stock = productStocks[id] ?? 0
 
-    // Validate stock only for increases
     if (newQuantity > item.quantity && newQuantity > stock) {
       toast({
         title: "Erreur",
@@ -72,7 +181,6 @@ export default function CartPage() {
       return
     }
 
-    // Handle decreases and removals
     try {
       updateQuantity(id, newQuantity)
     } catch (error) {
@@ -113,8 +221,6 @@ export default function CartPage() {
         image: item.image,
       }))
 
-      const finalTotal = total > 200 ? total : total + 8
-
       await createOrder({
         customerName: orderForm.name,
         email: orderForm.email,
@@ -126,6 +232,8 @@ export default function CartPage() {
         notes: orderForm.notes,
         items: orderItems,
         total: finalTotal,
+        promoCode: appliedPromo?.code,
+        discount: discount,
       })
 
       toast({
@@ -147,23 +255,21 @@ export default function CartPage() {
     }
   }
 
-if (isLoading) {
-  return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
-        </div>
-      </main>
-    </div>
-  );
-}
-
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <main className="container mx-auto px-4 py-8">
+          <div className="flex items-center justify-center py-12">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
+          </div>
+        </main>
+      </div>
+    )
+  }
 
   if (items.length === 0) {
     return (
-      <div className="bg-background ">
-
+      <div className="bg-background">
         <main className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
             <div className="flex justify-center mb-6">
@@ -184,7 +290,7 @@ if (isLoading) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-secondary/30 to-background rounded-3xl m-4">
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
 
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center mb-8">
@@ -205,156 +311,138 @@ if (isLoading) {
               const stock = productStocks[item.id] ?? 0
               return (
                 <Card key={item.id} className="overflow-hidden">
-<CardContent className="p-4 sm:p-6">
-  <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-4 sm:gap-6">
-    
-    {/* Left Section: Image + Info */}
-    <div className="flex items-start gap-4 flex-1 min-w-0 w-full">
-      
-      {/* Image with better styling and hover effect */}
-      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-gradient-to-br from-muted/50 to-muted border shadow-xs hover:shadow-md transition-shadow duration-200 flex-shrink-0">
-        <Image
-          src={item.image || "/placeholder.svg"}
-          alt={item.name}
-          fill
-          sizes="(max-width: 640px) 80px, 96px"
-          className="object-cover hover:scale-105 transition-transform duration-300"
-          priority={false}
-        />
-      </div>
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-4 sm:gap-6">
+                      <div className="flex items-start gap-4 flex-1 min-w-0 w-full">
+                        <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-gradient-to-br from-muted/50 to-muted border shadow-xs hover:shadow-md transition-shadow duration-200 flex-shrink-0">
+                          <Image
+                            src={item.image || "/placeholder.svg"}
+                            alt={item.name}
+                            fill
+                            sizes="(max-width: 640px) 80px, 96px"
+                            className="object-cover hover:scale-105 transition-transform duration-300"
+                            priority={false}
+                          />
+                        </div>
 
-      {/* Text Info with better spacing */}
-      <div className="flex flex-col justify-between gap-1.5 sm:gap-2 min-w-0 flex-1">
-        <div className="space-y-1.5">
-          <div className="flex items-start justify-between gap-2">
-            <h3 className="text-base sm:text-lg font-semibold leading-tight line-clamp-2">
-              {item.name}
-            </h3>
-            {/* Price for mobile (hidden on larger screens) */}
-            <span className="text-sm font-semibold text-primary sm:hidden">
-              {item.price.toFixed(2)} TND
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="inline-flex items-center px-2 py-1 rounded-full bg-primary/10 text-xs font-medium text-primary capitalize">
-              {item.category}
-            </span>
-            
+                        <div className="flex flex-col justify-between gap-1.5 sm:gap-2 min-w-0 flex-1">
+                          <div className="space-y-1.5">
+                            <div className="flex items-start justify-between gap-2">
+                              <h3 className="text-base sm:text-lg font-semibold leading-tight line-clamp-2">
+                                {item.name}
+                              </h3>
+                              <span className="text-sm font-semibold text-primary sm:hidden">
+                                {item.price.toFixed(2)} TND
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="inline-flex items-center px-2 py-1 rounded-full bg-primary/10 text-xs font-medium text-primary capitalize">
+                                {item.category}
+                              </span>
+                            </div>
+                            
+                            <p className="hidden sm:block text-sm font-semibold text-primary">
+                              {item.price.toFixed(2)} TND chacun
+                            </p>
+                          </div>
 
-          </div>
-          
-          {/* Unit price for desktop (hidden on mobile) */}
-          <p className="hidden sm:block text-sm font-semibold text-primary">
-            {item.price.toFixed(2)} TND chacun
-          </p>
-        </div>
+                          <div className="sm:hidden w-full pt-2">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-8 w-8 rounded-md"
+                                  onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                                  disabled={item.quantity <= 1}
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                                
+                                <span className="w-8 text-center font-semibold text-sm">
+                                  {item.quantity}
+                                </span>
+                                
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-8 w-8 rounded-md"
+                                  onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                                  disabled={item.quantity >= stock}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                              
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="text-destructive hover:text-destructive px-2 py-1 h-auto"
+                                onClick={() => removeItem(item.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
 
-        {/* Quantity controls for mobile (hidden on desktop) */}
-        <div className="sm:hidden w-full pt-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-8 w-8 rounded-md"
-                onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                disabled={item.quantity <= 1}
-              >
-                <Minus className="h-3 w-3" />
-              </Button>
-              
-              <span className="w-8 text-center font-semibold text-sm">
-                {item.quantity}
-              </span>
-              
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-8 w-8 rounded-md"
-                onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                disabled={item.quantity >= stock}
-              >
-                <Plus className="h-3 w-3" />
-              </Button>
-            </div>
-            
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-destructive hover:text-destructive px-2 py-1 h-auto"
-              onClick={() => removeItem(item.id)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
+                      <div className="hidden sm:block h-20 w-px bg-border mx-2" />
 
-    {/* Divider - responsive */}
-    <div className="hidden sm:block h-20 w-px bg-border mx-2" />
+                      <div className="hidden sm:flex flex-col items-end gap-3">
+                        <div className="flex flex-col items-center gap-2 w-full">
+                          <div className="flex items-center gap-3 justify-between w-full">
+                            <div className="flex items-center gap-3">
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                className="h-9 w-9 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors"
+                                onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                                disabled={item.quantity <= 1}
+                              >
+                                <Minus className="h-4 w-4" />
+                              </Button>
 
-    {/* Right Section: Desktop controls */}
-    <div className="hidden sm:flex flex-col items-end gap-3 ">
-      
-      {/* Quantity Controls with better feedback */}
-      <div className="flex flex-col items-center gap-2 w-full">
-        <div className="flex items-center gap-3 justify-between w-full">
-          <div className="flex items-center gap-3">
-            <Button
-              size="icon"
-              variant="outline"
-              className="h-9 w-9 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors"
-              onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-              disabled={item.quantity <= 1}
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
+                              <span className="w-12 text-center font-semibold text-base">
+                                {item.quantity}
+                              </span>
 
-            <span className="w-12 text-center font-semibold text-base">
-              {item.quantity}
-            </span>
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                className="h-9 w-9 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors"
+                                onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                                disabled={item.quantity >= stock}
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
 
-            <Button
-              size="icon"
-              variant="outline"
-              className="h-9 w-9 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors"
-              onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-              disabled={item.quantity >= stock}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-
-      </div>
-
-
-      {/* Action buttons */}
-      <div className="flex items-center gap-2 w-full justify-end">
-        
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-destructive hover:text-destructive hover:bg-destructive/10 px-3"
-          onClick={() => removeItem(item.id)}
-        >
-          <Trash2 className="h-4 w-4 mr-2" />
-          Supprimer
-        </Button>
-      </div>
-    </div>
-    
- </div>
-</CardContent>
+                        <div className="flex items-center gap-2 w-full justify-end">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-destructive hover:text-destructive hover:bg-destructive/10 px-3"
+                            onClick={() => removeItem(item.id)}
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Supprimer
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
                 </Card>
               )
             })}
           </div>
 
           {/* Order Summary & Checkout Form */}
-          <div className="space-y-6">
+          <div className="space-y-6 relative z-10">
+
             {/* Order Summary */}
             <Card>
               <CardHeader>
@@ -370,24 +458,104 @@ if (isLoading) {
                   </span>
                   <span className="font-medium">{total.toFixed(2)} TND</span>
                 </div>
+                
+                {discount > 0 && (
+                  <div className="flex justify-between text-base text-green-600">
+                    <span>Réduction ({appliedPromo?.code})</span>
+                    <span className="font-medium">-{discount.toFixed(2)} TND</span>
+                  </div>
+                )}
+                
                 <div className="flex justify-between text-base">
                   <span>Livraison</span>
                   <span className="font-medium">
-                    {total > 200 ? (
+                    {shipping === 0 ? (
                       <span className="text-green-600">Gratuit</span>
                     ) : (
-                      "8.00 TND"
+                      `${shipping.toFixed(2)} TND`
                     )}
                   </span>
                 </div>
+                
                 <div className="border-t pt-4">
                   <div className="flex justify-between text-xl font-bold">
                     <span>Total</span>
-                    <span className="text-primary">
-                      {(total > 200 ? total : total + 8).toFixed(2)} TND
-                    </span>
+                    <span className="text-primary">{finalTotal.toFixed(2)} TND</span>
                   </div>
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Promo Code Card */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center text-base">
+                  <Tag className="h-5 w-5 mr-2" />
+                  Code Promo
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {appliedPromo ? (
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <Check className="h-5 w-5 text-green-600" />
+                        <div>
+                          <p className="font-semibold text-green-700 dark:text-green-400">
+                            {appliedPromo.code}
+                          </p>
+                          {appliedPromo.description && (
+                            <p className="text-xs text-green-600 dark:text-green-500">
+                              {appliedPromo.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleRemovePromo}
+                        className="h-8 w-8 p-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Entrez le code promo"
+                        value={promoCode}
+                        onChange={(e) => {
+                          setPromoCode(e.target.value.toUpperCase())
+                          setPromoError("")
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault()
+                            handleApplyPromo()
+                          }
+                        }}
+                        className={promoError ? "border-destructive" : ""}
+                      />
+                      <Button
+                        onClick={handleApplyPromo}
+                        disabled={!promoCode || isValidatingPromo}
+                        className="whitespace-nowrap"
+                      >
+                        {isValidatingPromo ? (
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
+          ) : (
+                          "Appliquer"
+                        )}
+                      </Button>
+                    </div>
+                    {promoError && (
+                      <p className="text-sm text-destructive">{promoError}</p>
+                    )}
+                  </div>
+                )}
               </CardContent>
             </Card>
 
@@ -514,11 +682,11 @@ if (isLoading) {
                   <Button type="submit" className="w-full" size="lg" disabled={isCheckingOut}>
                     {isCheckingOut ? (
                       <>
-                        <LoadingAnimation size={60} className="text-white mr-2" />
-                        Traitement de la Commande...
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
+            Traitement de la Commande...
                       </>
                     ) : (
-                      `Passer la Commande - ${(total > 200 ? total : total + 8).toFixed(2)} TND`
+                      `Passer la Commande - ${finalTotal.toFixed(2)} TND`
                     )}
                   </Button>
 

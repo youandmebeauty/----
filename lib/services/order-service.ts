@@ -1,6 +1,7 @@
 import type { Order} from "@/lib/models"
 import { sendOrderConfirmationEmail } from "@/lib/services/email-service"
 import { updateProductStock, getProductById } from "@/lib/services/product-service"
+import { incrementPromoCodeUsage } from "@/lib/services/promo-code-service"
 
 // Dynamic imports for client-side Firebase
 let firestoreModule: any = null
@@ -119,6 +120,15 @@ export async function createOrder(order: Omit<Order, "id" | "createdAt" | "statu
       createdAt: new Date().toISOString(),
     } as Order
 
+    // Increment promo code usage if a promo code was used
+    if (order.promoCode) {
+      try {
+        await incrementPromoCodeUsage(order.promoCode)
+      } catch (promoError) {
+        console.error("Error incrementing promo code usage:", promoError)
+        // Don't throw error for promo tracking failure, order was created successfully
+      }
+    }
 
     // Send confirmation emails
     try {

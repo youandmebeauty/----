@@ -37,6 +37,8 @@ export async function sendOrderConfirmationEmail(order: Order): Promise<boolean>
 function generateCustomerEmailBody(order: Order): string {
   const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingCost = subtotal > 200 ? 0 : 8;
+  const discount = order.discount || 0;
+  const promoCode = order.promoCode;
 
   const itemsList = order.items
     .map(
@@ -65,6 +67,7 @@ function generateCustomerEmailBody(order: Order): string {
           <h3>Récapitulatif de la commande</h3>
           <p><strong>Numéro de commande :</strong> #${order.id}</p>
           <p><strong>Date de commande :</strong> ${new Date(order.createdAt).toLocaleDateString('fr-FR')}</p>
+          ${promoCode ? `<p><strong>Code promo utilisé :</strong> <span style="color: #16a34a; font-weight: bold;">${promoCode}</span></p>` : ''}
           
           <table style="width: 100%; border-collapse: collapse;">
             <thead>
@@ -83,6 +86,12 @@ function generateCustomerEmailBody(order: Order): string {
                 <td colspan="3" style="padding: 10px; text-align: right;"><strong>Sous-total :</strong></td>
                 <td style="padding: 10px;">${subtotal.toFixed(2)} TND</td>
               </tr>
+              ${discount > 0 ? `
+              <tr>
+                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Réduction (${promoCode}) :</strong></td>
+                <td style="padding: 10px; color: #16a34a;"><strong>-${discount.toFixed(2)} TND</strong></td>
+              </tr>
+              ` : ''}
               <tr>
                 <td colspan="3" style="padding: 10px; text-align: right;"><strong>Livraison :</strong></td>
                 <td style="padding: 10px;">${shippingCost === 0 ? '<span style="color: #16a34a;">Gratuite</span>' : `${shippingCost.toFixed(2)} TND`
@@ -120,6 +129,8 @@ function generateCustomerEmailBody(order: Order): string {
 function generateAdminEmailBody(order: Order): string {
   const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingCost = subtotal > 200 ? 0 : 8;
+  const discount = order.discount || 0;
+  const promoCode = order.promoCode;
 
   const itemsList = order.items
     .map(
@@ -146,6 +157,7 @@ function generateAdminEmailBody(order: Order): string {
         <p><strong>Client :</strong> ${order.customerName}</p>
         <p><strong>Email :</strong> ${order.email}</p>
         <p><strong>Téléphone :</strong> ${order.phone || "Non fourni"}</p>
+        ${promoCode ? `<p><strong>Code promo utilisé :</strong> <span style="color: #16a34a; font-weight: bold;">${promoCode}</span> ${discount > 0 ? `(-${discount.toFixed(2)} TND)` : ''}</p>` : ''}
         
         <div style="margin: 20px 0;">
           <h3>Détails de la commande</h3>
@@ -166,6 +178,12 @@ function generateAdminEmailBody(order: Order): string {
                 <td colspan="3" style="padding: 10px; text-align: right;"><strong>Sous-total :</strong></td>
                 <td style="padding: 10px;">${subtotal.toFixed(2)} TND</td>
               </tr>
+              ${discount > 0 ? `
+              <tr>
+                <td colspan="3" style="padding: 10px; text-align: right;"><strong>Réduction (${promoCode}) :</strong></td>
+                <td style="padding: 10px; color: #16a34a;"><strong>-${discount.toFixed(2)} TND</strong></td>
+              </tr>
+              ` : ''}
               <tr>
                 <td colspan="3" style="padding: 10px; text-align: right;"><strong>Livraison :</strong></td>
                 <td style="padding: 10px;">${shippingCost === 0 ? '<span style="color: #16a34a;">Gratuite</span>' : `${shippingCost.toFixed(2)} TND`

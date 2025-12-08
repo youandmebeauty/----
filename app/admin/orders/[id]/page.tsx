@@ -180,8 +180,14 @@ function OrderDetailsContent() {
                     ))}
                   </div>
 
-                  <div className="border-t border-border/50 mt-6 pt-4">
-                    <div className="flex justify-between text-xl font-serif font-medium">
+                  <div className="border-t border-border/50 mt-6 pt-4 space-y-2">
+                    {order.promoCode && order.discount && order.discount > 0 && (
+                      <div className="flex justify-between text-base">
+                        <span className="text-muted-foreground">Code promo ({order.promoCode}):</span>
+                        <span className="text-green-600 font-medium">-{order.discount.toFixed(2)} TND</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-xl font-serif font-medium pt-2">
                       <span>Total:</span>
                       <span>{order.total.toFixed(2)} TND</span>
                     </div>

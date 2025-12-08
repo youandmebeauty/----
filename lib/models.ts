@@ -32,7 +32,24 @@ export interface Order {
   total: number
   status: "pending" | "processing" | "shipped" | "delivered" | "cancelled"
   notes?: string
+  promoCode?: string
+  discount?: number
   createdAt: Date | string
+}
+
+export interface PromoCode {
+  id: string
+  code: string
+  type: 'percentage' | 'fixed'
+  value: number
+  minPurchase?: number
+  expiryDate?: Date | string
+  description?: string
+  active?: boolean
+  usageLimit?: number
+  usedCount?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export interface OrderItem {
