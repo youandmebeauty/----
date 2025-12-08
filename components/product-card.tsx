@@ -92,14 +92,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
           {/* Quick Add Button - Appears on Hover */}
           {!isOutOfStock && (
-            <div className="absolute bottom-4 left-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+            <div className="absolute bottom-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
               <Button
                 onClick={handleAddToCart}
-                className="w-full h-11 bg-background/95 backdrop-blur-sm hover:bg-primary text-foreground border border-border/50 rounded-full shadow-lg"
+                className="h-11 bg-background/95 backdrop-blur-sm hover:bg-primary text-foreground border border-border/50 rounded-full shadow-lg"
                 variant="outline"
               >
-                <ShoppingBag className="h-4 w-4 mr-2" />
-                <span className="text-xs uppercase tracking-wider font-medium">Ajouter au panier</span>
+                <ShoppingBag className="h-4 w-4 md:mr-2 " />
+                <span className="hidden md:block text-sm uppercase font-medium">Ajouter au panier</span>
               </Button>
             </div>
           )}
