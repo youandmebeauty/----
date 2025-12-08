@@ -31,7 +31,7 @@ function AddProductContent() {
     description: "",
     longDescription: "",
     image: "",
-    stock: "",
+    quantity: "",
     featured: false,
     ingredients: "",
     skinType: [] as string[],
@@ -79,7 +79,7 @@ function AddProductContent() {
         description: formData.description,
         longDescription: formData.longDescription || formData.description,
         image: formData.image,
-        stock: Number.parseInt(formData.stock),
+        quantity: Number.parseInt(formData.quantity),
         featured: formData.featured,
         ingredients: formData.ingredients ? formData.ingredients.split(",").map((i) => i.trim()) : [],
       }
@@ -177,13 +177,13 @@ function AddProductContent() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="stock">Stock *</Label>
+                    <Label htmlFor="quantity">Quantité *</Label>
                     <Input
-                      id="stock"
-                      name="stock"
+                      id="quantity"
+                      name="quantity"
                       type="number"
                       min="0"
-                      value={formData.stock}
+                      value={formData.quantity}
                       onChange={handleInputChange}
                       required
                       placeholder="0"

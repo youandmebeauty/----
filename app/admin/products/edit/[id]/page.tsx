@@ -268,7 +268,7 @@ function EditProductContent() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="quantity">Stock *</Label>
+                    <Label htmlFor="quantity">Quantité *</Label>
                     <Input
                       id="quantity"
                       name="quantity"
