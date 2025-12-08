@@ -212,7 +212,7 @@ export function AnalysisResults({ imageSrc, detections, groupedDetections, onRes
                     </div>
 
                     {/* Recommendations Section */}
-                    {groupedDetections.length > 0 && (
+                    {groupedDetections.length > 0  && (
                         <div>
                             <h2 className="font-serif text-3xl mb-8">Routine Recommandée</h2>
                             <div className="space-y-16">

@@ -87,13 +87,6 @@ function SearchContent() {
     return () => clearTimeout(debounce)
   }, [selectedCategory, selectedSubcategory, selectedSkinTypes, selectedHairTypes, priceRange, sortBy, searchQuery])
 
-  const updateUrl = (params: URLSearchParams) => {
-    // Preserve the search query ('q') when updating filters
-    if (searchQuery) {
-      params.set('q', searchQuery)
-    }
-    router.push(`/shop?${params.toString()}`)
-  }
 
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId)

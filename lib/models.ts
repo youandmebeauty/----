@@ -1,7 +1,7 @@
 export interface Product {
   id: string
   name: string
-  brand?: string
+  brand: string
   price: number
   image: string
   category: string
@@ -13,8 +13,6 @@ export interface Product {
   description: string
   longDescription?: string
   ingredients?: string[]
-  rating?: number
-  reviews?: number
   quantity: number
   featured?: boolean
   createdAt: Date | string
@@ -52,6 +50,7 @@ export interface SearchFilters {
   hairType?: string[]
   minPrice?: number
   maxPrice?: number
+  brand?: string[]
   ingredients?: string[]
   sortBy?: "price-asc" | "price-desc" | "name-asc" | "name-desc" | "newest"
 }

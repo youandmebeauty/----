@@ -7,15 +7,23 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    domains: ["placeholder.svg", "cloudinary.com", "res.cloudinary.com"],
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**",
+        hostname: "placeholder.svg",
       },
+      {
+        protocol: "https",
+        hostname: "cloudinary.com",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      }
     ],
     unoptimized: false,
   },
+
   experimental: {
     serverActions: {
       allowedOrigins: ["localhost:3000"],

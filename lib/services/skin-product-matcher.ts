@@ -172,12 +172,12 @@ function calculateRelevanceScore(product: Product, keywords: string[]): number {
         score += 3
     }
 
-    // Boost score for highly rated products
-    if (product.rating && product.rating >= 4.5) {
-        score += 2
-    } else if (product.rating && product.rating >= 4.0) {
-        score += 1
-    }
+    // // Boost score for highly rated products
+    // if (product.rating && product.rating >= 4.5) {
+    //     score += 2
+    // } else if (product.rating && product.rating >= 4.0) {
+    //     score += 1
+    // }
 
     return score
 }

@@ -271,6 +271,10 @@ export async function searchProducts(searchTerm: string, filters?: SearchFilters
       constraints.push(firestoreModule.where("ingredients", "array-contains-any", filters.ingredients))
     }
 
+    if (filters?.brand && filters.brand.length > 0) {
+      constraints.push(firestoreModule.where("brand", "array-contains-any", filters.brand))
+    }
+
     // Add sorting
     if (filters?.sortBy) {
       switch (filters.sortBy) {
@@ -314,7 +318,8 @@ if (searchTerm) {
         (product: Product): boolean =>
           product.name.toLowerCase().includes(lowerSearchTerm) ||
           product.description.toLowerCase().includes(lowerSearchTerm) ||
-          (product.ingredients || []).some((ing: string) => ing.toLowerCase().includes(lowerSearchTerm)),
+          (product.ingredients || []).some((ing: string) => ing.toLowerCase().includes(lowerSearchTerm)) ||
+          product.brand.toLowerCase().includes(lowerSearchTerm),
       )
     }
 
