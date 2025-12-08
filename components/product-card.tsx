@@ -14,10 +14,17 @@ interface Product {
   name: string
   brand?: string
   price: number
-  image: string
+  image?: string
   category: string
   description: string
   quantity: number
+  hasColorVariants?: boolean
+  colorVariants?: Array<{
+    colorName: string
+    color?: string
+    image: string
+    quantity: number
+  }>
 }
 
 interface ProductCardProps {
@@ -38,6 +45,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
     e.preventDefault()
     e.stopPropagation()
 
+    // For products with color variants, redirect to product page to select color
+    if (product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0) {
+      return // Let the link navigate to product page
+    }
+
     const remainingStock = product.quantity - cartQuantity
     const quantityToAdd = 1
 
@@ -53,7 +65,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.image,
+        image: product.image || "/placeholder.svg",
         category: product.category,
       })
     }
@@ -79,7 +91,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
             )}
             
             <Image
-              src={product.image || "/placeholder.svg"}
+              src={
+                product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
+                  ? product.colorVariants[0].image || "/placeholder.svg"
+                  : product.image || "/placeholder.svg"
+              }
               alt={product.name}
               fill
               className={cn(
@@ -122,7 +138,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
             </div>
 
             {/* Quick Add Button - Bottom */}
-            {!isOutOfStock && (
+            {!isOutOfStock && !product.hasColorVariants && (
               <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
                 <Button
                   onClick={handleAddToCart}
@@ -167,6 +183,30 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 {product.category}
               </span>
             </div>
+
+            {/* Color Variants Preview */}
+            {product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0 && (
+              <div className="flex items-center gap-2 pt-2">
+                <span className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">Couleurs:</span>
+                <div className="flex gap-1.5">
+                  {product.colorVariants.slice(0, 5).map((variant, index) => (
+                    <div
+                      key={index}
+                      className="relative w-6 h-6 rounded-full border border-border/50 shadow-sm"
+                      style={{ backgroundColor: variant.color || "#000000" }}
+                      title={variant.colorName}
+                    />
+                  ))}
+                  {product.colorVariants.length > 5 && (
+                    <div className="w-6 h-6 rounded-full border border-border/50 bg-secondary/30 flex items-center justify-center">
+                      <span className="text-[8px] text-muted-foreground font-semibold">
+                        +{product.colorVariants.length - 5}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </Link>

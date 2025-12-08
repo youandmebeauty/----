@@ -1,6 +1,6 @@
 import type { Order} from "@/lib/models"
 import { sendOrderConfirmationEmail } from "@/lib/services/email-service"
-import { updateProductStock, getProductById } from "@/lib/services/product-service"
+import { updateItemStock, getItemStock } from "@/lib/services/product-service"
 import { incrementPromoCodeUsage } from "@/lib/services/promo-code-service"
 
 // Dynamic imports for client-side Firebase
@@ -87,29 +87,46 @@ export async function createOrder(order: Omit<Order, "id" | "createdAt" | "statu
         throw new Error(`Invalid item: ${item.name || 'Unknown'}`)
       }
 
-      const product = await getProductById(item.id)
+      // Get stock for the item (handles variants)
+      const availableStock = await getItemStock(item.id)
       
-      if (!product) {
-        throw new Error(`Product not found: ${item.name}`)
-      }
-
-      if (product.quantity === undefined || product.quantity < item.quantity) {
+      if (availableStock < item.quantity) {
         throw new Error(
           `Stock insuffisant pour ${item.name}. ` +
-          `Demandé: ${item.quantity}, Disponible: ${product.quantity ?? 0}`
+          `Demandé: ${item.quantity}, Disponible: ${availableStock}`
         )
       }
 
-      // Reduce stock immediately
-      const newStock = product.quantity - item.quantity
-      await updateProductStock(item.id, newStock)
+      // Reduce stock immediately (handles variants)
+      const newStock = availableStock - item.quantity
+      await updateItemStock(item.id, newStock)
     }
 
     // Create order after stock is successfully reduced
-    const orderData = {
-      ...order,
+    // Remove undefined fields as Firestore doesn't accept them
+    const orderData: any = {
+      customerName: order.customerName,
+      email: order.email,
+      phone: order.phone || null,
+      address: order.address,
+      city: order.city,
+      postalCode: order.postalCode,
+      gouvernorat: order.gouvernorat,
+      items: order.items,
+      total: order.total,
       status: "pending" as const,
       createdAt: firestoreModule.serverTimestamp(),
+    }
+
+    // Only include optional fields if they have values
+    if (order.notes) {
+      orderData.notes = order.notes
+    }
+    if (order.promoCode) {
+      orderData.promoCode = order.promoCode
+    }
+    if (order.discount !== undefined && order.discount > 0) {
+      orderData.discount = order.discount
     }
 
     const docRef = await firestoreModule.addDoc(firestoreModule.collection(db, ORDERS_COLLECTION), orderData)
@@ -181,15 +198,13 @@ export async function updateOrderStatus(id: string, status: Order["status"]): Pr
           }
 
           try {
-            const product = await getProductById(item.id)
-            if (product && product.quantity !== undefined) {
-              const newStock = product.quantity + item.quantity
-              await updateProductStock(item.id, newStock)
-            } else {
-              console.warn(`Product ${item.id} not found or has no stock value`)
-            }
+            // Get current stock (handles variants)
+            const currentStock = await getItemStock(item.id)
+            const newStock = currentStock + item.quantity
+            // Restore stock (handles variants)
+            await updateItemStock(item.id, newStock)
           } catch (stockError) {
-            console.error(`Error restoring stock for product ${item.id}:`, stockError)
+            console.error(`Error restoring stock for item ${item.id}:`, stockError)
             // Continue with other items even if one fails
           }
         }

@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 import { useCart } from "@/components/cart-provider"
 import { useToast } from "@/hooks/use-toast"
 import type { Product } from "@/lib/models"
@@ -25,14 +26,35 @@ export function ProductClient({ product }: ProductClientProps) {
     const [quantity, setQuantity] = useState(1)
     const [imageLoaded, setImageLoaded] = useState(false)
     const [isAdding, setIsAdding] = useState(false)
+    const [selectedColorIndex, setSelectedColorIndex] = useState<number | null>(
+        product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0 ? 0 : null
+    )
+
+    // Get current variant or default product data
+    const currentVariant = selectedColorIndex !== null && product.colorVariants 
+        ? product.colorVariants[selectedColorIndex] 
+        : null
+    
+    const displayImage = currentVariant?.image || product.image
+    const displayQuantity = currentVariant?.quantity ?? product.quantity
+
+    // Reset image loaded state when image changes
+    useEffect(() => {
+        setImageLoaded(false)
+    }, [displayImage])
 
     // Calculate the number of items of this product already in the cart
+    // For products with color variants, each variant is a distinct product with unique ID
+    const variantId = currentVariant 
+        ? `${product.id}-${selectedColorIndex}`
+        : product.id
+    
     const cartQuantity = items
-        .filter((item) => item.id === product.id)
+        .filter((item) => item.id === variantId)
         .reduce((sum, item) => sum + item.quantity, 0)
 
     const handleAddToCart = async () => {
-        const remainingStock = product.quantity - cartQuantity
+        const remainingStock = displayQuantity - cartQuantity
 
         if (quantity > remainingStock) {
             toast({
@@ -48,19 +70,28 @@ export function ProductClient({ product }: ProductClientProps) {
         // Simulate a brief loading state for better UX
         await new Promise(resolve => setTimeout(resolve, 300))
 
-        const existingItem = items.find((item) => item.id === product.id)
+        const itemName = currentVariant 
+            ? `${product.name} - ${currentVariant.colorName}`
+            : product.name
+        
+        // For products with variants, use unique ID per variant
+        const itemId = currentVariant 
+            ? `${product.id}-${selectedColorIndex}`
+            : product.id
+        
+        const existingItem = items.find((item) => item.id === itemId)
         if (existingItem) {
-            updateQuantity(product.id, existingItem.quantity + quantity)
+            updateQuantity(itemId, existingItem.quantity + quantity)
         } else {
             addItem({
-                id: product.id,
-                name: product.name,
+                id: itemId,
+                name: itemName,
                 price: product.price,
-                image: product.image,
+                image: displayImage || "/placeholder.svg",
                 category: product.category,
             })
             if (quantity > 1) {
-                updateQuantity(product.id, quantity)
+                updateQuantity(itemId, quantity)
             }
         }
 
@@ -81,9 +112,9 @@ export function ProductClient({ product }: ProductClientProps) {
         setIsAdding(false)
     }
 
-    const inStock = product.quantity > cartQuantity
-    const remainingStock = product.quantity - cartQuantity
-    const stockPercentage = (remainingStock / product.quantity) * 100
+    const inStock = displayQuantity > cartQuantity
+    const remainingStock = displayQuantity - cartQuantity
+    const stockPercentage = displayQuantity > 0 ? (remainingStock / displayQuantity) * 100 : 0
     const isLowStock = stockPercentage <= 20 && stockPercentage > 0
 
     return (
@@ -101,7 +132,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                 )}
                                 
                                 <Image
-                                    src={product.image || "/placeholder.svg"}
+                                    src={displayImage || "/placeholder.svg"}
                                     alt={product.name}
                                     fill
                                     className={cn(
@@ -110,6 +141,8 @@ export function ProductClient({ product }: ProductClientProps) {
                                     )}
                                     priority
                                     onLoad={() => setImageLoaded(true)}
+                                    onError={() => setImageLoaded(true)}
+                                    key={displayImage} // Force re-render when image changes
                                 />
 
                                 {/* Gradient overlay */}
@@ -180,6 +213,47 @@ export function ProductClient({ product }: ProductClientProps) {
                                 {product.description}
                             </p>
                         </div>
+
+                        {/* Color Variants Selector */}
+                        {product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0 && (
+                            <div className="animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "150ms" }}>
+                                <div className="space-y-3">
+                                    <Label className="text-xs uppercase tracking-widest font-semibold text-foreground">
+                                        Couleur {currentVariant && `: ${currentVariant.colorName}`}
+                                    </Label>
+                                    <div className="flex flex-wrap gap-3">
+                                        {product.colorVariants.map((variant, index) => (
+                                            <button
+                                                key={index}
+                                                type="button"
+                                                onClick={() => {
+                                                    setSelectedColorIndex(index)
+                                                    setImageLoaded(false)
+                                                    setQuantity(1)
+                                                }}
+                                                className={cn(
+                                                    "relative w-16 h-16 rounded-lg border-2 transition-all duration-200 flex items-center justify-center",
+                                                    selectedColorIndex === index
+                                                        ? "border-primary scale-105 shadow-lg ring-2 ring-primary/20"
+                                                        : "border-border hover:border-primary/50 hover:scale-102"
+                                                )}
+                                                style={{ backgroundColor: variant.color || "#000000" }}
+                                                title={variant.colorName}
+                                            >
+                                                {selectedColorIndex === index && (
+                                                    <div className="absolute inset-0 bg-primary/10 border-2 border-primary rounded-lg" />
+                                                )}
+                                                {variant.quantity === 0 && (
+                                                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-lg">
+                                                        <span className="text-xs text-white font-semibold">Épuisé</span>
+                                                    </div>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Actions */}
                         <div className="space-y-6 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "200ms" }}>

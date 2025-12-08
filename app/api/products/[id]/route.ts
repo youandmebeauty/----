@@ -29,6 +29,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       ingredients,
       skinType,
       hairType,
+      hasColorVariants,
+      colorVariants,
     } = body
 
     const docRef = adminDb.collection(PRODUCTS_COLLECTION).doc(params.id)
@@ -37,6 +39,10 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     if (!doc.exists) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 })
     }
+
+    const currentData = doc.data()!
+    const wasHasColorVariants = currentData.hasColorVariants || false
+    const isSwitchingToColorVariants = hasColorVariants !== undefined && hasColorVariants && !wasHasColorVariants
 
     // Prepare update data
     const updateData: any = {
@@ -50,12 +56,20 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     if (subcategory !== undefined) updateData.subcategory = subcategory || null
     if (description !== undefined) updateData.description = description
     if (longDescription !== undefined) updateData.longDescription = longDescription || null
-    if (image !== undefined) updateData.image = image
+    // Only update image if there are no color variants
+    // If switching to color variants, remove the image
+    if (isSwitchingToColorVariants) {
+      updateData.image = null
+    } else if (image !== undefined && !hasColorVariants) {
+      updateData.image = image
+    }
     if (quantity !== undefined) updateData.quantity = Number(quantity)
     if (featured !== undefined) updateData.featured = featured
     if (ingredients !== undefined) updateData.ingredients = Array.isArray(ingredients) ? ingredients : []
     if (skinType !== undefined) updateData.skinType = Array.isArray(skinType) ? skinType : []
     if (hairType !== undefined) updateData.hairType = Array.isArray(hairType) ? hairType : []
+    if (hasColorVariants !== undefined) updateData.hasColorVariants = hasColorVariants
+    if (colorVariants !== undefined) updateData.colorVariants = Array.isArray(colorVariants) ? colorVariants : []
 
     await docRef.update(updateData)
 

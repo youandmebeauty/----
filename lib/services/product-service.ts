@@ -98,10 +98,26 @@ export async function getProductById(id: string): Promise<Product | null> {
       return null
     }
 
-    return {
+    const data = productDoc.data()
+    const product = {
       id: productDoc.id,
-      ...productDoc.data(),
+      ...data,
     } as Product
+    
+    // Debug: Log colorVariants if they exist
+    if (product.hasColorVariants && product.colorVariants) {
+      console.log(`[getProductById-client] Product ${product.id} has ${product.colorVariants.length} color variants:`, product.colorVariants)
+      product.colorVariants.forEach((variant, idx) => {
+        console.log(`[getProductById-client] Variant ${idx}:`, {
+          colorName: variant.colorName,
+          quantity: variant.quantity,
+          quantityType: typeof variant.quantity,
+          fullVariant: variant
+        })
+      })
+    }
+    
+    return product
   } catch (error) {
     console.error("Error getting product (client):", error)
     return null
@@ -381,24 +397,21 @@ if (searchTerm) {
 }
 
 export async function createProduct(product: Omit<Product, "id" | "createdAt" | "updatedAt">): Promise<Product> {
-  await initFirestore()
-  if (!firestoreModule || !db) throw new Error("Firestore not available")
-
   try {
-    const productData = {
-      ...product,
-      createdAt: firestoreModule.serverTimestamp(),
-      updatedAt: firestoreModule.serverTimestamp(),
+    const response = await fetch("/api/products", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(product),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || "Failed to create product")
     }
 
-    const docRef = await firestoreModule.addDoc(firestoreModule.collection(db, PRODUCTS_COLLECTION), productData)
-
-    return {
-      id: docRef.id,
-      ...productData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    } as Product
+    return await response.json()
   } catch (error) {
     console.error("Error creating product:", error)
     throw error
@@ -446,6 +459,74 @@ export async function deleteProduct(id: string): Promise<void> {
   }
 }
 
+// Helper function to parse item ID and extract product ID and variant index
+// Format: productId-variantIndex (e.g., "abc123-0", "product-with-dashes-2")
+export function parseItemId(itemId: string): { productId: string; variantIndex: number | null } {
+  // Try to find the last occurrence of a pattern like "-N" where N is a number
+  const match = itemId.match(/^(.+)-(\d+)$/)
+  if (match) {
+    const productId = match[1]
+    const variantIndex = parseInt(match[2], 10)
+    if (!isNaN(variantIndex) && variantIndex >= 0) {
+      return { productId, variantIndex }
+    }
+  }
+  // If no variant pattern found, it's just a product ID
+  return { productId: itemId, variantIndex: null }
+}
+
+// Get stock for an item (handles variants)
+export async function getItemStock(itemId: string): Promise<number> {
+  try {
+    const { productId, variantIndex } = parseItemId(itemId)
+    console.log(`[getItemStock] Parsing itemId: ${itemId} -> productId: ${productId}, variantIndex: ${variantIndex}`)
+    
+    const product = await getProductById(productId)
+    
+    if (!product) {
+      console.warn(`[getItemStock] Product not found: ${productId} (parsed from ${itemId})`)
+      return 0
+    }
+
+    console.log(`[getItemStock] Product found: ${product.name}, hasColorVariants: ${product.hasColorVariants}, colorVariants length: ${product.colorVariants?.length || 0}`)
+
+    // If it's a variant, return the variant's stock
+    if (variantIndex !== null) {
+      if (!product.hasColorVariants || !product.colorVariants) {
+        console.warn(`[getItemStock] Product ${productId} doesn't have color variants but variantIndex is ${variantIndex}`)
+        return 0
+      }
+      
+      if (variantIndex < 0 || variantIndex >= product.colorVariants.length) {
+        console.warn(`[getItemStock] Invalid variantIndex ${variantIndex} for product ${productId} (has ${product.colorVariants.length} variants)`)
+        return 0
+      }
+      
+      const variant = product.colorVariants[variantIndex]
+      if (!variant) {
+        console.warn(`[getItemStock] Variant ${variantIndex} is null/undefined for product ${productId}`)
+        return 0
+      }
+      
+      // Debug: Log the full variant object to see what we're working with
+      console.log(`[getItemStock] Full variant object:`, JSON.stringify(variant, null, 2))
+      
+      // Check if quantity exists and is a valid number
+      const stock = typeof variant.quantity === 'number' ? variant.quantity : (parseInt(String(variant.quantity || 0), 10) || 0)
+      console.log(`[getItemStock] Variant ${variantIndex} (${variant.colorName}) of product ${productId}: ${stock} in stock (raw quantity: ${variant.quantity}, type: ${typeof variant.quantity})`)
+      return stock
+    }
+
+    // Otherwise return the product's stock
+    const stock = product.quantity ?? 0
+    console.log(`[getItemStock] Product ${productId} (no variant): ${stock} in stock`)
+    return stock
+  } catch (error) {
+    console.error(`[getItemStock] Error getting stock for itemId ${itemId}:`, error)
+    return 0
+  }
+}
+
 export async function updateProductStock(id: string, quantity: number): Promise<void> {
   await initFirestore()
   if (!firestoreModule || !db) {
@@ -466,6 +547,63 @@ export async function updateProductStock(id: string, quantity: number): Promise<
     console.debug(`Product ${id} stock updated to ${quantity}`)
   } catch (error) {
     console.error("Error updating product stock:", error)
+    throw error
+  }
+}
+
+// Update stock for an item (handles variants)
+export async function updateItemStock(itemId: string, quantity: number): Promise<void> {
+  const { productId, variantIndex } = parseItemId(itemId)
+  
+  // If it's a variant, update the variant's stock
+  if (variantIndex !== null) {
+    await updateVariantStock(productId, variantIndex, quantity)
+  } else {
+    // Otherwise update the product's stock
+    await updateProductStock(productId, quantity)
+  }
+}
+
+// Update stock for a specific variant
+export async function updateVariantStock(productId: string, variantIndex: number, quantity: number): Promise<void> {
+  await initFirestore()
+  if (!firestoreModule || !db) {
+    console.error("Firestore not initialized")
+    throw new Error("Firestore not available")
+  }
+
+  try {
+    const productRef = firestoreModule.doc(db, PRODUCTS_COLLECTION, productId)
+    const productDoc = await firestoreModule.getDoc(productRef)
+
+    if (!productDoc.exists()) {
+      console.warn(`Product ${productId} not found for variant stock update`)
+      throw new Error("Product not found")
+    }
+
+    const productData = productDoc.data() as Product
+    if (!productData.hasColorVariants || !productData.colorVariants || !productData.colorVariants[variantIndex]) {
+      throw new Error(`Variant ${variantIndex} not found for product ${productId}`)
+    }
+
+    // Update the variant's quantity
+    const updatedVariants = [...productData.colorVariants]
+    updatedVariants[variantIndex] = {
+      ...updatedVariants[variantIndex],
+      quantity
+    }
+
+    // Update total quantity (sum of all variants)
+    const totalQuantity = updatedVariants.reduce((sum, v) => sum + v.quantity, 0)
+
+    await firestoreModule.updateDoc(productRef, {
+      colorVariants: updatedVariants,
+      quantity: totalQuantity
+    })
+    
+    console.debug(`Product ${productId} variant ${variantIndex} stock updated to ${quantity}`)
+  } catch (error) {
+    console.error("Error updating variant stock:", error)
     throw error
   }
 }

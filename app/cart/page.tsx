@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useCart } from "@/components/cart-provider"
 import { useToast } from "@/hooks/use-toast"
 import { createOrder } from "@/lib/services/order-service"
-import { getProductById } from "@/lib/services/product-service"
+import { getItemStock } from "@/lib/services/product-service"
 import { getPromoCodeByCode } from "@/lib/services/promo-code-service"
 import type { OrderItem, PromoCode } from "@/lib/models"
 import { Minus, Plus, Trash2, ShoppingBag, Tag, Check, X } from "lucide-react"
@@ -42,16 +42,16 @@ export default function CartPage() {
     notes: "",
   })
 
-  // Fetch stock for all products in the cart
+  // Fetch stock for all products in the cart (handles variants)
   useEffect(() => {
     const fetchStocks = async () => {
       const stocks: { [id: string]: number } = {}
       for (const item of items) {
         try {
-          const product = await getProductById(item.id)
-          stocks[item.id] = typeof product?.quantity === 'number' && product.quantity >= 0 ? product.quantity : 0
+          const stock = await getItemStock(item.id)
+          stocks[item.id] = stock
         } catch (error) {
-          console.error(`Error fetching stock for product ${item.id}:`, error)
+          console.error(`Error fetching stock for item ${item.id}:`, error)
           stocks[item.id] = 0
         }
       }
@@ -205,9 +205,11 @@ export default function CartPage() {
     setIsCheckingOut(true)
 
     try {
-      // Validate stock before submitting order
+      // Validate stock before submitting order (re-fetch to ensure accuracy)
       for (const item of items) {
-        const stock = productStocks[item.id] ?? 0
+        console.log(`[handleSubmitOrder] Checking stock for item: id=${item.id}, name=${item.name}, quantity=${item.quantity}`)
+        const stock = await getItemStock(item.id)
+        console.log(`[handleSubmitOrder] Stock result for ${item.id}: ${stock}`)
         if (item.quantity > stock) {
           throw new Error(`Stock insuffisant pour ${item.name}. Seulement ${stock} disponible.`)
         }
@@ -221,20 +223,30 @@ export default function CartPage() {
         image: item.image,
       }))
 
-      await createOrder({
+      const orderData: any = {
         customerName: orderForm.name,
         email: orderForm.email,
-        phone: orderForm.phone,
+        phone: orderForm.phone || undefined,
         address: orderForm.address,
         city: orderForm.city,
         postalCode: orderForm.postalCode,
         gouvernorat: orderForm.gouvernorat,
-        notes: orderForm.notes,
         items: orderItems,
         total: finalTotal,
-        promoCode: appliedPromo?.code,
-        discount: discount,
-      })
+      }
+
+      // Only include optional fields if they have values
+      if (orderForm.notes) {
+        orderData.notes = orderForm.notes
+      }
+      if (appliedPromo?.code) {
+        orderData.promoCode = appliedPromo.code
+      }
+      if (discount > 0) {
+        orderData.discount = discount
+      }
+
+      await createOrder(orderData)
 
       toast({
         title: "Commande soumise avec succès!",

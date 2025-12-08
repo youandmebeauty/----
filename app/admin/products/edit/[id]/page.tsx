@@ -13,8 +13,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
 import { getProductById, updateProduct, deleteProduct } from "@/lib/services/product-service"
-import type { Product } from "@/lib/models"
-import { ArrowLeft, Trash2, Image as ImageIcon, X } from "lucide-react"
+import type { Product, ColorVariant } from "@/lib/models"
+import { ArrowLeft, Trash2, Image as ImageIcon, X, Plus } from "lucide-react"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
 import { CldUploadWidget } from 'next-cloudinary';
 import { SHOP_CATEGORIES } from "@/lib/category-data"
@@ -40,7 +40,9 @@ function EditProductContent() {
     ingredients: "",
     skinType: [] as string[],
     hairType: [] as string[],
+    hasColorVariants: false,
   })
+  const [colorVariants, setColorVariants] = useState<ColorVariant[]>([])
 
   useEffect(() => {
     if (params.id) {
@@ -61,13 +63,15 @@ function EditProductContent() {
           subcategory: productData.subcategory || "",
           description: productData.description,
           longDescription: productData.longDescription || "",
-          image: productData.image,
+          image: productData.image || "",
           quantity: productData.quantity.toString(),
           featured: productData.featured || false,
           ingredients: productData.ingredients?.join(", ") || "",
           skinType: productData.skinType || [],
           hairType: productData.hairType || [],
+          hasColorVariants: productData.hasColorVariants || false,
         })
+        setColorVariants(productData.colorVariants || [])
       } else {
         toast({
           title: "Erreur",
@@ -95,6 +99,32 @@ function EditProductContent() {
     setFormData((prev) => ({ ...prev, featured: checked }))
   }
 
+  const handleColorVariantsToggle = (checked: boolean) => {
+    setFormData((prev) => ({ ...prev, hasColorVariants: checked }))
+    if (!checked) {
+      setColorVariants([])
+    }
+  }
+
+  const addColorVariant = () => {
+    setColorVariants((prev) => [
+      ...prev,
+      { colorName: "", color: "#000000", image: "", quantity: 0 },
+    ])
+  }
+
+  const removeColorVariant = (index: number) => {
+    setColorVariants((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  const updateColorVariant = (index: number, field: keyof ColorVariant, value: string | number) => {
+    setColorVariants((prev) =>
+      prev.map((variant, i) =>
+        i === index ? { ...variant, [field]: value } : variant
+      )
+    )
+  }
+
   const toggleSkinType = (type: string) => {
     setFormData((prev) => ({
       ...prev,
@@ -120,7 +150,7 @@ function EditProductContent() {
     setLoading(true)
 
     try {
-      const productData = {
+      const productData: any = {
         name: formData.name.trim(),
         brand: formData.brand.trim(),
         price: Number.parseFloat(formData.price) || 0,
@@ -128,12 +158,28 @@ function EditProductContent() {
         subcategory: formData.subcategory?.trim() || undefined,
         description: formData.description.trim(),
         longDescription: formData.longDescription?.trim() || formData.description.trim(),
-        image: formData.image.trim(),
-        quantity: Number.parseInt(formData.quantity, 10) || 0,
+        quantity: formData.hasColorVariants 
+          ? colorVariants.reduce((sum, v) => sum + v.quantity, 0)
+          : Number.parseInt(formData.quantity, 10) || 0,
         featured: formData.featured,
         ingredients: formData.ingredients ? formData.ingredients.split(",").map((i) => i.trim()).filter((i) => i.length > 0) : [],
         skinType: formData.skinType || [],
         hairType: formData.hairType || [],
+        hasColorVariants: formData.hasColorVariants,
+      }
+
+      // Only include image if there are no color variants
+      if (!formData.hasColorVariants) {
+        productData.image = formData.image.trim()
+      }
+
+      if (formData.hasColorVariants && colorVariants.length > 0) {
+        productData.colorVariants = colorVariants.map(v => ({
+          colorName: v.colorName.trim(),
+          color: v.color || "#000000",
+          image: v.image.trim(),
+          quantity: Number(v.quantity) || 0,
+        }))
       }
 
       await updateProduct(product.id, productData)
@@ -268,18 +314,28 @@ function EditProductContent() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="quantity">Quantité *</Label>
+                    <Label htmlFor="quantity">
+                      Quantité {formData.hasColorVariants ? "(calculée automatiquement)" : "*"}
+                    </Label>
                     <Input
                       id="quantity"
                       name="quantity"
                       type="number"
                       min="0"
-                      value={formData.quantity}
+                      value={formData.hasColorVariants 
+                        ? colorVariants.reduce((sum, v) => sum + v.quantity, 0).toString()
+                        : formData.quantity}
                       onChange={handleInputChange}
-                      required
+                      required={!formData.hasColorVariants}
+                      disabled={formData.hasColorVariants}
                       placeholder="0"
                       className="bg-background/50"
                     />
+                    {formData.hasColorVariants && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        La quantité totale est calculée à partir des variantes de couleur
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -376,60 +432,62 @@ function EditProductContent() {
                   </div>
                 )}
 
-                <div className="space-y-4">
-                  <Label>Image du produit *</Label>
-                  <div className="flex flex-col gap-4">
-                    {formData.image && (
-                      <div className="relative w-40 h-40 rounded-lg overflow-hidden border border-border">
-                        <img
-                          src={formData.image}
-                          alt="Product preview"
-                          className="w-full h-full object-cover"
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2 h-6 w-6 rounded-full"
-                          onClick={() => setFormData(prev => ({ ...prev, image: "" }))}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    )}
-
-                    <CldUploadWidget
-                      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-                      onSuccess={(result: any) => {
-                        if (result.info?.secure_url) {
-                          setFormData(prev => ({ ...prev, image: result.info.secure_url }))
-                        }
-                      }}
-                    >
-                      {({ open }) => {
-                        return (
+                {!formData.hasColorVariants && (
+                  <div className="space-y-4">
+                    <Label>Image du produit *</Label>
+                    <div className="flex flex-col gap-4">
+                      {formData.image && (
+                        <div className="relative w-40 h-40 rounded-lg overflow-hidden border border-border">
+                          <img
+                            src={formData.image}
+                            alt="Product preview"
+                            className="w-full h-full object-cover"
+                          />
                           <Button
                             type="button"
-                            variant="outline"
-                            onClick={() => open()}
-                            className="w-full sm:w-auto"
+                            variant="destructive"
+                            size="icon"
+                            className="absolute top-2 right-2 h-6 w-6 rounded-full"
+                            onClick={() => setFormData(prev => ({ ...prev, image: "" }))}
                           >
-                            <ImageIcon className="mr-2 h-4 w-4" />
-                            {formData.image ? "Changer l'image" : "Télécharger une image"}
+                            <X className="h-3 w-3" />
                           </Button>
-                        );
-                      }}
-                    </CldUploadWidget>
+                        </div>
+                      )}
 
-                    {/* Hidden input to ensure validation works if needed, though we handle it via state */}
-                    <input
-                      type="hidden"
-                      name="image"
-                      value={formData.image}
-                      required
-                    />
+                      <CldUploadWidget
+                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                        onSuccess={(result: any) => {
+                          if (result.info?.secure_url) {
+                            setFormData(prev => ({ ...prev, image: result.info.secure_url }))
+                          }
+                        }}
+                      >
+                        {({ open }) => {
+                          return (
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => open()}
+                              className="w-full sm:w-auto"
+                            >
+                              <ImageIcon className="mr-2 h-4 w-4" />
+                              {formData.image ? "Changer l'image" : "Télécharger une image"}
+                            </Button>
+                          );
+                        }}
+                      </CldUploadWidget>
+
+                      {/* Hidden input to ensure validation works if needed, though we handle it via state */}
+                      <input
+                        type="hidden"
+                        name="image"
+                        value={formData.image}
+                        required
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div>
                   <Label htmlFor="description">Description *</Label>
@@ -475,6 +533,149 @@ function EditProductContent() {
                   <Checkbox id="featured" checked={formData.featured} onCheckedChange={handleCheckboxChange} />
                   <Label htmlFor="featured">Produit en vedette</Label>
                 </div>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox id="hasColorVariants" checked={formData.hasColorVariants} onCheckedChange={handleColorVariantsToggle} />
+                  <Label htmlFor="hasColorVariants">A des variantes de couleur</Label>
+                </div>
+
+                {formData.hasColorVariants && (
+                  <div className="space-y-4 p-4 border border-border/50 rounded-lg bg-background/30">
+                    <div className="flex items-center justify-between">
+                      <Label>Variantes de couleur</Label>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={addColorVariant}
+                        className="rounded-full"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Ajouter une variante
+                      </Button>
+                    </div>
+
+                    {colorVariants.length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-4">
+                        Aucune variante ajoutée. Cliquez sur "Ajouter une variante" pour commencer.
+                      </p>
+                    )}
+
+                    {colorVariants.map((variant, index) => (
+                      <Card key={index} className="bg-background/50 border-border/50">
+                        <CardContent className="p-4 space-y-4">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-medium">Variante {index + 1}</h4>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeColorVariant(index)}
+                              className="text-destructive hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <Label htmlFor={`variant-color-picker-${index}`}>Couleur *</Label>
+                              <div className="flex items-center gap-2 mt-2">
+                                <input
+                                  id={`variant-color-picker-${index}`}
+                                  type="color"
+                                  value={variant.color || "#000000"}
+                                  onChange={(e) => updateColorVariant(index, "color", e.target.value)}
+                                  className="w-16 h-10 rounded-lg border border-border cursor-pointer bg-background/50"
+                                />
+                                <Input
+                                  type="text"
+                                  value={variant.color || "#000000"}
+                                  onChange={(e) => updateColorVariant(index, "color", e.target.value)}
+                                  placeholder="#000000"
+                                  pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
+                                  className="bg-background/50 flex-1"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <Label htmlFor={`variant-color-name-${index}`}>Nom de la couleur *</Label>
+                              <Input
+                                id={`variant-color-name-${index}`}
+                                value={variant.colorName}
+                                onChange={(e) => updateColorVariant(index, "colorName", e.target.value)}
+                                placeholder="Ex: Rouge, Bleu, Noir..."
+                                required
+                                className="bg-background/50"
+                              />
+                            </div>
+                          </div>
+
+                          <div>
+                            <Label htmlFor={`variant-quantity-${index}`}>Quantité *</Label>
+                            <Input
+                              id={`variant-quantity-${index}`}
+                              type="number"
+                              min="0"
+                              value={variant.quantity}
+                              onChange={(e) => updateColorVariant(index, "quantity", Number.parseInt(e.target.value) || 0)}
+                              required
+                              className="bg-background/50"
+                            />
+                          </div>
+
+                          <div>
+                            <Label>Image de la variante *</Label>
+                            <div className="flex flex-col gap-4 mt-2">
+                              {variant.image && (
+                                <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-border">
+                                  <img
+                                    src={variant.image}
+                                    alt={`${variant.colorName} preview`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="icon"
+                                    className="absolute top-2 right-2 h-6 w-6 rounded-full"
+                                    onClick={() => updateColorVariant(index, "image", "")}
+                                  >
+                                    <X className="h-3 w-3" />
+                                  </Button>
+                                </div>
+                              )}
+
+                              <CldUploadWidget
+                                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                                onSuccess={(result: any) => {
+                                  if (result.info?.secure_url) {
+                                    updateColorVariant(index, "image", result.info.secure_url)
+                                  }
+                                }}
+                              >
+                                {({ open }) => {
+                                  return (
+                                    <Button
+                                      type="button"
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => open()}
+                                      className="w-full sm:w-auto"
+                                    >
+                                      <ImageIcon className="mr-2 h-4 w-4" />
+                                      {variant.image ? "Changer l'image" : "Télécharger une image"}
+                                    </Button>
+                                  )
+                                }}
+                              </CldUploadWidget>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
 
                 <div className="flex space-x-4 pt-4">
                   <Button type="submit" disabled={loading} className="rounded-full px-8">

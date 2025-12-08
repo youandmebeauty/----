@@ -1,9 +1,16 @@
+export interface ColorVariant {
+  colorName: string
+  color?: string // Hex color code (optional for backward compatibility)
+  image: string
+  quantity: number
+}
+
 export interface Product {
   id: string
   name: string
   brand: string
   price: number
-  image: string
+  image?: string
   category: string
   subcategory?: string
   skinType?: string[]
@@ -15,6 +22,8 @@ export interface Product {
   ingredients?: string[]
   quantity: number
   featured?: boolean
+  hasColorVariants?: boolean
+  colorVariants?: ColorVariant[]
   createdAt: Date | string
   updatedAt: Date | string
 }
