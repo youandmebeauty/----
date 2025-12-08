@@ -268,10 +268,10 @@ function EditProductContent() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="stock">Stock *</Label>
+                    <Label htmlFor="quantity">Stock *</Label>
                     <Input
-                      id="stock"
-                      name="stock"
+                      id="quantity"
+                      name="quantity"
                       type="number"
                       min="0"
                       value={formData.quantity}
