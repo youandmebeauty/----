@@ -246,7 +246,7 @@ if (isLoading) {
           
           {/* Unit price for desktop (hidden on mobile) */}
           <p className="hidden sm:block text-sm font-semibold text-primary">
-            {item.price.toFixed(2)} TND each
+            {item.price.toFixed(2)} TND chacun
           </p>
         </div>
 
