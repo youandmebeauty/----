@@ -121,19 +121,19 @@ function EditProductContent() {
 
     try {
       const productData = {
-        name: formData.name,
-        brand: formData.brand,
-        price: Number.parseFloat(formData.price),
+        name: formData.name.trim(),
+        brand: formData.brand.trim(),
+        price: Number.parseFloat(formData.price) || 0,
         category: formData.category,
-        subcategory: formData.subcategory,
-        description: formData.description,
-        longDescription: formData.longDescription || formData.description,
-        image: formData.image,
-        quantity: Number.parseInt(formData.quantity),
+        subcategory: formData.subcategory?.trim() || undefined,
+        description: formData.description.trim(),
+        longDescription: formData.longDescription?.trim() || formData.description.trim(),
+        image: formData.image.trim(),
+        quantity: Number.parseInt(formData.quantity, 10) || 0,
         featured: formData.featured,
-        ingredients: formData.ingredients ? formData.ingredients.split(",").map((i) => i.trim()) : [],
-        skinType: formData.skinType,
-        hairType: formData.hairType,
+        ingredients: formData.ingredients ? formData.ingredients.split(",").map((i) => i.trim()).filter((i) => i.length > 0) : [],
+        skinType: formData.skinType || [],
+        hairType: formData.hairType || [],
       }
 
       await updateProduct(product.id, productData)

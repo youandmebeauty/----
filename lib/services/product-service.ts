@@ -359,30 +359,21 @@ export async function updateProduct(
   id: string,
   product: Partial<Omit<Product, "id" | "createdAt" | "updatedAt">>,
 ): Promise<Product> {
-  await initFirestore()
-  if (!firestoreModule || !db) throw new Error("Firestore not available")
-
   try {
-    const productRef = firestoreModule.doc(db, PRODUCTS_COLLECTION, id)
-    const productDoc = await firestoreModule.getDoc(productRef)
+    const response = await fetch(`/api/products/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(product),
+    })
 
-    if (!productDoc.exists()) {
-      throw new Error("Product not found")
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || "Failed to update product")
     }
 
-    const productData = {
-      ...product,
-      updatedAt: firestoreModule.serverTimestamp(),
-    }
-
-    await firestoreModule.updateDoc(productRef, productData)
-
-    return {
-      id,
-      ...productDoc.data(),
-      ...productData,
-      updatedAt: new Date().toISOString(),
-    } as Product
+    return await response.json()
   } catch (error) {
     console.error("Error updating product:", error)
     throw error
@@ -390,18 +381,15 @@ export async function updateProduct(
 }
 
 export async function deleteProduct(id: string): Promise<void> {
-  await initFirestore()
-  if (!firestoreModule || !db) throw new Error("Firestore not available")
-
   try {
-    const productRef = firestoreModule.doc(db, PRODUCTS_COLLECTION, id)
-    const productDoc = await firestoreModule.getDoc(productRef)
+    const response = await fetch(`/api/products/${id}`, {
+      method: "DELETE",
+    })
 
-    if (!productDoc.exists()) {
-      throw new Error("Product not found")
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || "Failed to delete product")
     }
-
-    await firestoreModule.deleteDoc(productRef)
   } catch (error) {
     console.error("Error deleting product:", error)
     throw error
