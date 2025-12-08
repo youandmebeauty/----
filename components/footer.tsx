@@ -119,10 +119,10 @@ export function Footer() {
                 <div>
                   <h4 className="font-medium mb-1 text-foreground">Nous Écrire</h4>
                   <a
-                    href="mailto:contact@youandme.tn"
+                    href="mailto:youandme282@gmail.com"
                     className="text-muted-foreground hover:text-primary transition-colors"
                   >
-                    contact@youandme.tn
+                    youandme282@gmail.com
                   </a>
                 </div>
                 <div>

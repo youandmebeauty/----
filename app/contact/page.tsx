@@ -134,8 +134,8 @@ export default function ContactPage() {
                     <Mail className="h-5 w-5" />
                     <span className="font-medium">Email</span>
                   </div>
-                  <a href="mailto:contact@youandme.tn" className="text-lg text-muted-foreground hover:text-foreground transition-colors">
-                    contact@youandme.tn
+                  <a href="mailto:youandme282@gmail.com" className="text-lg text-muted-foreground hover:text-foreground transition-colors">
+                    youandme282@gmail.com
                   </a>
                 </div>
 
