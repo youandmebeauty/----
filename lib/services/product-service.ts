@@ -267,6 +267,10 @@ export async function searchProducts(searchTerm: string, filters?: SearchFilters
       constraints.push(firestoreModule.where("price", "<=", filters.maxPrice))
     }
 
+    if (filters?.ingredients && filters.ingredients.length > 0) {
+      constraints.push(firestoreModule.where("ingredients", "array-contains-any", filters.ingredients))
+    }
+
     // Add sorting
     if (filters?.sortBy) {
       switch (filters.sortBy) {
@@ -304,12 +308,13 @@ export async function searchProducts(searchTerm: string, filters?: SearchFilters
     )
 
     // Client-side search for text matching
-    if (searchTerm) {
+if (searchTerm) {
       const lowerSearchTerm = searchTerm.toLowerCase()
       products = products.filter(
         (product: Product): boolean =>
           product.name.toLowerCase().includes(lowerSearchTerm) ||
-          product.description.toLowerCase().includes(lowerSearchTerm),
+          product.description.toLowerCase().includes(lowerSearchTerm) ||
+          (product.ingredients || []).some((ing: string) => ing.toLowerCase().includes(lowerSearchTerm)),
       )
     }
 

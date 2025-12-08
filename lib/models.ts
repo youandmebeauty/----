@@ -52,5 +52,6 @@ export interface SearchFilters {
   hairType?: string[]
   minPrice?: number
   maxPrice?: number
+  ingredients?: string[]
   sortBy?: "price-asc" | "price-desc" | "name-asc" | "name-desc" | "newest"
 }

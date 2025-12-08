@@ -50,7 +50,7 @@ export function ShopHeader({
 
             {/* Search Bar */}
             <div className="mb-6">
-                <SearchBar className="max-w-2xl" />
+                <SearchBar className="w-full" />
             </div>
 
             {/* Controls Section */}

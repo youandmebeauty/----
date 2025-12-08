@@ -14,10 +14,10 @@ interface SearchBarProps {
 export function SearchBar({ onSearch, placeholder = "Rechercher des produits...", className = "" }: SearchBarProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const [query, setQuery] = useState(searchParams.get("search") || "")
+    const [query, setQuery] = useState(searchParams.get("q") || "")
 
     useEffect(() => {
-        setQuery(searchParams.get("search") || "")
+        setQuery(searchParams.get("q") || "")
     }, [searchParams])
 
     const handleSearch = (value: string) => {
@@ -29,9 +29,9 @@ export function SearchBar({ onSearch, placeholder = "Rechercher des produits..."
             // Update URL with search query
             const params = new URLSearchParams(searchParams.toString())
             if (value) {
-                params.set("search", value)
+                params.set("q", value)
             } else {
-                params.delete("search")
+                params.delete("q")
             }
             router.push(`/shop?${params.toString()}`)
         }

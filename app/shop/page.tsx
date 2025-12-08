@@ -11,7 +11,6 @@ import { Sparkles, User, Wind } from "lucide-react"
 import { ShopHeader } from "@/components/shop/shop-header"
 import { ShopFilters } from "@/components/shop/shop-filters"
 import { ProductGrid } from "@/components/shop/product-grid"
-import { FeaturedSection } from "@/components/shop/featured-section"
 import { cn } from "@/lib/utils"
 import {
   Dialog,
@@ -19,8 +18,9 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog"
+import { FeaturedSection } from "@/components/shop/featured-section"
 
-function ShopContent() {
+function SearchContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
@@ -40,9 +40,11 @@ function ShopContent() {
   const [searchQuery, setSearchQuery] = useState("")
 
   useEffect(() => {
+    // In search page, we prioritize 'q' for the query
     const category = searchParams.get("category") || "all"
     const subcategory = searchParams.get("subcategory")
-    const search = searchParams.get("search") || ""
+    const search = searchParams.get("q") || searchParams.get("shop") || ""
+
     setSelectedCategory(category)
     setSelectedSubcategory(subcategory || null)
     setSearchQuery(search)
@@ -67,7 +69,6 @@ function ShopContent() {
         if (selectedSubcategory) filters.subcategory = selectedSubcategory
         if (selectedSkinTypes.length > 0) filters.skinType = selectedSkinTypes
         if (selectedHairTypes.length > 0) filters.hairType = selectedHairTypes
-
         if (sortBy !== "featured") {
           filters.sortBy = sortBy as any
         }
@@ -86,34 +87,48 @@ function ShopContent() {
     return () => clearTimeout(debounce)
   }, [selectedCategory, selectedSubcategory, selectedSkinTypes, selectedHairTypes, priceRange, sortBy, searchQuery])
 
+  const updateUrl = (params: URLSearchParams) => {
+    // Preserve the search query ('q') when updating filters
+    if (searchQuery) {
+      params.set('q', searchQuery)
+    }
+    router.push(`/shop?${params.toString()}`)
+  }
+
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId)
     setSelectedSubcategory(null)
     setSelectedSkinTypes([])
     setSelectedHairTypes([])
 
-    const params = new URLSearchParams(searchParams.toString())
+    const params = new URLSearchParams() // Start fresh to avoid accumulation of unwanted params? Or preserve?
+    // Let's behave similarly to ShopPage but keep 'q'
+
+    // Actually, ShopPage does: new URLSearchParams(searchParams.toString())
+    const paramsCurrent = new URLSearchParams(searchParams.toString())
+
     if (categoryId === "all") {
-      params.delete("category")
+      paramsCurrent.delete("category")
     } else {
-      params.set("category", categoryId)
+      paramsCurrent.set("category", categoryId)
     }
-    params.delete("subcategory")
-    router.push(`/shop?${params.toString()}`)
+    paramsCurrent.delete("subcategory")
+
+    // Ensure q is preserved (it should be since we extended searchParams)
+
+    router.push(`/shop?${paramsCurrent.toString()}`)
   }
 
   const handleSubcategoryChange = (subcategoryId: string) => {
+    const params = new URLSearchParams(searchParams.toString())
     if (selectedSubcategory === subcategoryId) {
       setSelectedSubcategory(null)
-      const params = new URLSearchParams(searchParams.toString())
       params.delete("subcategory")
-      router.push(`/shop?${params.toString()}`)
     } else {
       setSelectedSubcategory(subcategoryId)
-      const params = new URLSearchParams(searchParams.toString())
       params.set("subcategory", subcategoryId)
-      router.push(`/shop?${params.toString()}`)
     }
+    router.push(`/shop?${params.toString()}`)
   }
 
   const toggleSkinType = (type: string) => {
@@ -134,6 +149,9 @@ function ShopContent() {
     setSelectedSkinTypes([])
     setSelectedHairTypes([])
     setPriceRange([0, 200])
+
+    // We should probably keep the search query though?
+    // ShopPage implementation clears everything state-wise.
   }
 
   const activeFiltersCount =
@@ -166,17 +184,20 @@ function ShopContent() {
     toggleFilterExpand
   }
 
+  // Determine title based on search query
+  const pageTitle = searchQuery
+    ? `Résultats pour "${searchQuery}"`
+    : (selectedCategory === "all" ? "Tous les produits" : activeCategory?.label || "Recherche")
+
   return (
     <div className="min-h-screen bg-background">
       <main className="container mx-auto px-4 lg:px-6 xl:px-8 py-8">
-
         {/* Featured Section (New) */}
         <FeaturedSection />
-
         {/* Header & Controls */}
         <div id="product-section" className="scroll-mt-24">
           <ShopHeader
-            title={selectedCategory === "all" ? "Tous les produits" : activeCategory?.label || "Boutique"}
+            title={pageTitle}
             productCount={products.length}
             sortBy={sortBy}
             setSortBy={setSortBy}
@@ -199,11 +220,20 @@ function ShopContent() {
           {/* Main Content */}
           <div className="flex-1">
             <div className={cn("transition-opacity duration-300", isRefetching ? "opacity-50" : "opacity-100")}>
-              <ProductGrid
-                products={products}
-                loading={isInitialLoading}
-                clearAllFilters={clearAllFilters}
-              />
+              {products.length === 0 && !isInitialLoading ? (
+                <div className="text-center py-12">
+                  <p className="text-muted-foreground text-lg mb-4">Aucun produit trouvé pour votre recherche.</p>
+                  <button onClick={clearAllFilters} className="text-primary hover:underline">
+                    Effacer les filtres
+                  </button>
+                </div>
+              ) : (
+                <ProductGrid
+                  products={products}
+                  loading={isInitialLoading}
+                  clearAllFilters={clearAllFilters}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -286,7 +316,6 @@ export default function ShopPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-background">
         <main className="container mx-auto px-4 lg:px-6 xl:px-8 py-8">
-          <div className="h-[400px] w-full bg-muted animate-pulse rounded-2xl mb-16" />
           <div className="mb-8 lg:mb-12 space-y-2">
             <div className="h-10 w-64 bg-muted animate-pulse" />
             <div className="h-4 w-32 bg-muted animate-pulse" />
@@ -319,7 +348,7 @@ export default function ShopPage() {
         </main>
       </div>
     }>
-      <ShopContent />
+      <SearchContent />
     </Suspense>
   )
 }
