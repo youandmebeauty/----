@@ -271,7 +271,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                         <AccordionTrigger className="text-sm uppercase tracking-widest font-semibold hover:no-underline hover:text-primary transition-colors">
                                             Description détaillée
                                         </AccordionTrigger>
-                                        <AccordionContent className="text-muted-foreground leading-relaxed font-light pt-4 text-base">
+                                        <AccordionContent className="text-muted-foreground leading-relaxed font-light pt-4 text-base whitespace-pre-wrap">
                                             {product.longDescription}
                                         </AccordionContent>
                                     </AccordionItem>
