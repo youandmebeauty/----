@@ -80,7 +80,6 @@ export async function createOrder(order: Omit<Order, "id" | "createdAt" | "statu
 
   try {
     // VALIDATE AND REDUCE STOCK BEFORE CREATING ORDER
-    console.log("Validating stock for order items:", order.items)
     
     for (const item of order.items) {
       if (!item.id || !item.quantity || item.quantity <= 0) {
@@ -102,7 +101,6 @@ export async function createOrder(order: Omit<Order, "id" | "createdAt" | "statu
 
       // Reduce stock immediately
       const newStock = product.quantity - item.quantity
-      console.log(`Reducing stock for ${item.id} (${item.name}): ${product.quantity} -> ${newStock}`)
       await updateProductStock(item.id, newStock)
     }
 
@@ -121,7 +119,6 @@ export async function createOrder(order: Omit<Order, "id" | "createdAt" | "statu
       createdAt: new Date().toISOString(),
     } as Order
 
-    console.log(`Order created successfully: ${newOrder.id}`)
 
     // Send confirmation emails
     try {
@@ -157,14 +154,12 @@ export async function updateOrderStatus(id: string, status: Order["status"]): Pr
     const orderData = orderDoc.data() as Order
     const previousStatus = orderData.status
 
-    console.log(`Updating order ${id} from ${previousStatus} to ${status}`)
 
     // Update order status in database
     await firestoreModule.updateDoc(orderRef, { status })
 
     // Handle stock restoration if order is cancelled
     if (status === "cancelled" && previousStatus !== "cancelled") {
-      console.log(`Restoring stock for cancelled order ${id}`)
       
       if (!orderData.items || !Array.isArray(orderData.items)) {
         console.warn(`Order ${id} has no valid items array`)
@@ -180,7 +175,6 @@ export async function updateOrderStatus(id: string, status: Order["status"]): Pr
             if (product && product.quantity !== undefined) {
               const newStock = product.quantity + item.quantity
               await updateProductStock(item.id, newStock)
-              console.log(`Product ${item.id} (${item.name}) stock restored: ${product.quantity} -> ${newStock}`)
             } else {
               console.warn(`Product ${item.id} not found or has no stock value`)
             }

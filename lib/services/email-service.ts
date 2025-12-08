@@ -7,46 +7,27 @@ interface EmailPayload {
   type: "customer" | "admin"
 }
 
-export async function sendEmail(payload: EmailPayload): Promise<boolean> {
+
+export async function sendOrderConfirmationEmail(order: Order): Promise<boolean> {
   try {
+    
+    // Send both customer and admin emails via a single API call
     const response = await fetch("/api/send-email", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ order }),
     })
 
     if (!response.ok) {
-      throw new Error(`Failed to send email: ${response.statusText}`)
+      const errorData = await response.json().catch(() => ({ error: "Unknown error" }))
+      console.error("API returned error:", errorData)
+      throw new Error(`Failed to send confirmation emails: ${errorData.error || response.statusText}`)
     }
 
-    return true
-  } catch (error) {
-    console.error("Error sending email:", error)
-    return false
-  }
-}
-
-export async function sendOrderConfirmationEmail(order: Order): Promise<boolean> {
-  try {
-    // Send email to customer
-    const customerEmailSent = await sendEmail({
-      to: order.email,
-      subject: "Confirmation de votre commande",
-      html: generateCustomerEmailBody(order),
-      type: "customer",
-    })
-
-    // Send notification to admin
-    const adminEmailSent = await sendEmail({
-      to: process.env.GMAIL_USER!,
-      subject: `Nouvelle commande #${order.id}`,
-      html: generateAdminEmailBody(order),
-      type: "admin",
-    })
-
-    return customerEmailSent && adminEmailSent
+    const data = await response.json()
+    return data.success
   } catch (error) {
     console.error("Error sending order confirmation emails:", error)
     return false
@@ -155,7 +136,7 @@ function generateAdminEmailBody(order: Order): string {
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="background-color: #45062E; padding: 20px; text-align: center;">
-        <h1 style="color: white; margin: 0;">You&me Beauty - Nouvelle commande</h1>
+        <h1 style="color: white; margin: 0;">You & Me Beauty - Nouvelle commande</h1>
       </div>
       
       <div style="padding: 20px;">
@@ -219,3 +200,6 @@ function generateAdminEmailBody(order: Order): string {
     </div>
   `;
 }
+
+// Export the email generation functions so they can be used server-side
+export { generateCustomerEmailBody, generateAdminEmailBody }

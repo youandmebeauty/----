@@ -592,7 +592,7 @@ export default function SkinAnalyzerFeature() {
                                         className="w-full h-full object-cover opacity-50"
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                                        <LoadingAnimation size={140} className="text-white" />
+                                        <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
                                     </div>
                                 </div>
                             )}

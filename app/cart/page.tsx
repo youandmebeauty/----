@@ -162,7 +162,7 @@ if (isLoading) {
 
   if (items.length === 0) {
     return (
-      <div className="bg-background">
+      <div className="bg-background ">
 
         <main className="container mx-auto px-4 py-8">
           <div className="text-center py-12">
@@ -183,7 +183,8 @@ if (isLoading) {
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-secondary/30">
+    <div className="min-h-screen bg-gradient-to-b from-secondary/30 to-background rounded-3xl m-4">
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
 
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center mb-8">
@@ -204,71 +205,149 @@ if (isLoading) {
               const stock = productStocks[item.id] ?? 0
               return (
                 <Card key={item.id} className="overflow-hidden">
-                  <CardContent className="p-6">
-                    <div className="flex items-center space-x-4">
-                      {/* Product Image */}
-                      <div className="flex-shrink-0">
-                        <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-muted">
-                          <Image src={item.image || "/placeholder.svg"} alt={item.name} fill className="object-cover" />
-                        </div>
-                      </div>
+<CardContent className="p-4 sm:p-6">
+  <div className="flex flex-col sm:flex-row items-center sm:justify-between gap-4 sm:gap-6">
+    
+    {/* Left Section: Image + Info */}
+    <div className="flex items-start gap-4 flex-1 min-w-0 w-full">
+      
+      {/* Image with better styling and hover effect */}
+      <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-lg overflow-hidden bg-gradient-to-br from-muted/50 to-muted border shadow-xs hover:shadow-md transition-shadow duration-200 flex-shrink-0">
+        <Image
+          src={item.image || "/placeholder.svg"}
+          alt={item.name}
+          fill
+          sizes="(max-width: 640px) 80px, 96px"
+          className="object-cover hover:scale-105 transition-transform duration-300"
+          priority={false}
+        />
+      </div>
 
-                      {/* Product Details */}
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold truncate mb-1">{item.name}</h3>
-                        <p className="text-sm text-muted-foreground capitalize mb-2">{item.category}</p>
-                        <p className="text-lg font-bold text-primary">{item.price.toFixed(2)} TND</p>
-                        {/* Stock Status */}
-                        <p className="text-xs text-muted-foreground">
-                          {item.quantity <= stock ? (
-                            `${stock - item.quantity} disponible`
-                          ) : (
-                            <span className="text-destructive">Dépasse le stock ({stock} disponible)</span>
-                          )}
-                        </p>
-                      </div>
+      {/* Text Info with better spacing */}
+      <div className="flex flex-col justify-between gap-1.5 sm:gap-2 min-w-0 flex-1">
+        <div className="space-y-1.5">
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="text-base sm:text-lg font-semibold leading-tight line-clamp-2">
+              {item.name}
+            </h3>
+            {/* Price for mobile (hidden on larger screens) */}
+            <span className="text-sm font-semibold text-primary sm:hidden">
+              {item.price.toFixed(2)} TND
+            </span>
+          </div>
+          
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="inline-flex items-center px-2 py-1 rounded-full bg-primary/10 text-xs font-medium text-primary capitalize">
+              {item.category}
+            </span>
+            
 
-                      {/* Quantity Controls */}
-                      <div className="flex flex-col items-center space-y-3">
-                        <div className="flex items-center space-x-2">
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
-                            disabled={item.quantity <= 1}
-                          >
-                            <Minus className="h-3 w-3" />
-                          </Button>
-                          <span className="w-12 text-center font-medium">{item.quantity}</span>
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-8 w-8"
-                            onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
-                            disabled={item.quantity >= stock}
-                          >
-                            <Plus className="h-3 w-3" />
-                          </Button>
-                        </div>
+          </div>
+          
+          {/* Unit price for desktop (hidden on mobile) */}
+          <p className="hidden sm:block text-sm font-semibold text-primary">
+            {item.price.toFixed(2)} TND each
+          </p>
+        </div>
 
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeItem(item.id)}
-                          className="text-destructive hover:text-destructive h-8"
-                        >
-                          <Trash2 className="h-4 w-4 mr-1" />
-                          Supprimer
-                        </Button>
-                      </div>
+        {/* Quantity controls for mobile (hidden on desktop) */}
+        <div className="sm:hidden w-full pt-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Button
+                size="icon"
+                variant="outline"
+                className="h-8 w-8 rounded-md"
+                onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+                disabled={item.quantity <= 1}
+              >
+                <Minus className="h-3 w-3" />
+              </Button>
+              
+              <span className="w-8 text-center font-semibold text-sm">
+                {item.quantity}
+              </span>
+              
+              <Button
+                size="icon"
+                variant="outline"
+                className="h-8 w-8 rounded-md"
+                onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                disabled={item.quantity >= stock}
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+            </div>
+            
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-destructive hover:text-destructive px-2 py-1 h-auto"
+              onClick={() => removeItem(item.id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-                      {/* Item Total */}
-                      <div className="text-right">
-                        <p className="text-xl font-bold">{(item.price * item.quantity).toFixed(2)} TND</p>
-                      </div>
-                    </div>
-                  </CardContent>
+    {/* Divider - responsive */}
+    <div className="hidden sm:block h-20 w-px bg-border mx-2" />
+
+    {/* Right Section: Desktop controls */}
+    <div className="hidden sm:flex flex-col items-end gap-3 ">
+      
+      {/* Quantity Controls with better feedback */}
+      <div className="flex flex-col items-center gap-2 w-full">
+        <div className="flex items-center gap-3 justify-between w-full">
+          <div className="flex items-center gap-3">
+            <Button
+              size="icon"
+              variant="outline"
+              className="h-9 w-9 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors"
+              onClick={() => handleQuantityChange(item.id, item.quantity - 1)}
+              disabled={item.quantity <= 1}
+            >
+              <Minus className="h-4 w-4" />
+            </Button>
+
+            <span className="w-12 text-center font-semibold text-base">
+              {item.quantity}
+            </span>
+
+            <Button
+              size="icon"
+              variant="outline"
+              className="h-9 w-9 rounded-md hover:bg-primary hover:text-primary-foreground transition-colors"
+              onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+              disabled={item.quantity >= stock}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+      </div>
+
+
+      {/* Action buttons */}
+      <div className="flex items-center gap-2 w-full justify-end">
+        
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-destructive hover:text-destructive hover:bg-destructive/10 px-3"
+          onClick={() => removeItem(item.id)}
+        >
+          <Trash2 className="h-4 w-4 mr-2" />
+          Supprimer
+        </Button>
+      </div>
+    </div>
+    
+ </div>
+</CardContent>
                 </Card>
               )
             })}
