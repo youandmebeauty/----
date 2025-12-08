@@ -156,7 +156,7 @@ export default function ContactPage() {
                     <span className="font-medium">Boutique</span>
                   </div>
                   <address className="text-lg text-muted-foreground not-italic">
-                    Route Lafrane KM 5.5, Marketing Torki, Sfax Sud<br />
+                    Route Lafrane KM 5.5, Markez Torki, Sfax Sud<br />
                     Sfax, Tunisie
                   </address>
                 </div>

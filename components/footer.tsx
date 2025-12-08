@@ -135,7 +135,7 @@ export function Footer() {
               <div>
                 <h4 className="font-medium mb-1 text-foreground">Nous Rendre Visite</h4>
                 <p className="text-muted-foreground leading-relaxed">
-                  Route Lafrane KM 5.5, Marketing Torki, Sfax Sud
+                  Route Lafrane KM 5.5, Markez Torki, Sfax Sud
                   <br />
                   Sfax, Tunisie
                 </p>

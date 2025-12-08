@@ -110,8 +110,8 @@ function generateCustomerEmailBody(order: Order): string {
       </div>
       
       <div style="background-color: #f8f8f8; padding: 20px; text-align: center; font-size: 12px; color: #666;">
-        <p>© 2024 You & Me Beauty. Tous droits réservés.</p>
-        <p>123 Beauty Street, New York, NY 10001</p>
+        <p>© 2025 You & Me Beauty. Tous droits réservés.</p>
+        <p>Route Lafrane KM 5.5, Markez Torki, Sfax Sud</p>
       </div>
     </div>
   `;
