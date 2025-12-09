@@ -35,7 +35,7 @@ function SearchContent() {
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null)
   const [selectedSkinTypes, setSelectedSkinTypes] = useState<string[]>([])
   const [selectedHairTypes, setSelectedHairTypes] = useState<string[]>([])
-  const [priceRange, setPriceRange] = useState([0, 200])
+  const [priceRange, setPriceRange] = useState([0, 1000])
   const [sortBy, setSortBy] = useState("featured")
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -141,7 +141,7 @@ function SearchContent() {
     setSelectedSubcategory(null)
     setSelectedSkinTypes([])
     setSelectedHairTypes([])
-    setPriceRange([0, 200])
+    setPriceRange([0, 1000])
 
     // We should probably keep the search query though?
     // ShopPage implementation clears everything state-wise.
@@ -240,7 +240,7 @@ function SearchContent() {
             }
           }}
         >
-          <DialogContent className="sm:max-w-[600px]">
+          <DialogContent className="rounded-xl border-2 border-border shadow-lg">
             <DialogTitle className="text-center text-2xl font-bold mb-6">
               Que recherchez-vous ?
             </DialogTitle>
