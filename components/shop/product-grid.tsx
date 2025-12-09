@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion"
 import { ProductCard } from "@/components/product-card"
-import { Button } from "@/components/ui/button"
 import type { Product } from "@/lib/models"
 
 interface ProductGridProps {
@@ -29,13 +28,13 @@ export function ProductGrid({ products, loading, clearAllFilters }: ProductGridP
     if (products.length === 0) {
         return (
             <div className="text-center py-20">
-                <h3 className="text-lg font-medium mb-2">Aucun produit trouvé</h3>
-                <p className="text-sm text-muted-foreground mb-6">
-                    Essayez d'ajuster vos filtres pour voir plus de résultats
-                </p>
-                <Button variant="outline" onClick={clearAllFilters}>
+                <p className="text-muted-foreground mb-4">Aucun produit trouvé</p>
+                <button 
+                    onClick={clearAllFilters}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
                     Réinitialiser les filtres
-                </Button>
+                </button>
             </div>
         )
     }
