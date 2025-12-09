@@ -22,7 +22,7 @@ interface ShopHeaderProps {
     clearAllFilters: () => void
     isFilterOpen: boolean
     setIsFilterOpen: (open: boolean) => void
-    filterProps: any // Passing through props for the mobile filter sheet
+    filterProps: any
 }
 
 export function ShopHeader({
@@ -37,30 +37,36 @@ export function ShopHeader({
     filterProps
 }: ShopHeaderProps) {
     return (
-        <div className="space-y-6">
-            {/* Title Section */}
-            <div className="mb-8 lg:mb-12">
-                <h1 className="text-3xl lg:text-4xl font-light mb-2">
+        <div className="space-y-8">
+            {/* Title Section with Result Count */}
+            <div className="pb-6 border-b">
+            <div className="flex items-center gap-3">
+
+            <span className="h-px w-8 bg-primary"></span>
+
+            <span className="text-sm text-muted-foreground font-medium">
+                    {productCount} {productCount === 1 ? 'résultat' : 'résultats'}
+                </span>                    </div>
+
+                <h1 className="text-4xl lg:text-5xl font-bold tracking-tight mb-3">
                     {title}
                 </h1>
-                <p className="text-sm text-muted-foreground">
-                    {productCount} {productCount === 1 ? 'résultat' : 'résultats'}
-                </p>
+               
             </div>
 
             {/* Search Bar */}
-            <div className="mb-6">
+            <div>
                 <SearchBar className="w-full" />
             </div>
 
             {/* Controls Section */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
 
                 {/* Mobile Filter Trigger */}
                 <div className="lg:hidden">
                     <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                         <SheetTrigger asChild>
-                            <Button variant="outline" size="sm" className="font-medium w-full sm:w-auto">
+                            <Button variant="outline" className="font-medium w-full sm:w-auto">
                                 <Filter className="w-4 h-4 mr-2" />
                                 Filtres
                                 {activeFiltersCount > 0 && ` (${activeFiltersCount})`}
@@ -73,11 +79,11 @@ export function ShopHeader({
                             </SheetDescription>
                             <div className="flex flex-col h-full">
                                 <div className="px-6 py-4 border-b flex items-center justify-between">
-                                    <h2 className="text-lg font-medium">Filtres</h2>
+                                    <h2 className="text-lg font-semibold">Filtres</h2>
                                     {activeFiltersCount > 0 && (
                                         <button
                                             onClick={clearAllFilters}
-                                            className="text-sm underline"
+                                            className="text-sm font-medium underline hover:no-underline transition-all"
                                         >
                                             Effacer tout
                                         </button>
@@ -88,7 +94,7 @@ export function ShopHeader({
                                 </div>
                                 <div className="p-6 border-t">
                                     <Button
-                                        className="w-full bg-foreground text-background hover:bg-foreground/90"
+                                        className="w-full bg-foreground text-background hover:bg-foreground/90 font-medium"
                                         onClick={() => setIsFilterOpen(false)}
                                     >
                                         Voir {productCount} produits
@@ -100,11 +106,11 @@ export function ShopHeader({
                 </div>
 
                 {/* Desktop Active Filters Clear */}
-                <div className="hidden lg:flex items-center gap-2 text-sm">
+                <div className="hidden lg:flex items-center">
                     {activeFiltersCount > 0 && (
                         <button
                             onClick={clearAllFilters}
-                            className="underline hover:text-foreground transition-colors"
+                            className="text-sm font-medium underline hover:no-underline transition-all"
                         >
                             Effacer les filtres ({activeFiltersCount})
                         </button>
