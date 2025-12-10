@@ -5,6 +5,7 @@ import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { CartProvider } from "@/components/cart-provider"
 import { FirebaseProvider } from "@/components/firebase-provider"
+import { LoadingProvider } from "@/components/loading-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { Footer } from "@/components/footer"
 import { Header } from "@/components/header"
@@ -96,11 +97,13 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <FirebaseProvider>
             <CartProvider>
-              <SmoothScroll />
-              <Header />
-              {children}
-              <Footer />
-              <Toaster />
+              <LoadingProvider>
+                <SmoothScroll />
+                <Header />
+                {children}
+                <Footer />
+                <Toaster />
+              </LoadingProvider>
             </CartProvider>
           </FirebaseProvider>
         </ThemeProvider>
