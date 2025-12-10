@@ -4,6 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useCart } from "./cart-provider"
+import { useLoading } from "./loading-provider"
 import { toast } from "@/components/ui/use-toast"
 import { cn } from "@/lib/utils"
 import { ShoppingBag, Eye } from "lucide-react"
@@ -34,6 +35,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const { items, addItem, updateQuantity } = useCart()
+  const { setIsLoading: setGlobalLoading } = useLoading()
   const [imageLoaded, setImageLoaded] = useState(false)
 
   // Calculate the number of items of this product already in the cart
@@ -74,6 +76,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
     })
   }
 
+  const handleNavigationClick = (e: React.MouseEvent) => {
+    setGlobalLoading(true)
+  }
+
   const isOutOfStock = product.quantity <= cartQuantity
 
   return (
@@ -81,6 +87,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
       <Link 
         href={`/product/${product.id}`}
         className="block"
+        onClick={handleNavigationClick}
       >
         <div className="relative">
           {/* Image Container */}
@@ -139,11 +146,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
             {/* Quick Add Button - Bottom */}
             {!isOutOfStock && !product.hasColorVariants && (
-              <div className="absolute bottom-0  left-0 right-0 p-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
                 <Button
                   onClick={handleAddToCart}
                   className={cn(
-                    "w-full   h-12 bg-background/95 backdrop-blur-sm hover:bg-primary text-foreground hover:text-primary-foreground",
+                    "w-full h-12 bg-background/95 backdrop-blur-sm hover:bg-primary text-foreground hover:text-primary-foreground",
                     "border border-border/50 rounded-full shadow-xl hover:shadow-2xl",
                     "transition-all duration-300 hover:scale-[1.02]",
                     "font-medium uppercase tracking-wide"

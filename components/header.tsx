@@ -3,10 +3,11 @@
 import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import { motion, AnimatePresence } from "framer-motion"
 import { useCart } from "./cart-provider"
+import { useLoading } from "./loading-provider"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -17,11 +18,13 @@ import GlassSurface from "./GlassSurface"
 export function Header() {
   const { theme, setTheme } = useTheme()
   const { itemCount, isLoading } = useCart()
+  const { setIsLoading: setGlobalLoading } = useLoading()
   const [isOpen, setIsOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [scrolled, setScrolled] = useState(false)
   const router = useRouter()
+  const pathname = usePathname()
   const searchInputRef = useRef<HTMLInputElement>(null)
 
   const navigation = [
@@ -43,14 +46,26 @@ export function Header() {
   // Close menu when route changes
   useEffect(() => {
     setIsOpen(false)
-  }, [router])
+  }, [pathname])
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      router.push(`/shop?q=${encodeURIComponent(searchQuery.trim())}`)
-      setSearchQuery("")
-      setIsSearchOpen(false)
+
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      if (searchQuery.trim()) {
+        setGlobalLoading(true)
+        router.push(`/shop?q=${encodeURIComponent(searchQuery.trim())}`)
+        setSearchQuery("")
+        setIsSearchOpen(false)
+      }
+    }
+  }
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    // Only show loading if navigating to a different page
+    if (pathname !== href) {
+      setGlobalLoading(true)
     }
   }
 
@@ -100,7 +115,7 @@ export function Header() {
                     className="w-full h-full flex items-center"
                   >
                     <Search className="h-5 w-5 text-muted-foreground mr-2 sm:mr-4 flex-shrink-0" />
-                    <form onSubmit={handleSearch} className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0">
                       <Input
                         ref={searchInputRef}
                         type="search"
@@ -108,9 +123,10 @@ export function Header() {
                         className="w-full border-none h-12 text-base sm:text-lg bg-transparent focus-visible:ring-0 px-0 placeholder:text-muted-foreground/50"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
+                        onKeyDown={handleSearchKeyDown}
                         autoFocus
                       />
-                    </form>
+                    </div>
                     <Button
                       type="button"
                       variant="ghost"
@@ -132,7 +148,11 @@ export function Header() {
                     className="w-full flex items-center justify-between"
                   >
                     {/* Logo - Always visible on mobile */}
-                    <Link href="/" className="flex items-center space-x-3 flex-shrink-0">
+                    <Link 
+                      href="/" 
+                      className="flex items-center space-x-3 flex-shrink-0"
+                      onClick={(e) => handleNavClick(e, "/")}
+                    >
                       <img
                         src={theme == "light" ? "/logo-light.webp" : "/logo-white.webp"}
                         alt="You&Me Beauty Logo"
@@ -147,6 +167,7 @@ export function Header() {
                           key={item.name}
                           href={item.href}
                           className="text-sm font-medium uppercase text-foreground hover:text-primary transition-colors whitespace-nowrap"
+                          onClick={(e) => handleNavClick(e, item.href)}
                         >
                           {item.name}
                         </Link>
@@ -179,7 +200,11 @@ export function Header() {
                       </Button>
 
                       {/* Cart */}
-                      <Link href="/cart" className="flex-shrink-0">
+                      <Link 
+                        href="/cart" 
+                        className="flex-shrink-0"
+                        onClick={(e) => handleNavClick(e, "/cart")}
+                      >
                         <Button variant="ghost" size="icon" className="relative hover:bg-transparent hover:text-primary h-9 w-9 sm:h-10 sm:w-10">
                           <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5" />
                           <AnimatePresence>
@@ -254,7 +279,10 @@ export function Header() {
                                     <Link
                                       href={item.href}
                                       className="text-2xl font-semibold uppercase tracking-tight text-white/90 hover:text-primary active:scale-95 transition-all block"
-                                      onClick={() => setIsOpen(false)}
+                                      onClick={(e) => {
+                                        handleNavClick(e, item.href)
+                                        setIsOpen(false)
+                                      }}
                                     >
                                       {item.name}
                                     </Link>

@@ -3,6 +3,8 @@
 import Link from "next/link"
 import Image from "next/image"
 import { ScrollAnimation } from "./scroll-animation"
+import { useLoading } from "./loading-provider"
+import { useRouter, usePathname } from "next/navigation"
 
 const categories = [
   {
@@ -32,6 +34,14 @@ const categories = [
 ]
 
 export function Categories() {
+  const pathname = usePathname()
+const { setIsLoading: setGlobalLoading } = useLoading()
+const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+  // Only show loading if navigating to a different page
+  if (pathname !== href) {
+    setGlobalLoading(true)
+  }
+}
   return (
     <section className="mt-24 pt-24 bg-gradient-to-b rounded-3xl m-4 from-secondary to-background/30">
       <div className="container mx-auto px-4 ">
@@ -60,6 +70,7 @@ export function Categories() {
               <Link
                 href={category.href}
                 className="rounded-xl group relative aspect-[3/4] overflow-hidden bg-secondary block"
+                onClick={(e) => handleNavClick(e, "/")}
               >
                 <Image
                   src={category.image}
