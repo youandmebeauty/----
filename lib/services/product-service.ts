@@ -124,7 +124,7 @@ export async function getProductById(id: string): Promise<Product | null> {
   }
 }
 
-export async function getFeaturedProducts(limitCount = 4): Promise<Product[]> {
+export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
   await initFirestore()
   if (!firestoreModule || !db) return []
 
@@ -157,15 +157,21 @@ export async function getRelatedProducts(
   category: string,
   brand: string,
   subcategory?: string,
-  limitCount = 4
+  limitCount = 7
 ): Promise<Product[]> {
   // Server-side: Use Firebase Admin SDK
   if (typeof window === "undefined") {
     try {
       const { adminDb } = await import("@/lib/firebase-admin")
       
-      // First, try to get products of the same brand
+      // First, try to get products of the same brand AND subcategory
       let brandQuery = adminDb.collection(PRODUCTS_COLLECTION).where("brand", "==", brand)
+      
+      // Add subcategory filter if provided
+      if (subcategory) {
+        brandQuery = brandQuery.where("subcategory", "==", subcategory)
+      }
+      
       const brandSnapshot = await brandQuery.orderBy("createdAt", "desc").limit(limitCount * 2).get()
       
       let products: Product[] = brandSnapshot.docs
@@ -178,7 +184,7 @@ export async function getRelatedProducts(
         })
         .filter((product: Product) => product.id !== productId)
       
-      // If we don't have enough products from the same brand, get products from the same category
+      // If we don't have enough products from the same brand+subcategory, get products from the same category
       if (products.length < limitCount) {
         let categoryQuery = adminDb.collection(PRODUCTS_COLLECTION).where("category", "==", category)
         
@@ -217,13 +223,19 @@ export async function getRelatedProducts(
   if (!firestoreModule || !db) return []
 
   try {
-    // First, try to get products of the same brand
+    // First, try to get products of the same brand AND subcategory
     const brandRef = firestoreModule.collection(db, PRODUCTS_COLLECTION)
     const brandConstraints: any[] = [
       firestoreModule.where("brand", "==", brand),
-      firestoreModule.orderBy("createdAt", "desc"),
-      firestoreModule.limit(limitCount * 2),
     ]
+    
+    // Add subcategory filter if provided
+    if (subcategory) {
+      brandConstraints.push(firestoreModule.where("subcategory", "==", subcategory))
+    }
+    
+    brandConstraints.push(firestoreModule.orderBy("createdAt", "desc"))
+    brandConstraints.push(firestoreModule.limit(limitCount * 2))
     
     const brandQuery = firestoreModule.query(brandRef, ...brandConstraints)
     const brandSnapshot = await firestoreModule.getDocs(brandQuery)
@@ -235,7 +247,7 @@ export async function getRelatedProducts(
       } as Product))
       .filter((product: Product) => product.id !== productId)
     
-    // If we don't have enough products from the same brand, get products from the same category
+    // If we don't have enough products from the same brand+subcategory, get products from the same category
     if (products.length < limitCount) {
       const categoryRef = firestoreModule.collection(db, PRODUCTS_COLLECTION)
       const categoryConstraints: any[] = [
@@ -272,7 +284,6 @@ export async function getRelatedProducts(
     return []
   }
 }
-
 export async function getProductsByCategory(category: string): Promise<Product[]> {
   await initFirestore()
   if (!firestoreModule || !db) return []

@@ -183,8 +183,6 @@ export function ProductClient({ product }: ProductClientProps) {
 
     const inStock = displayQuantity > cartQuantity
     const remainingStock = displayQuantity - cartQuantity
-    const stockPercentage = displayQuantity > 0 ? (remainingStock / displayQuantity) * 100 : 0
-    const isLowStock = stockPercentage <= 2 && stockPercentage > 0
 
     return (
         <div className="min-h-screen bg-background">
@@ -329,7 +327,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                         inStock ? "bg-emerald-500" : "bg-destructive"
                                     )} />
                                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                                        {inStock ? isLowStock ? "Stock limité" : "En stock" : "Épuisé"}
+                                        {inStock ?  "En stock" : "Épuisé"}
                                     </span>
                                 </div>
                             </div>
@@ -405,14 +403,9 @@ export function ProductClient({ product }: ProductClientProps) {
                         <div className="space-y-6 pt-4 animate-in fade-in slide-in-from-bottom-4 duration-700" style={{ animationDelay: "200ms" }}>
                             {inStock && (
                                 <div className="space-y-3">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs uppercase tracking-widest font-semibold text-foreground">Quantité</span>
-                                        {isLowStock && (
-                                            <span className="text-xs text-amber-600 font-medium">
-                                                Plus que {remainingStock} disponible{remainingStock > 1 ? 's' : ''}
-                                            </span>
-                                        )}
-                                    </div>
+                                    <Label className="text-xs uppercase tracking-widest font-semibold text-foreground">
+                                        Quantité
+                                    </Label>
                                     <div className="flex items-center gap-4">
                                         <div className="flex items-center border-2 border-border rounded-lg overflow-hidden shadow-sm">
                                             <Button
@@ -466,21 +459,6 @@ export function ProductClient({ product }: ProductClientProps) {
                                 )}
                             </Button>
 
-                            {/* Stock Progress Bar */}
-                            {inStock && isLowStock && (
-                                <div className="space-y-2 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-lg">
-                                    <div className="flex items-center justify-between text-xs">
-                                        <span className="text-amber-800 dark:text-amber-200 font-medium">Stock restant</span>
-                                        <span className="text-amber-900 dark:text-amber-100 font-semibold">{remainingStock} / {product.quantity}</span>
-                                    </div>
-                                    <div className="h-2 bg-amber-200 dark:bg-amber-900/40 rounded-full overflow-hidden">
-                                        <div 
-                                            className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full transition-all duration-500"
-                                            style={{ width: `${stockPercentage}%` }}
-                                        />
-                                    </div>
-                                </div>
-                            )}
                         </div>
 
                         {/* Accordions for Details */}
