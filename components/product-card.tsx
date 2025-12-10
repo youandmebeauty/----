@@ -139,19 +139,19 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
             {/* Quick Add Button - Bottom */}
             {!isOutOfStock && !product.hasColorVariants && (
-              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+              <div className="absolute bottom-0  left-0 right-0 p-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
                 <Button
                   onClick={handleAddToCart}
                   className={cn(
-                    "w-full h-12 bg-background/95 backdrop-blur-sm hover:bg-primary text-foreground hover:text-primary-foreground",
+                    "w-full   h-12 bg-background/95 backdrop-blur-sm hover:bg-primary text-foreground hover:text-primary-foreground",
                     "border border-border/50 rounded-full shadow-xl hover:shadow-2xl",
                     "transition-all duration-300 hover:scale-[1.02]",
                     "font-medium uppercase tracking-wide"
                   )}
                   variant="outline"
                 >
-                  <ShoppingBag className="h-4 w-4 mr-2" />
-                  <span className="text-sm">Ajouter au panier</span>
+                  <ShoppingBag className="h-4 w-4" />
+                  <span className="text-xs truncate">Ajouter au panier</span>
                 </Button>
               </div>
             )}

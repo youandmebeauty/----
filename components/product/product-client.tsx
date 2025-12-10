@@ -15,11 +15,33 @@ import {
     AccordionTrigger,
 } from "@/components/ui/accordion"
 import { cn } from "@/lib/utils"
+import { SHOP_CATEGORIES } from "@/lib/category-data" // adjust path as needed
 
 interface ProductClientProps {
     product: Product
 }
+function getSubcategoryLabel(categoryId: string, subcategoryId: string): string {
+    const category = SHOP_CATEGORIES.find(cat => cat.id === categoryId)
+    if (!category?.subcategories) return subcategoryId
+    
+    // Search in first level subcategories
+    for (const subcat of category.subcategories) {
+        if (subcat.id === subcategoryId) return subcat.label
+        
+        // Search in nested subcategories
+        if (subcat.subcategories) {
+            const nestedSubcat = subcat.subcategories.find(nested => nested.id === subcategoryId)
+            if (nestedSubcat) return nestedSubcat.label
+        }
+    }
+    
+    return subcategoryId // fallback to ID if not found
+}
 
+function getCategoryLabel(categoryId: string): string {
+    const category = SHOP_CATEGORIES.find(cat => cat.id === categoryId)
+    return category?.label || categoryId
+}
 export function ProductClient({ product }: ProductClientProps) {
     const { items, addItem, updateQuantity } = useCart()
     const { toast } = useToast()
@@ -115,7 +137,7 @@ export function ProductClient({ product }: ProductClientProps) {
     const inStock = displayQuantity > cartQuantity
     const remainingStock = displayQuantity - cartQuantity
     const stockPercentage = displayQuantity > 0 ? (remainingStock / displayQuantity) * 100 : 0
-    const isLowStock = stockPercentage <= 20 && stockPercentage > 0
+    const isLowStock = stockPercentage <= 2 && stockPercentage > 0
 
     return (
         <div className="min-h-screen bg-background">
@@ -173,10 +195,10 @@ export function ProductClient({ product }: ProductClientProps) {
                         {/* Header */}
                         <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <div className="flex items-center justify-between">
-                               <div> <span className="text-xs uppercase sm:tracking-[0.2em] border-r-2 border-primary/50  text-muted-foreground font-medium px-3 py-1 bg-secondary/30 rounded-l-full">
-                                    {product.category}
-                                </span><span className="text-xs uppercase sm:tracking-[0.2em] text-muted-foreground font-medium px-3 py-1 bg-secondary/60 rounded-r-full">
-                                    {product.subcategory}
+                               <div> <span className="sm:inline-block hidden text-xs uppercase  sm:tracking-[0.2em] border-r-2 border-primary/50  text-muted-foreground font-medium px-3 py-1 bg-secondary/30 rounded-l-full">
+                                    {getCategoryLabel(product.category)}
+                                </span><span className="text-xs uppercase sm:tracking-[0.2em] text-muted-foreground font-medium px-3 py-1 bg-secondary/60 rounded-full sm:rounded-r-full sm:rounded-l-none">
+                                    {getSubcategoryLabel(product.category, product.subcategory?.toString() || "")}
                                 </span></div>
                                 {/* Stock Indicator */}
                                 <div className="flex items-center gap-2 px-3 py-1 bg-secondary/20 rounded-full">
