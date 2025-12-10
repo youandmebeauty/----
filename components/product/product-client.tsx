@@ -173,9 +173,11 @@ export function ProductClient({ product }: ProductClientProps) {
                         {/* Header */}
                         <div className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-700">
                             <div className="flex items-center justify-between">
-                                <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-medium px-3 py-1 bg-secondary/30 rounded-full">
+                               <div> <span className="text-xs uppercase sm:tracking-[0.2em] border-r-2 border-primary/50  text-muted-foreground font-medium px-3 py-1 bg-secondary/30 rounded-l-full">
                                     {product.category}
-                                </span>
+                                </span><span className="text-xs uppercase sm:tracking-[0.2em] text-muted-foreground font-medium px-3 py-1 bg-secondary/60 rounded-r-full">
+                                    {product.subcategory}
+                                </span></div>
                                 {/* Stock Indicator */}
                                 <div className="flex items-center gap-2 px-3 py-1 bg-secondary/20 rounded-full">
                                     <span className={cn(
