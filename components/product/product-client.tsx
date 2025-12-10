@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label"
 import { useCart } from "@/components/cart-provider"
 import { useToast } from "@/hooks/use-toast"
 import type { Product } from "@/lib/models"
-import { Minus, Plus, ShoppingBag, Package, Truck, RotateCcw } from "lucide-react"
+import { Minus, Plus, ShoppingBag, Package, Truck, ShieldCheck , ChevronLeft, ChevronRight } from "lucide-react"
 import {
     Accordion,
     AccordionContent,
@@ -48,6 +48,8 @@ export function ProductClient({ product }: ProductClientProps) {
     const [quantity, setQuantity] = useState(1)
     const [imageLoaded, setImageLoaded] = useState(false)
     const [isAdding, setIsAdding] = useState(false)
+    const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+    const [thumbnailStartIndex, setThumbnailStartIndex] = useState(0)
     const [selectedColorIndex, setSelectedColorIndex] = useState<number | null>(
         product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0 ? 0 : null
     )
@@ -57,13 +59,58 @@ export function ProductClient({ product }: ProductClientProps) {
         ? product.colorVariants[selectedColorIndex] 
         : null
     
-    const displayImage = currentVariant?.image || product.image
+    // Get images array - support both new images array and old single image field
+    const productImages = product.images && product.images.length > 0 
+        ? product.images 
+        : (product.image ? [product.image] : [])
+    
+    const displayImages = currentVariant?.image ? [currentVariant.image] : productImages
+    const displayImage = displayImages[selectedImageIndex] || displayImages[0]
     const displayQuantity = currentVariant?.quantity ?? product.quantity
 
     // Reset image loaded state when image changes
     useEffect(() => {
         setImageLoaded(false)
     }, [displayImage])
+
+    // Reset selected image index when color variant changes
+    useEffect(() => {
+        setSelectedImageIndex(0)
+        setThumbnailStartIndex(0)
+    }, [selectedColorIndex])
+
+    // Thumbnail slider navigation
+    const THUMBNAILS_VISIBLE = 3
+    const canScrollLeft = thumbnailStartIndex > 0
+    const canScrollRight = thumbnailStartIndex + THUMBNAILS_VISIBLE < displayImages.length
+
+    const scrollThumbnailsLeft = () => {
+        if (canScrollLeft) {
+            setThumbnailStartIndex(prev => Math.max(0, prev - 1))
+        }
+    }
+
+    const scrollThumbnailsRight = () => {
+        if (canScrollRight) {
+            setThumbnailStartIndex(prev => Math.min(displayImages.length - THUMBNAILS_VISIBLE, prev + 1))
+        }
+    }
+
+    const handleThumbnailClick = (index: number) => {
+        setSelectedImageIndex(index)
+        // Center the selected image in the middle position
+        const middlePosition = Math.floor(THUMBNAILS_VISIBLE / 2) // This will be 1 for 3 thumbnails
+        let newStartIndex = index - middlePosition
+        
+        // Adjust boundaries
+        if (newStartIndex < 0) {
+            newStartIndex = 0
+        } else if (newStartIndex + THUMBNAILS_VISIBLE > displayImages.length) {
+            newStartIndex = Math.max(0, displayImages.length - THUMBNAILS_VISIBLE)
+        }
+        
+        setThumbnailStartIndex(newStartIndex)
+    }
 
     // Calculate the number of items of this product already in the cart
     // For products with color variants, each variant is a distinct product with unique ID
@@ -147,6 +194,7 @@ export function ProductClient({ product }: ProductClientProps) {
                     {/* Left Column: Image (Sticky on Desktop) */}
                     <div className="relative">
                         <div className="lg:sticky lg:top-24 space-y-4">
+                            {/* Main Image */}
                             <div className="relative aspect-[4/5] w-full overflow-hidden bg-secondary/10 rounded-lg shadow-lg">
                                 {/* Loading skeleton */}
                                 {!imageLoaded && (
@@ -169,7 +217,81 @@ export function ProductClient({ product }: ProductClientProps) {
 
                                 {/* Gradient overlay */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-transparent" />
+                                
+                                {/* Image counter badge */}
+                                {displayImages.length > 1 && (
+                                    <div className="absolute bottom-4 right-4 bg-black/60 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-full">
+                                        {selectedImageIndex + 1} / {displayImages.length}
+                                    </div>
+                                )}
                             </div>
+
+                            {/* Thumbnail Gallery Slider */}
+                            {displayImages.length > 1 && (
+                                <div className="flex items-center gap-2">
+                                    {/* Left Arrow */}
+                                    <button
+                                        type="button"
+                                        onClick={scrollThumbnailsLeft}
+                                        disabled={!canScrollLeft}
+                                        className={cn(
+                                            "flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-md transition-all",
+                                            canScrollLeft
+                                                ? "hover:bg-secondary text-foreground"
+                                                : "text-muted-foreground/30 cursor-not-allowed"
+                                        )}
+                                        aria-label="Previous thumbnails"
+                                    >
+                                        <ChevronLeft className="h-5 w-5" />
+                                    </button>
+
+                                    {/* Thumbnails Container */}
+                                    <div className="flex-1 overflow-hidden">
+                                        <div className="grid grid-cols-3 gap-2">
+                                            {displayImages
+                                                .slice(thumbnailStartIndex, thumbnailStartIndex + THUMBNAILS_VISIBLE)
+                                                .map((image, relativeIndex) => {
+                                                    const actualIndex = thumbnailStartIndex + relativeIndex
+                                                    return (
+                                                        <button
+                                                            key={actualIndex}
+                                                            type="button"
+                                                            onClick={() => handleThumbnailClick(actualIndex)}
+                                                            className={cn(
+                                                                "relative aspect-square cursor-pointer overflow-hidden rounded-md border transition-all duration-200",
+                                                                selectedImageIndex === actualIndex
+                                                                    ? "border-primary ring-1 ring-primary"
+                                                                    : "border-border/50 hover:border-primary/50"
+                                                            )}
+                                                        >
+                                                            <img
+                                                                src={image}
+                                                                alt={`${product.name} - Image ${actualIndex + 1}`}
+                                                                className="w-full h-full object-cover"
+                                                            />
+                                                        </button>
+                                                    )
+                                                })}
+                                        </div>
+                                    </div>
+
+                                    {/* Right Arrow */}
+                                    <button
+                                        type="button"
+                                        onClick={scrollThumbnailsRight}
+                                        disabled={!canScrollRight}
+                                        className={cn(
+                                            "flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-md transition-all",
+                                            canScrollRight
+                                                ? "hover:bg-secondary text-foreground"
+                                                : "text-muted-foreground/30 cursor-not-allowed"
+                                        )}
+                                        aria-label="Next thumbnails"
+                                    >
+                                        <ChevronRight className="h-5 w-5" />
+                                    </button>
+                                </div>
+                            )}
 
                             {/* Trust Badges */}
                             <div className="grid grid-cols-3 gap-3 pt-4">
@@ -182,8 +304,8 @@ export function ProductClient({ product }: ProductClientProps) {
                                     <span className="text-xs text-muted-foreground font-medium">Livraison rapide</span>
                                 </div>
                                 <div className="flex flex-col items-center text-center p-3 bg-secondary/20 rounded-lg hover:bg-secondary/30 transition-colors duration-300">
-                                    <RotateCcw className="h-5 w-5 text-primary mb-2" />
-                                    <span className="text-xs text-muted-foreground font-medium">Retours 7 jours</span>
+                                    <ShieldCheck  className="h-5 w-5 text-primary mb-2" />
+                                    <span className="text-xs text-muted-foreground font-medium">100% Authentique</span>
                                 </div>
                             </div>
                         </div>
@@ -397,7 +519,7 @@ export function ProductClient({ product }: ProductClientProps) {
 
                                 <AccordionItem value="shipping" className="border-border/50">
                                     <AccordionTrigger className="text-sm uppercase tracking-widest font-semibold hover:no-underline hover:text-primary transition-colors">
-                                        Livraison & Retours
+                                        Livraison & Authenticité
                                     </AccordionTrigger>
                                     <AccordionContent className="text-muted-foreground leading-relaxed font-light pt-4 space-y-4">
                                         <div className="flex items-start gap-3">
@@ -408,11 +530,14 @@ export function ProductClient({ product }: ProductClientProps) {
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3">
-                                            <RotateCcw className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                                            <ShieldCheck  className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                                             <div>
-                                                <p className="font-medium text-foreground mb-1">Retours faciles</p>
-                                                <p className="text-sm">Les retours sont acceptés dans les 7 jours suivant l'achat. Produit non utilisé et dans son emballage d'origine.</p>
-                                            </div>
+  <p className="font-medium text-foreground mb-1">100% Authentique</p>
+  <p className="text-sm">
+    Tous nos produits sont garantis 100% authentiques, provenant directement des fournisseurs officiels ou marques partenaires.
+  </p>
+</div>
+
                                         </div>
                                     </AccordionContent>
                                 </AccordionItem>

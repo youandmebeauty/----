@@ -168,12 +168,21 @@ export default function ContactPage() {
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="item-1" className="border-b border-border/50">
                   <AccordionTrigger className="text-base hover:no-underline py-4">
-                    Livraison et retours
+                    Livraison
                   </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground pb-4">
-                    Nous livrons partout en Tunisie sous 2 à 4 jours ouvrables. Les retours sont gratuits sous 7 jours si le produit n'a pas été ouvert.
+                    Nous livrons partout en Tunisie sous 2 à 4 jours ouvrables.
                   </AccordionContent>
                 </AccordionItem>
+                <AccordionItem value="item-1" className="border-b border-border/50">
+  <AccordionTrigger className="text-base hover:no-underline py-4">
+    Authenticité Garantie
+  </AccordionTrigger>
+  <AccordionContent className="text-muted-foreground pb-4">
+    Nous garantissons que chaque produit est authentique, vérifié et issu de circuits officiels pour assurer une qualité irréprochable.
+  </AccordionContent>
+</AccordionItem>
+
                 <AccordionItem value="item-2" className="border-b border-border/50">
                   <AccordionTrigger className="text-base hover:no-underline py-4">
                     Comment utiliser l'analyseur de peau IA ?

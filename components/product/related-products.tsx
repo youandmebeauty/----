@@ -14,7 +14,7 @@ export function RelatedProducts({ products, currentProduct }: RelatedProductsPro
     }
 
     // Determine if products are from same brand or same category
-    const sameBrandProducts = products.filter(p => p.brand === currentProduct.brand)
+    const sameBrandProducts = products.filter(p => p.brand === currentProduct.brand )
     const sameCategoryProducts = products.filter(p => p.category === currentProduct.category && p.brand !== currentProduct.brand)
     
     const isSameBrand = sameBrandProducts.length > 0

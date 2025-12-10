@@ -24,6 +24,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       description,
       longDescription,
       image,
+      images,
       quantity,
       featured,
       ingredients,
@@ -56,12 +57,21 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     if (subcategory !== undefined) updateData.subcategory = subcategory || null
     if (description !== undefined) updateData.description = description
     if (longDescription !== undefined) updateData.longDescription = longDescription || null
-    // Only update image if there are no color variants
-    // If switching to color variants, remove the image
+    // Only update image/images if there are no color variants
+    // If switching to color variants, remove the image and images
     if (isSwitchingToColorVariants) {
       updateData.image = null
-    } else if (image !== undefined && !hasColorVariants) {
-      updateData.image = image
+      updateData.images = null
+    } else if (!hasColorVariants) {
+      // Handle images array
+      if (images !== undefined && Array.isArray(images)) {
+        updateData.images = images
+        updateData.image = images.length > 0 ? images[0] : null // First image as main
+      } else if (image !== undefined) {
+        // Backward compatibility: if only single image provided
+        updateData.image = image
+        updateData.images = image ? [image] : []
+      }
     }
     if (quantity !== undefined) updateData.quantity = Number(quantity)
     if (featured !== undefined) updateData.featured = featured

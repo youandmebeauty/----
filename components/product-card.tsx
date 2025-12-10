@@ -16,6 +16,7 @@ interface Product {
   brand?: string
   price: number
   image?: string
+  images?: string[]
   category: string
   description: string
   quantity: number
@@ -67,7 +68,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
         id: product.id,
         name: product.name,
         price: product.price,
-        image: product.image || "/placeholder.svg",
+        image: (product.images && product.images.length > 0 ? product.images[0] : product.image) || "/placeholder.svg",
         category: product.category,
       })
     }
@@ -101,7 +102,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               src={
                 product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
                   ? product.colorVariants[0].image || "/placeholder.svg"
-                  : product.image || "/placeholder.svg"
+                  : (product.images && product.images.length > 0 ? product.images[0] : product.image) || "/placeholder.svg"
               }
               alt={product.name}
               fill

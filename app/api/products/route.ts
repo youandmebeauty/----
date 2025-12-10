@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
       description,
       longDescription,
       image,
+      images,
       quantity,
       featured,
       ingredients,
@@ -34,12 +35,12 @@ export async function POST(request: NextRequest) {
     } = body
 
     // Validate required fields
-    // Image is only required if there are no color variants
+    // Images are only required if there are no color variants
     if (!name || !price || !category || !description) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 })
     }
-    if (!hasColorVariants && !image) {
-      return NextResponse.json({ error: "Image is required when there are no color variants" }, { status: 400 })
+    if (!hasColorVariants && !image && (!images || images.length === 0)) {
+      return NextResponse.json({ error: "At least one image is required when there are no color variants" }, { status: 400 })
     }
 
     // Create product
@@ -62,9 +63,15 @@ export async function POST(request: NextRequest) {
       updatedAt: Timestamp.now(),
     }
 
-    // Only include image if there are no color variants
-    if (!hasColorVariants && image) {
-      productData.image = image.trim()
+    // Only include images if there are no color variants
+    if (!hasColorVariants) {
+      if (Array.isArray(images) && images.length > 0) {
+        productData.images = images
+        productData.image = images[0] // First image as main for backward compatibility
+      } else if (image) {
+        productData.image = image.trim()
+        productData.images = [image.trim()] // Convert single image to array
+      }
     }
 
     const docRef = await adminDb.collection(PRODUCTS_COLLECTION).add(productData)

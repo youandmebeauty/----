@@ -31,7 +31,7 @@ function AddProductContent() {
     subcategory: "",
     description: "",
     longDescription: "",
-    image: "",
+    images: [] as string[],
     quantity: "",
     featured: false,
     ingredients: "",
@@ -115,9 +115,11 @@ function AddProductContent() {
         hasColorVariants: formData.hasColorVariants,
       }
 
-      // Only include image if there are no color variants
+      // Only include images if there are no color variants
       if (!formData.hasColorVariants) {
-        productData.image = formData.image
+        productData.images = formData.images
+        // Set first image as the main image for backward compatibility
+        productData.image = formData.images[0] || ""
       }
 
       if (formData.hasColorVariants && colorVariants.length > 0) {
@@ -342,58 +344,102 @@ function AddProductContent() {
 
                 {!formData.hasColorVariants && (
                   <div className="space-y-4">
-                    <Label>Image du produit *</Label>
-                    <div className="flex flex-col gap-4">
-                      {formData.image && (
-                        <div className="relative w-40 h-40 rounded-lg overflow-hidden border border-border">
-                          <img
-                            src={formData.image}
-                            alt="Product preview"
-                            className="w-full h-full object-cover"
-                          />
+                    <Label>Images du produit *</Label>
+                    
+                    {/* Images Gallery */}
+                    {formData.images.length > 0 && (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        {formData.images.map((image, index) => (
+                          <div key={index} className="relative aspect-square rounded-lg overflow-hidden border border-border group">
+                            <img
+                              src={image}
+                              alt={`Product image ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            {index === 0 && (
+                              <div className="absolute top-2 left-2 bg-primary text-primary-foreground text-xs px-2 py-1 rounded-full">
+                                Principal
+                              </div>
+                            )}
+                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                              {index > 0 && (
+                                <Button
+                                  type="button"
+                                  variant="secondary"
+                                  size="icon"
+                                  className="h-8 w-8 rounded-full"
+                                  onClick={() => {
+                                    const newImages = [...formData.images]
+                                    const temp = newImages[0]
+                                    newImages[0] = newImages[index]
+                                    newImages[index] = temp
+                                    setFormData(prev => ({ ...prev, images: newImages }))
+                                  }}
+                                  title="Définir comme image principale"
+                                >
+                                  <ImageIcon className="h-4 w-4" />
+                                </Button>
+                              )}
+                              <Button
+                                type="button"
+                                variant="destructive"
+                                size="icon"
+                                className="h-8 w-8 rounded-full"
+                                onClick={() => {
+                                  setFormData(prev => ({ 
+                                    ...prev, 
+                                    images: prev.images.filter((_, i) => i !== index) 
+                                  }))
+                                }}
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* Upload Button */}
+                    <CldUploadWidget
+                      uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                      onSuccess={(result: any) => {
+                        if (result.info?.secure_url) {
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            images: [...prev.images, result.info.secure_url] 
+                          }))
+                        }
+                      }}
+                    >
+                      {({ open }) => {
+                        return (
                           <Button
                             type="button"
-                            variant="destructive"
-                            size="icon"
-                            className="absolute top-2 right-2 h-6 w-6 rounded-full"
-                            onClick={() => setFormData(prev => ({ ...prev, image: "" }))}
+                            variant="outline"
+                            onClick={() => open()}
+                            className="w-full sm:w-auto"
                           >
-                            <X className="h-3 w-3" />
+                            <Plus className="mr-2 h-4 w-4" />
+                            {formData.images.length === 0 ? "Ajouter des images" : "Ajouter une autre image"}
                           </Button>
-                        </div>
-                      )}
+                        );
+                      }}
+                    </CldUploadWidget>
 
-                      <CldUploadWidget
-                        uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-                        onSuccess={(result: any) => {
-                          if (result.info?.secure_url) {
-                            setFormData(prev => ({ ...prev, image: result.info.secure_url }))
-                          }
-                        }}
-                      >
-                        {({ open }) => {
-                          return (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={() => open()}
-                              className="w-full sm:w-auto"
-                            >
-                              <ImageIcon className="mr-2 h-4 w-4" />
-                              {formData.image ? "Changer l'image" : "Télécharger une image"}
-                            </Button>
-                          );
-                        }}
-                      </CldUploadWidget>
+                    {formData.images.length === 0 && (
+                      <p className="text-sm text-muted-foreground">
+                        Ajoutez au moins une image du produit. La première image sera l'image principale.
+                      </p>
+                    )}
 
-                      {/* Hidden input to ensure validation works if needed, though we handle it via state */}
-                      <input
-                        type="hidden"
-                        name="image"
-                        value={formData.image}
-                        required
-                      />
-                    </div>
+                    {/* Hidden input to ensure validation works */}
+                    <input
+                      type="hidden"
+                      name="images"
+                      value={formData.images.join(',')}
+                      required
+                    />
                   </div>
                 )}
 

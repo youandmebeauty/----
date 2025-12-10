@@ -10,7 +10,8 @@ export interface Product {
   name: string
   brand: string
   price: number
-  image?: string
+  image?: string // Kept for backward compatibility, will use first image from images array
+  images?: string[] // Array of product images
   category: string
   subcategory?: string
   skinType?: string[]
