@@ -128,22 +128,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               </div>
             )}
 
-            {/* Action Buttons - Top Right */}
-            <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
-              {/* Quick View Button */}
-              <Button
-                onClick={(e) => {
-                  e.preventDefault()
-                  e.stopPropagation()
-                  // Quick view functionality would go here
-                }}
-                size="icon"
-                variant="outline"
-                className="h-10 w-10 rounded-full bg-background/95 backdrop-blur-sm border-border/50 shadow-lg hover:scale-110 hover:shadow-xl transition-all duration-300"
-              >
-                <Eye className="h-4 w-4" />
-              </Button>
-            </div>
+            
 
             {/* Quick Add Button - Bottom */}
             {!isOutOfStock && !product.hasColorVariants && (

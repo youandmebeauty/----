@@ -10,7 +10,7 @@ const values = [
     {
         icon: Package,
         title: "Large Sélection",
-        description: "Des centaines de marques de beauté et produits cosmétiques soigneusement sélectionnés",
+        description: "Des centaines de marques de beauté premium et produits cosmétiques soigneusement sélectionnés",
         gradient: "from-pink-500/10 via-rose-500/10 to-purple-500/10",
         iconBg: "bg-gradient-to-br from-pink-500/20 to-rose-500/20",
     },
@@ -81,7 +81,7 @@ export function WhyChooseUs() {
                 </div>
 
                 {/* Values Grid */}
-                <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-20">
+                <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3  gap-6 lg:gap-8 mb-20">
                     {values.map((value, index) => {
                         const Icon = value.icon
                         return (
@@ -91,7 +91,7 @@ export function WhyChooseUs() {
                                 delay={index * 0.1}
                             >
                                 <div
-                                    className="group relative bg-card/50 backdrop-blur-sm border border-border/50 rounded-3xl p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-700 hover:-translate-y-3 sticky md:static overflow-hidden"
+                                    className="group sticky bg-card/50 h-full backdrop-blur-sm border border-border/50 rounded-3xl p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-700 hover:-translate-y-3 overflow-hidden"
                                     style={{
                                         top: `calc(8rem + ${index * 1.5}rem)`,
                                         zIndex: values.length - index,
@@ -107,7 +107,7 @@ export function WhyChooseUs() {
                                     </div>
 
                                     {/* Content */}
-                                    <div className="relative">
+                                    <div className="relative flex flex-col h-full w-full justify-between">
                                         {/* Icon Container */}
                                         <div className={`w-20 h-20 ${value.iconBg} rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 group-hover:rotate-6 transition-all duration-700 shadow-lg`}>
                                             <Icon className="w-10 h-10 text-primary group-hover:scale-110 transition-transform duration-700" />

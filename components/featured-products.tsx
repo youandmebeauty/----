@@ -11,10 +11,27 @@ export function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const [itemsPerView, setItemsPerView] = useState(4)
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     fetchFeaturedProducts()
+  }, [])
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setItemsPerView(1) // Mobile: 1 item
+      } else if (window.innerWidth < 1024) {
+        setItemsPerView(2) // Tablet: 2 items
+      } else {
+        setItemsPerView(4) // Desktop: 4 items
+      }
+    }
+
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
   }, [])
 
   const fetchFeaturedProducts = async () => {
@@ -28,25 +45,36 @@ export function FeaturedProducts() {
     }
   }
 
-  const showSlider = products.length > 4
+  const showSlider = products.length > itemsPerView
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % products.length)
+    setCurrentIndex((prev) => {
+      const maxIndex = products.length - itemsPerView
+      return prev >= maxIndex ? 0 : prev + 1
+    })
   }
 
   const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + products.length) % products.length)
+    setCurrentIndex((prev) => {
+      const maxIndex = products.length - itemsPerView
+      return prev <= 0 ? maxIndex : prev - 1
+    })
   }
 
   const getVisibleProducts = () => {
     if (!showSlider) return products
     
     const visible = []
-    for (let i = 0; i < 4; i++) {
-      visible.push(products[(currentIndex + i) % products.length])
+    for (let i = 0; i < itemsPerView; i++) {
+      const index = currentIndex + i
+      if (index < products.length) {
+        visible.push(products[index])
+      }
     }
     return visible
   }
+
+  const maxDots = products.length - itemsPerView + 1
 
   if (loading) {
     return (
@@ -86,7 +114,7 @@ export function FeaturedProducts() {
         </div>
 
         {showSlider ? (
-          <div className="relative">
+          <div className="relative px-8 sm:px-12 lg:px-0">
             <div className="overflow-hidden" ref={scrollRef}>
               <div className="grid grid-cols-1 gap-y-16 gap-x-8 sm:grid-cols-2 lg:grid-cols-4 transition-all duration-500">
                 {getVisibleProducts().map((product, index) => (
@@ -99,22 +127,22 @@ export function FeaturedProducts() {
 
             <button
               onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-background border border-border rounded-full p-3 shadow-lg hover:bg-secondary transition-colors z-10"
+              className="absolute left-0 top-1/2 -translate-y-1/2 sm:-translate-x-6 bg-background border border-border rounded-full p-2 sm:p-3 shadow-lg hover:bg-secondary transition-colors z-10"
               aria-label="Previous products"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
 
             <button
               onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-background border border-border rounded-full p-3 shadow-lg hover:bg-secondary transition-colors z-10"
+              className="absolute right-0 top-1/2 -translate-y-1/2 sm:translate-x-6 bg-background border border-border rounded-full p-2 sm:p-3 shadow-lg hover:bg-secondary transition-colors z-10"
               aria-label="Next products"
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
 
             <div className="flex justify-center gap-2 mt-8">
-              {products.map((_, index) => (
+              {Array.from({ length: maxDots }).map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
@@ -129,12 +157,12 @@ export function FeaturedProducts() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-y-16  min-h-[500px] gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-y-16 min-h-[500px] gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
             {products.map((product, index) => (
               <ScrollAnimation
                 key={product.id}
                 variant="slideUp"
-                delay={index * 0.1}
+                delay={index * 0.01}
               >
                 <ProductCard product={product} />
               </ScrollAnimation>
