@@ -207,9 +207,7 @@ export default function CartPage() {
     try {
       // Validate stock before submitting order (re-fetch to ensure accuracy)
       for (const item of items) {
-        console.log(`[handleSubmitOrder] Checking stock for item: id=${item.id}, name=${item.name}, quantity=${item.quantity}`)
         const stock = await getItemStock(item.id)
-        console.log(`[handleSubmitOrder] Stock result for ${item.id}: ${stock}`)
         if (item.quantity > stock) {
           throw new Error(`Stock insuffisant pour ${item.name}. Seulement ${stock} disponible.`)
         }

@@ -103,19 +103,7 @@ export async function getProductById(id: string): Promise<Product | null> {
       id: productDoc.id,
       ...data,
     } as Product
-    
-    // Debug: Log colorVariants if they exist
-    if (product.hasColorVariants && product.colorVariants) {
-      console.log(`[getProductById-client] Product ${product.id} has ${product.colorVariants.length} color variants:`, product.colorVariants)
-      product.colorVariants.forEach((variant, idx) => {
-        console.log(`[getProductById-client] Variant ${idx}:`, {
-          colorName: variant.colorName,
-          quantity: variant.quantity,
-          quantityType: typeof variant.quantity,
-          fullVariant: variant
-        })
-      })
-    }
+
     
     return product
   } catch (error) {
@@ -490,7 +478,6 @@ export function parseItemId(itemId: string): { productId: string; variantIndex: 
 export async function getItemStock(itemId: string): Promise<number> {
   try {
     const { productId, variantIndex } = parseItemId(itemId)
-    console.log(`[getItemStock] Parsing itemId: ${itemId} -> productId: ${productId}, variantIndex: ${variantIndex}`)
     
     const product = await getProductById(productId)
     
@@ -499,7 +486,6 @@ export async function getItemStock(itemId: string): Promise<number> {
       return 0
     }
 
-    console.log(`[getItemStock] Product found: ${product.name}, hasColorVariants: ${product.hasColorVariants}, colorVariants length: ${product.colorVariants?.length || 0}`)
 
     // If it's a variant, return the variant's stock
     if (variantIndex !== null) {
@@ -520,17 +506,14 @@ export async function getItemStock(itemId: string): Promise<number> {
       }
       
       // Debug: Log the full variant object to see what we're working with
-      console.log(`[getItemStock] Full variant object:`, JSON.stringify(variant, null, 2))
       
       // Check if quantity exists and is a valid number
       const stock = typeof variant.quantity === 'number' ? variant.quantity : (parseInt(String(variant.quantity || 0), 10) || 0)
-      console.log(`[getItemStock] Variant ${variantIndex} (${variant.colorName}) of product ${productId}: ${stock} in stock (raw quantity: ${variant.quantity}, type: ${typeof variant.quantity})`)
       return stock
     }
 
     // Otherwise return the product's stock
     const stock = product.quantity ?? 0
-    console.log(`[getItemStock] Product ${productId} (no variant): ${stock} in stock`)
     return stock
   } catch (error) {
     console.error(`[getItemStock] Error getting stock for itemId ${itemId}:`, error)
