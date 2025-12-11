@@ -108,6 +108,7 @@ export const SHOP_CATEGORIES: Category[] = [
                     { id: "eyeshadow-palette", label: "Palettes Yeux" },
                     { id: "eyeliner-liquid", label: "Eyeliners Liquides" },
                     { id: "eyeliner-gel", label: "Eyeliners Gel" },
+                    { id: "eyeliner-waterproof", label: "Eyeliners Waterproof" },
                     { id: "eyeliner-pencil", label: "Eyeliners Crayons" },
                     { id: "eyeliner-felt", label: "Eyeliners Feutres" },
                     { id: "kohl", label: "Khôl / Kajal" },
