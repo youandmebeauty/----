@@ -28,7 +28,7 @@ export function AnalyticsChart({ data, title }: AnalyticsChartProps) {
                                         style={{ height: `${(item.revenue / maxRevenue) * 100}%` }}
                                     >
                                         <div className="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-foreground text-background text-xs px-2 py-1 rounded whitespace-nowrap z-10">
-                                            {item.revenue.toFixed(2)} TND
+                                            {item.revenue.toFixed(2)} DT
                                         </div>
                                     </div>
                                 </div>
@@ -44,19 +44,19 @@ export function AnalyticsChart({ data, title }: AnalyticsChartProps) {
                         <div className="text-center">
                             <p className="text-xs text-muted-foreground mb-1">Total</p>
                             <p className="text-sm font-medium">
-                                {data.reduce((sum, item) => sum + item.revenue, 0).toFixed(2)} TND
+                                {data.reduce((sum, item) => sum + item.revenue, 0).toFixed(2)} DT
                             </p>
                         </div>
                         <div className="text-center">
                             <p className="text-xs text-muted-foreground mb-1">Moyenne</p>
                             <p className="text-sm font-medium">
-                                {(data.reduce((sum, item) => sum + item.revenue, 0) / data.length).toFixed(2)} TND
+                                {(data.reduce((sum, item) => sum + item.revenue, 0) / data.length).toFixed(2)} DT
                             </p>
                         </div>
                         <div className="text-center">
                             <p className="text-xs text-muted-foreground mb-1">Plus haut</p>
                             <p className="text-sm font-medium">
-                                {Math.max(...data.map(d => d.revenue)).toFixed(2)} TND
+                                {Math.max(...data.map(d => d.revenue)).toFixed(2)} DT
                             </p>
                         </div>
                     </div>

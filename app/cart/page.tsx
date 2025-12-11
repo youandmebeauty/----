@@ -135,7 +135,7 @@ export default function CartPage() {
 
       // Check minimum purchase
       if (foundPromo.minPurchase && total < foundPromo.minPurchase) {
-        setPromoError(`Commande minimum de ${foundPromo.minPurchase} TND requise`)
+        setPromoError(`Commande minimum de ${foundPromo.minPurchase} DT requise`)
         setIsValidatingPromo(false)
         return
       }
@@ -342,7 +342,7 @@ export default function CartPage() {
                                 {item.name}
                               </h3>
                               <span className="text-sm font-semibold text-primary sm:hidden">
-                                {item.price.toFixed(2)} TND
+                                {item.price.toFixed(2)} DT
                               </span>
                             </div>
                             
@@ -353,7 +353,7 @@ export default function CartPage() {
                             </div>
                             
                             <p className="hidden sm:block text-sm font-semibold text-primary">
-                              {item.price.toFixed(2)} TND chacun
+                              {item.price.toFixed(2)} DT chacun
                             </p>
                           </div>
 
@@ -466,13 +466,13 @@ export default function CartPage() {
                   <span>
                     Sous-total ({itemCount} {itemCount === 1 ? "article" : "articles"})
                   </span>
-                  <span className="font-medium">{total.toFixed(2)} TND</span>
+                  <span className="font-medium">{total.toFixed(2)} DT</span>
                 </div>
                 
                 {discount > 0 && (
                   <div className="flex justify-between text-base text-green-600">
                     <span>Réduction ({appliedPromo?.code})</span>
-                    <span className="font-medium">-{discount.toFixed(2)} TND</span>
+                    <span className="font-medium">-{discount.toFixed(2)} DT</span>
                   </div>
                 )}
                 
@@ -482,7 +482,7 @@ export default function CartPage() {
                     {shipping === 0 ? (
                       <span className="text-green-600">Gratuit</span>
                     ) : (
-                      `${shipping.toFixed(2)} TND`
+                      `${shipping.toFixed(2)} DT`
                     )}
                   </span>
                 </div>
@@ -490,7 +490,7 @@ export default function CartPage() {
                 <div className="border-t pt-4">
                   <div className="flex justify-between text-xl font-bold">
                     <span>Total</span>
-                    <span className="text-primary">{finalTotal.toFixed(2)} TND</span>
+                    <span className="text-primary">{finalTotal.toFixed(2)} DT</span>
                   </div>
                 </div>
               </CardContent>
@@ -696,7 +696,7 @@ export default function CartPage() {
             Traitement de la Commande...
                       </>
                     ) : (
-                      `Passer la Commande - ${finalTotal.toFixed(2)} TND`
+                      `Passer la Commande - ${finalTotal.toFixed(2)} DT`
                     )}
                   </Button>
 

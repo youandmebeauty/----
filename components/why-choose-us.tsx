@@ -38,7 +38,7 @@ const values = [
     {
         icon: Truck,
         title: "Livraison Rapide",
-        description: "Livraison gratuite dès 100 TND partout en Tunisie avec suivi en temps réel",
+        description: "Livraison gratuite dès 200 DT partout en Tunisie avec suivi en temps réel",
         gradient: "from-blue-500/10 via-indigo-500/10 to-violet-500/10",
         iconBg: "bg-gradient-to-br from-blue-500/20 to-indigo-500/20",
     },

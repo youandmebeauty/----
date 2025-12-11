@@ -297,7 +297,7 @@ function DashboardContent() {
                 <DollarSign className="h-4 w-4 text-primary" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-serif font-medium">{stats.totalRevenue.toFixed(2)} TND</div>
+                <div className="text-2xl font-serif font-medium">{stats.totalRevenue.toFixed(2)} DT</div>
                 <p className="text-xs text-muted-foreground mt-1">Expédiées & Livrées uniquement</p>
               </CardContent>
             </Card>
@@ -324,19 +324,19 @@ function DashboardContent() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <MetricsCard
                   title="Aujourd'hui"
-                  value={`${analytics.today.totalRevenue.toFixed(2)} TND`}
+                  value={`${analytics.today.totalRevenue.toFixed(2)} DT`}
                   icon={<DollarSign className="h-4 w-4" />}
                   format="currency"
                 />
                 <MetricsCard
                   title="Cette Semaine"
-                  value={`${analytics.week.totalRevenue.toFixed(2)} TND`}
+                  value={`${analytics.week.totalRevenue.toFixed(2)} DT`}
                   icon={<TrendingUp className="h-4 w-4" />}
                   format="currency"
                 />
                 <MetricsCard
                   title="Ce Mois"
-                  value={`${analytics.month.totalRevenue.toFixed(2)} TND`}
+                  value={`${analytics.month.totalRevenue.toFixed(2)} DT`}
                   icon={<BarChart3 className="h-4 w-4" />}
                   format="currency"
                 />
@@ -365,7 +365,7 @@ function DashboardContent() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-medium">{item.revenue.toFixed(2)} TND</p>
+                            <p className="font-medium">{item.revenue.toFixed(2)} DT</p>
                           </div>
                         </div>
                       ))}
@@ -412,10 +412,10 @@ function DashboardContent() {
                             <TableCell>{order.email}</TableCell>
                             <TableCell>
                               <div>
-                                <div>{order.total.toFixed(2)} TND</div>
+                                <div>{order.total.toFixed(2)} DT</div>
                                 {order.discount && order.discount > 0 && (
                                   <div className="text-xs text-green-600">
-                                    -{order.discount.toFixed(2)} TND
+                                    -{order.discount.toFixed(2)} DT
                                   </div>
                                 )}
                               </div>
@@ -507,7 +507,7 @@ function DashboardContent() {
                                 {product.category}
                               </Badge>
                             </TableCell>
-                            <TableCell>{product.price.toFixed(2)} TND</TableCell>
+                            <TableCell>{product.price.toFixed(2)} DT</TableCell>
                             <TableCell>{product.quantity}</TableCell>
                             <TableCell>
                               <Badge
@@ -604,13 +604,13 @@ function DashboardContent() {
                               min="0"
                             />
                             <p className="text-xs text-muted-foreground mt-1">
-                              {promoForm.type === "percentage" ? "Pourcentage de réduction" : "Montant en TND"}
+                              {promoForm.type === "percentage" ? "Pourcentage de réduction" : "Montant en DT"}
                             </p>
                           </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <Label htmlFor="minPurchase">Achat Minimum (TND)</Label>
+                            <Label htmlFor="minPurchase">Achat Minimum (DT)</Label>
                             <Input
                               id="minPurchase"
                               type="number"
@@ -706,9 +706,9 @@ function DashboardContent() {
                               </TableCell>
                               <TableCell className="capitalize">{promo.type}</TableCell>
                               <TableCell>
-                                {promo.type === "percentage" ? `${promo.value}%` : `${promo.value} TND`}
+                                {promo.type === "percentage" ? `${promo.value}%` : `${promo.value} DT`}
                               </TableCell>
-                              <TableCell>{promo.minPurchase ? `${promo.minPurchase} TND` : "-"}</TableCell>
+                              <TableCell>{promo.minPurchase ? `${promo.minPurchase} DT` : "-"}</TableCell>
                               <TableCell>
                                 {promo.usedCount || 0}
                                 {promo.usageLimit && ` / ${promo.usageLimit}`}

@@ -407,8 +407,8 @@ export function ShopFilters({
                                 aria-label="Prix"
                             />
                             <div className="flex items-center justify-between text-sm">
-                                <span className="text-muted-foreground">{priceRange[0]} TND</span>
-                                <span className="text-muted-foreground">{priceRange[1]} TND</span>
+                                <span className="text-muted-foreground">{priceRange[0]} DT</span>
+                                <span className="text-muted-foreground">{priceRange[1]} DT</span>
                             </div>
                         </motion.div>
                     )}

@@ -347,7 +347,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                 <p className="text-3xl md:text-4xl font-semibold text-foreground tabular-nums">
                                     {product.price.toFixed(2)}
                                 </p>
-                                <span className="text-lg text-muted-foreground">TND</span>
+                                <span className="text-lg text-muted-foreground">DT</span>
                             </div>
                         </div>
 
@@ -429,7 +429,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                         </div>
                                         <div className="flex-1">
                                             <div className="text-xs text-muted-foreground mb-1">
-                                                Total: <span className="font-semibold text-foreground">{(product.price * quantity).toFixed(2)} TND</span>
+                                                Total: <span className="font-semibold text-foreground">{(product.price * quantity).toFixed(2)} DT</span>
                                             </div>
                                         </div>
                                     </div>
@@ -504,7 +504,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                             <Truck className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                                             <div>
                                                 <p className="font-medium text-foreground mb-1">Livraison gratuite</p>
-                                                <p className="text-sm">Pour toutes les commandes de plus de 200 TND. Livraison standard sous 3-5 jours ouvrés.</p>
+                                                <p className="text-sm">Pour toutes les commandes de plus de 200 DT. Livraison standard sous 3-5 jours ouvrés.</p>
                                             </div>
                                         </div>
                                         <div className="flex items-start gap-3">

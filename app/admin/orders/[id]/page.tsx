@@ -171,10 +171,10 @@ function OrderDetailsContent() {
                         <div className="flex-1">
                           <h3 className="font-semibold">{item.name}</h3>
                           <p className="text-sm text-muted-foreground">Quantité: {item.quantity}</p>
-                          <p className="text-sm text-muted-foreground">{item.price.toFixed(2)} TND chacun</p>
+                          <p className="text-sm text-muted-foreground">{item.price.toFixed(2)} DT chacun</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold">{(item.price * item.quantity).toFixed(2)} TND</p>
+                          <p className="font-semibold">{(item.price * item.quantity).toFixed(2)} DT</p>
                         </div>
                       </div>
                     ))}
@@ -184,12 +184,12 @@ function OrderDetailsContent() {
                     {order.promoCode && order.discount && order.discount > 0 && (
                       <div className="flex justify-between text-base">
                         <span className="text-muted-foreground">Code promo ({order.promoCode}):</span>
-                        <span className="text-green-600 font-medium">-{order.discount.toFixed(2)} TND</span>
+                        <span className="text-green-600 font-medium">-{order.discount.toFixed(2)} DT</span>
                       </div>
                     )}
                     <div className="flex justify-between text-xl font-serif font-medium pt-2">
                       <span>Total:</span>
-                      <span>{order.total.toFixed(2)} TND</span>
+                      <span>{order.total.toFixed(2)} DT</span>
                     </div>
                   </div>
                 </CardContent>

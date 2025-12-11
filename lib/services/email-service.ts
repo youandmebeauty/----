@@ -46,8 +46,8 @@ function generateCustomerEmailBody(order: Order): string {
         `<tr>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name}</td>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.quantity}</td>
-      <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.price.toFixed(2)} TND</td>
-      <td style="padding: 10px; border-bottom: 1px solid #eee;">${(item.price * item.quantity).toFixed(2)} TND</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.price.toFixed(2)} DT</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${(item.price * item.quantity).toFixed(2)} DT</td>
     </tr>`,
     )
     .join("");
@@ -84,22 +84,22 @@ function generateCustomerEmailBody(order: Order): string {
             <tfoot>
               <tr>
                 <td colspan="3" style="padding: 10px; text-align: right;"><strong>Sous-total :</strong></td>
-                <td style="padding: 10px;">${subtotal.toFixed(2)} TND</td>
+                <td style="padding: 10px;">${subtotal.toFixed(2)} DT</td>
               </tr>
               ${discount > 0 ? `
               <tr>
                 <td colspan="3" style="padding: 10px; text-align: right;"><strong>Réduction (${promoCode}) :</strong></td>
-                <td style="padding: 10px; color: #16a34a;"><strong>-${discount.toFixed(2)} TND</strong></td>
+                <td style="padding: 10px; color: #16a34a;"><strong>-${discount.toFixed(2)} DT</strong></td>
               </tr>
               ` : ''}
               <tr>
                 <td colspan="3" style="padding: 10px; text-align: right;"><strong>Livraison :</strong></td>
-                <td style="padding: 10px;">${shippingCost === 0 ? '<span style="color: #16a34a;">Gratuite</span>' : `${shippingCost.toFixed(2)} TND`
+                <td style="padding: 10px;">${shippingCost === 0 ? '<span style="color: #16a34a;">Gratuite</span>' : `${shippingCost.toFixed(2)} DT`
     }</td>
               </tr>
               <tr>
                 <td colspan="3" style="padding: 10px; text-align: right;"><strong>Total :</strong></td>
-                <td style="padding: 10px;"><strong>${order.total.toFixed(2)} TND</strong></td>
+                <td style="padding: 10px;"><strong>${order.total.toFixed(2)} DT</strong></td>
               </tr>
             </tfoot>
           </table>
@@ -138,8 +138,8 @@ function generateAdminEmailBody(order: Order): string {
         `<tr>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name}</td>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.quantity}</td>
-      <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.price.toFixed(2)} TND</td>
-      <td style="padding: 10px; border-bottom: 1px solid #eee;">${(item.price * item.quantity).toFixed(2)} TND</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.price.toFixed(2)} DT</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${(item.price * item.quantity).toFixed(2)} DT</td>
     </tr>`,
     )
     .join("");
@@ -157,7 +157,7 @@ function generateAdminEmailBody(order: Order): string {
         <p><strong>Client :</strong> ${order.customerName}</p>
         <p><strong>Email :</strong> ${order.email}</p>
         <p><strong>Téléphone :</strong> ${order.phone || "Non fourni"}</p>
-        ${promoCode ? `<p><strong>Code promo utilisé :</strong> <span style="color: #16a34a; font-weight: bold;">${promoCode}</span> ${discount > 0 ? `(-${discount.toFixed(2)} TND)` : ''}</p>` : ''}
+        ${promoCode ? `<p><strong>Code promo utilisé :</strong> <span style="color: #16a34a; font-weight: bold;">${promoCode}</span> ${discount > 0 ? `(-${discount.toFixed(2)} DT)` : ''}</p>` : ''}
         
         <div style="margin: 20px 0;">
           <h3>Détails de la commande</h3>
@@ -176,22 +176,22 @@ function generateAdminEmailBody(order: Order): string {
             <tfoot>
               <tr>
                 <td colspan="3" style="padding: 10px; text-align: right;"><strong>Sous-total :</strong></td>
-                <td style="padding: 10px;">${subtotal.toFixed(2)} TND</td>
+                <td style="padding: 10px;">${subtotal.toFixed(2)} DT</td>
               </tr>
               ${discount > 0 ? `
               <tr>
                 <td colspan="3" style="padding: 10px; text-align: right;"><strong>Réduction (${promoCode}) :</strong></td>
-                <td style="padding: 10px; color: #16a34a;"><strong>-${discount.toFixed(2)} TND</strong></td>
+                <td style="padding: 10px; color: #16a34a;"><strong>-${discount.toFixed(2)} DT</strong></td>
               </tr>
               ` : ''}
               <tr>
                 <td colspan="3" style="padding: 10px; text-align: right;"><strong>Livraison :</strong></td>
-                <td style="padding: 10px;">${shippingCost === 0 ? '<span style="color: #16a34a;">Gratuite</span>' : `${shippingCost.toFixed(2)} TND`
+                <td style="padding: 10px;">${shippingCost === 0 ? '<span style="color: #16a34a;">Gratuite</span>' : `${shippingCost.toFixed(2)} DT`
     }</td>
               </tr>
               <tr>
                 <td colspan="3" style="padding: 10px; text-align: right;"><strong>Total :</strong></td>
-                <td style="padding: 10px;"><strong>${order.total.toFixed(2)} TND</strong></td>
+                <td style="padding: 10px;"><strong>${order.total.toFixed(2)} DT</strong></td>
               </tr>
             </tfoot>
           </table>

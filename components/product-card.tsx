@@ -170,7 +170,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
                 <span className="text-lg font-semibold text-foreground tabular-nums">
                   {product.price.toFixed(2)}
                 </span>
-                <span className="text-xs font-normal text-muted-foreground">TND</span>
+                <span className="text-xs font-normal text-muted-foreground">DT</span>
               </div>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60 bg-secondary/30 px-2 py-1 rounded-full">
                 {product.category}
