@@ -23,8 +23,8 @@ const values = [
     },
     {
         icon: Shield,
-        title: "Garantie Qualité",
-        description: "Tous nos produits sont certifiés et garantis 100% authentiques avec traçabilité complète",
+        title: "Contrôle Rigoureux",
+        description: "Chaque produit bénéficie d’une vérification stricte de sa provenance, fraîcheur et conformité",
         gradient: "from-emerald-500/10 via-teal-500/10 to-cyan-500/10",
         iconBg: "bg-gradient-to-br from-emerald-500/20 to-teal-500/20",
     },
@@ -50,6 +50,7 @@ const values = [
         iconBg: "bg-gradient-to-br from-red-500/20 to-pink-500/20",
     },
 ]
+
 
 export function WhyChooseUs() {
     const { theme } = useTheme()
