@@ -12,7 +12,9 @@ export function FeaturedProducts() {
   const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [itemsPerView, setItemsPerView] = useState(4)
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     fetchFeaturedProducts()
@@ -33,6 +35,22 @@ export function FeaturedProducts() {
     window.addEventListener("resize", handleResize)
     return () => window.removeEventListener("resize", handleResize)
   }, [])
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (!isAutoPlaying || !showSlider) return
+
+    autoPlayRef.current = setInterval(() => {
+      nextSlide()
+    }, 3000) // Change slide every 4 seconds
+
+    return () => {
+      if (autoPlayRef.current) {
+        clearInterval(autoPlayRef.current)
+      }
+    }
+  }, [isAutoPlaying, currentIndex, itemsPerView, products.length])
+
 
   const fetchFeaturedProducts = async () => {
     try {
@@ -162,7 +180,7 @@ export function FeaturedProducts() {
               <ScrollAnimation
                 key={product.id}
                 variant="slideUp"
-                delay={index * 0.01}
+                delay={index * 0.1}
               >
                 <ProductCard product={product} />
               </ScrollAnimation>
