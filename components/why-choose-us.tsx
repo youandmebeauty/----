@@ -10,7 +10,7 @@ const values = [
     {
         icon: Package,
         title: "Large Sélection",
-        description: "Des centaines de marques de beauté premium et produits cosmétiques soigneusement sélectionnés",
+        description: "Des centaines de marques de beauté et produits cosmétiques soigneusement sélectionnés",
         gradient: "from-pink-500/10 via-rose-500/10 to-purple-500/10",
         iconBg: "bg-gradient-to-br from-pink-500/20 to-rose-500/20",
     },
