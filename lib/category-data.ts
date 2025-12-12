@@ -38,7 +38,10 @@ export const SHOP_CATEGORIES: Category[] = [
                     "Peau mature",
                     "Peau acnéique",
                     "Peau normale",
-                ],
+                    "Peau déshydratée",
+                    "Peau terne",
+                    "Peau atopique",
+                                    ],
             },
             {
                 id: "hairType",
@@ -53,6 +56,9 @@ export const SHOP_CATEGORIES: Category[] = [
                     "Cheveux crépus",
                     "Cheveux colorés",
                     "Cheveux abîmés",
+                    "Cheveux fins",
+                    "Cheveux épais",
+                    
                 ],
             },
         ],

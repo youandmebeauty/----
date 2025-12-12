@@ -11,7 +11,7 @@ export function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [itemsPerView, setItemsPerView] = useState(4)
+  const [itemsPerView, setItemsPerView] = useState(5)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
   const scrollRef = useRef<HTMLDivElement>(null)
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
@@ -25,9 +25,9 @@ export function FeaturedProducts() {
       if (window.innerWidth < 640) {
         setItemsPerView(1) // Mobile: 1 item
       } else if (window.innerWidth < 1024) {
-        setItemsPerView(2) // Tablet: 2 items
+        setItemsPerView(3) // Tablet: 2 items
       } else {
-        setItemsPerView(4) // Desktop: 4 items
+        setItemsPerView(5) // Desktop: 4 items
       }
     }
 
@@ -117,7 +117,7 @@ export function FeaturedProducts() {
 
   return (
     <section className="py-16 mt-24 bg-background border border-border/50 rounded-3xl m-4">
-      <div className="container mx-auto px-4">
+      <div className="container  mx-auto px-4">
         <div className="mb-16 flex items-end justify-between">
           <div className="max-w-xl">
             <div className="inline-flex items-center gap-2">
@@ -133,14 +133,28 @@ export function FeaturedProducts() {
 
         {showSlider ? (
           <div className="relative px-8 sm:px-12 lg:px-0">
-            <div className="overflow-hidden" ref={scrollRef}>
-              <div className="grid grid-cols-1 gap-y-16 gap-x-8 sm:grid-cols-2 lg:grid-cols-4 transition-all duration-500">
+            <div className="flex flex-col justify-around  " ref={scrollRef}>
+              <div className="grid grid-cols-1 gap-y-16 gap-x-8 sm:grid-cols-3 lg:grid-cols-5 transition-all duration-500">
                 {getVisibleProducts().map((product, index) => (
                   <div key={`${product.id}-${currentIndex}-${index}`}>
                     <ProductCard product={product} />
                   </div>
                 ))}
               </div>
+              <div className="flex justify-center gap-2 mt-8">
+              {Array.from({ length: maxDots }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentIndex(index)}
+                  className={`h-2 rounded-full transition-all ${
+                    index === currentIndex
+                      ? "w-8 bg-primary"
+                      : "w-2 bg-border hover:bg-primary/50"
+                  }`}
+                  aria-label={`Go to slide ${index + 1}`}
+                />
+              ))}
+            </div>
             </div>
 
             <button
@@ -159,23 +173,10 @@ export function FeaturedProducts() {
               <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
 
-            <div className="flex justify-center gap-2 mt-8">
-              {Array.from({ length: maxDots }).map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`h-2 rounded-full transition-all ${
-                    index === currentIndex
-                      ? "w-8 bg-primary"
-                      : "w-2 bg-border hover:bg-primary/50"
-                  }`}
-                  aria-label={`Go to slide ${index + 1}`}
-                />
-              ))}
-            </div>
+            
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-y-16 min-h-[500px] gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-y-16  gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
             {products.map((product, index) => (
               <ScrollAnimation
                 key={product.id}
