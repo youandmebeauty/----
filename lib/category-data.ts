@@ -111,6 +111,7 @@ export const SHOP_CATEGORIES: Category[] = [
                     { id: "eyeliner-waterproof", label: "Eyeliners Waterproof" },
                     { id: "eyeliner-pencil", label: "Eyeliners Crayons" },
                     { id: "eyeliner-felt", label: "Eyeliners Feutres" },
+                    { id: "concealer", label: "Anti-cernes" },
                     { id: "kohl", label: "Khôl / Kajal" },
                     { id: "mascara-lengthening", label: "Mascaras Allongeants" },
                     { id: "mascara-volumizing", label: "Mascaras Volumateurs" },
@@ -121,7 +122,6 @@ export const SHOP_CATEGORIES: Category[] = [
                     { id: "eye-primer", label: "Bases Yeux" },
                     { id: "false-lashes", label: "Faux-cils" },
                     { id: "lash-glue", label: "Colle à Faux-cils" },
-                    { id: "concealer", label: "Anti-cernes" },
                 ]
             },
             {

@@ -179,19 +179,19 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
             {/* Color Variants Preview */}
             {product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0 && (
-              <div className="flex items-center gap-2 pt-2">
+              <div className="flex items-center  gap-2 ">
                 <span className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">Couleurs:</span>
                 <div className="flex gap-1.5">
                   {product.colorVariants.slice(0, 5).map((variant, index) => (
                     <div
                       key={index}
-                      className="relative w-6 h-6 rounded-full border border-border/50 shadow-sm"
+                      className="relative w-6 h-6 -mr-4 z-10 rounded-full border-2 border-background shadow-sm"
                       style={{ backgroundColor: variant.color || "#000000" }}
                       title={variant.colorName}
                     />
                   ))}
                   {product.colorVariants.length > 5 && (
-                    <div className="w-6 h-6 rounded-full border border-border/50 bg-secondary/30 flex items-center justify-center">
+                    <div className="w-6 h-6 z-20 rounded-full border border-background bg-secondary flex items-center justify-center">
                       <span className="text-[8px] text-muted-foreground font-semibold">
                         +{product.colorVariants.length - 5}
                       </span>
