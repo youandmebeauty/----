@@ -121,6 +121,7 @@ export const SHOP_CATEGORIES: Category[] = [
                     { id: "eye-primer", label: "Bases Yeux" },
                     { id: "false-lashes", label: "Faux-cils" },
                     { id: "lash-glue", label: "Colle à Faux-cils" },
+                    { id: "concealer", label: "Anti-cernes" },
                 ]
             },
             {
