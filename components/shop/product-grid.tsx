@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { ProductCard } from "@/components/product-card"
 import type { Product } from "@/lib/models"
@@ -11,14 +12,26 @@ interface ProductGridProps {
 }
 
 export function ProductGrid({ products, loading, clearAllFilters }: ProductGridProps) {
-    if (loading) {
+    const INITIAL_VISIBLE_COUNT = 12
+    const LOAD_MORE_STEP = 12
+
+    const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT)
+    const [hasAnimated, setHasAnimated] = useState<Set<string>>(new Set())
+
+    useEffect(() => {
+        // Reset visible products when a new product list is loaded
+        setVisibleCount(INITIAL_VISIBLE_COUNT)
+        setHasAnimated(new Set())
+    }, [products])
+
+    if (loading && products.length === 0) {
         return (
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 lg:gap-x-6 lg:gap-y-12">
                 {[...Array(12)].map((_, i) => (
                     <div key={i} className="space-y-3 animate-pulse">
-                        <div className="aspect-[3/4] bg-muted" />
-                        <div className="h-3 bg-muted w-3/4" />
-                        <div className="h-3 bg-muted w-1/2" />
+                        <div className="aspect-[3/4] bg-muted rounded" />
+                        <div className="h-3 bg-muted w-3/4 rounded" />
+                        <div className="h-3 bg-muted w-1/2 rounded" />
                     </div>
                 ))}
             </div>
@@ -31,7 +44,8 @@ export function ProductGrid({ products, loading, clearAllFilters }: ProductGridP
                 <p className="text-muted-foreground mb-4">Aucun produit trouvé</p>
                 <button 
                     onClick={clearAllFilters}
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors underline"
+                    type="button"
                 >
                     Réinitialiser les filtres
                 </button>
@@ -39,18 +53,52 @@ export function ProductGrid({ products, loading, clearAllFilters }: ProductGridP
         )
     }
 
+    const visibleProducts = products.slice(0, visibleCount)
+    const hasMore = visibleCount < products.length
+
     return (
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 lg:gap-x-6 lg:gap-y-12">
-            {products.map((product, index) => (
-                <motion.div
-                    key={product.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.05 }}
-                >
-                    <ProductCard product={product} />
-                </motion.div>
-            ))}
+        <div className="space-y-10">
+            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 lg:gap-x-6 lg:gap-y-12">
+                {visibleProducts.map((product, index) => {
+                    const shouldAnimate = !hasAnimated.has(product.id)
+                    if (shouldAnimate) {
+                        setHasAnimated(prev => new Set(prev).add(product.id))
+                    }
+
+                    return (
+                        <motion.div
+                            key={product.id}
+                            initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: shouldAnimate ? (index % LOAD_MORE_STEP) * 0.05 : 0 }}
+                        >
+                            <ProductCard product={product} />
+                        </motion.div>
+                    )
+                })}
+
+                {loading && products.length > 0 && (
+                    [...Array(8)].map((_, i) => (
+                        <div key={`skeleton-${i}`} className="space-y-3 animate-pulse">
+                            <div className="aspect-[3/4] bg-muted rounded" />
+                            <div className="h-3 bg-muted w-3/4 rounded" />
+                            <div className="h-3 bg-muted w-1/2 rounded" />
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {hasMore && (
+                <div className="flex justify-center">
+                    <button
+                        onClick={() => setVisibleCount(count => Math.min(count + LOAD_MORE_STEP, products.length))}
+                        className="px-6 py-3 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                        type="button"
+                    >
+                        Voir plus
+                    </button>
+                </div>
+            )}
         </div>
     )
 }
