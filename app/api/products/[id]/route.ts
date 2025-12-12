@@ -23,6 +23,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       subcategory,
       description,
       longDescription,
+      howToUse,
       image,
       images,
       quantity,
@@ -80,7 +81,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     if (hairType !== undefined) updateData.hairType = Array.isArray(hairType) ? hairType : []
     if (hasColorVariants !== undefined) updateData.hasColorVariants = hasColorVariants
     if (colorVariants !== undefined) updateData.colorVariants = Array.isArray(colorVariants) ? colorVariants : []
-
+    if (howToUse !== undefined) updateData.howToUse = howToUse || null
     await docRef.update(updateData)
 
     // Fetch updated document

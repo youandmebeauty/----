@@ -474,7 +474,16 @@ export function ProductClient({ product }: ProductClientProps) {
                                         </AccordionContent>
                                     </AccordionItem>
                                 )}
-
+{product.howToUse && product.category==="soins" && product.howToUse.trim() !== "" && (
+                                    <AccordionItem value="howToUse" className="border-border/50">
+                                        <AccordionTrigger className="text-sm uppercase tracking-widest font-semibold hover:no-underline hover:text-primary transition-colors">
+                                            Conseil d'utilisation
+                                        </AccordionTrigger>
+                                        <AccordionContent className="text-muted-foreground leading-relaxed font-light pt-4 text-base whitespace-pre-wrap">
+                                            {product.howToUse}
+                                        </AccordionContent>
+                                    </AccordionItem>
+                                )}
                                 {product.ingredients && product.ingredients.length > 0 && (
                                     <AccordionItem value="ingredients" className="border-border/50">
                                         <AccordionTrigger className="text-sm uppercase tracking-widest font-semibold hover:no-underline hover:text-primary transition-colors">

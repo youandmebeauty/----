@@ -20,6 +20,7 @@ export interface Product {
   productType?: string
   description: string
   longDescription?: string
+  howToUse?: string
   ingredients?: string[]
   quantity: number
   featured?: boolean

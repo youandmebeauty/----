@@ -34,6 +34,7 @@ function EditProductContent() {
     subcategory: "",
     description: "",
     longDescription: "",
+    howToUse: "",
     images: [] as string[],
     quantity: "",
     featured: false,
@@ -63,6 +64,7 @@ function EditProductContent() {
           subcategory: productData.subcategory || "",
           description: productData.description,
           longDescription: productData.longDescription || "",
+          howToUse: productData.howToUse || "",
           images: productData.images || (productData.image ? [productData.image] : []),
           quantity: productData.quantity.toString(),
           featured: productData.featured || false,
@@ -158,6 +160,7 @@ function EditProductContent() {
         subcategory: formData.subcategory?.trim() || undefined,
         description: formData.description.trim(),
         longDescription: formData.longDescription?.trim() || formData.description.trim(),
+        howToUse: formData.howToUse?.trim() || "",
         quantity: formData.hasColorVariants 
           ? colorVariants.reduce((sum, v) => sum + v.quantity, 0)
           : Number.parseInt(formData.quantity, 10) || 0,
@@ -561,6 +564,20 @@ function EditProductContent() {
                     className="bg-background/50"
                   />
                 </div>
+                {formData.category === "soins"  && (
+                                  <div>
+                                    <Label>Conseil d'utilisation</Label>
+                                    <Textarea
+                                    id="howToUse"
+                                    name="howToUse"
+                                    value={formData.howToUse}
+                                    onChange={handleInputChange}
+                                    rows={3}
+                                    placeholder="Mode d'emploi du produit"
+                                    className="bg-background/50"
+                                  />
+                                  </div>
+                                )}
 
                 <div>
                   <Label htmlFor="ingredients">Ingrédients (séparés par des virgules)</Label>

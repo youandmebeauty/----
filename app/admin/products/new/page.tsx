@@ -31,6 +31,7 @@ function AddProductContent() {
     subcategory: "",
     description: "",
     longDescription: "",
+    howToUse: "",
     images: [] as string[],
     quantity: "",
     featured: false,
@@ -107,6 +108,7 @@ function AddProductContent() {
         subcategory: formData.subcategory,
         description: formData.description,
         longDescription: formData.longDescription || formData.description,
+        howToUse: formData.howToUse,
         quantity: formData.hasColorVariants 
           ? colorVariants.reduce((sum, v) => sum + v.quantity, 0)
           : Number.parseInt(formData.quantity),
@@ -469,7 +471,20 @@ function AddProductContent() {
                     className="bg-background/50"
                   />
                 </div>
-
+{formData.category === "soins"  && (
+                  <div>
+                    <Label>Conseil d'utilisation</Label>
+                    <Textarea
+                    id="howToUse"
+                    name="howToUse"
+                    value={formData.howToUse}
+                    onChange={handleInputChange}
+                    rows={3}
+                    placeholder="Mode d'emploi du produit"
+                    className="bg-background/50"
+                  />
+                  </div>
+                )}
                 <div>
                   <Label htmlFor="ingredients">Ingrédients (séparés par des virgules)</Label>
                   <Textarea
