@@ -7,8 +7,9 @@ import { useCart } from "./cart-provider"
 import { useLoading } from "./loading-provider"
 import { toast } from "@/components/ui/use-toast"
 import { cn } from "@/lib/utils"
-import { ShoppingBag, Eye } from "lucide-react"
+import { ShoppingBag } from "lucide-react"
 import { useState } from "react"
+import { generateSlug } from "@/lib/product-url"
 
 interface Product {
   id: string
@@ -53,6 +54,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
       return // Let the link navigate to product page
     }
 
+
     const remainingStock = product.quantity - cartQuantity
     const quantityToAdd = 1
 
@@ -82,11 +84,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
   }
 
   const isOutOfStock = product.quantity <= cartQuantity
-
+const slug = generateSlug(product.name, { 
+    includeBrand: product.brand 
+  })
   return (
     <div className={cn("group relative", className)}>
       <Link 
-        href={`/product/${product.id}`}
+        href={`/product/${slug}?id=${product.id}`}
         className="block"
         onClick={handleNavigationClick}
       >
