@@ -118,6 +118,9 @@ export default function RootLayout({
 
   return (
     <html lang="fr" suppressHydrationWarning>
+      <head>
+        <meta charSet="utf-8" />
+      </head>
       <body className={inter.className}>
         <script
           type="application/ld+json"

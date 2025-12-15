@@ -4,11 +4,13 @@ export default function robots(): MetadataRoute.Robots {
     const baseUrl = 'https://youandme.tn'
 
     return {
-        rules: {
-            userAgent: '*',
-            allow: '/',
-            disallow: '/admin/',
-        },
+        rules: [
+            {
+                userAgent: '*',
+                allow: '/',
+                disallow: ['/admin/', '/api/'],
+            }
+        ],
         sitemap: `${baseUrl}/sitemap.xml`,
     }
 }
