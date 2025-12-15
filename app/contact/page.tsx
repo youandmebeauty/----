@@ -1,5 +1,5 @@
 "use client"
-
+import { Metadata } from "next"
 import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -14,7 +14,37 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+// export const metadata: Metadata = {
 
+
+//     title: "Contactez-Nous",
+//     description: "Contactez notre équipe d'experts pour toute question sur nos produits ou pour des conseils beauté personnalisés.",
+//     alternates: {
+//       canonical:`https://youandme.tn/contact`,
+//     },    openGraph: {
+//       title: "Contactez-Nous",
+//       description: "Contactez notre équipe d'experts pour toute question sur nos produits ou pour des conseils beauté personnalisés.",
+//     },
+//     keywords: [
+//       'contact',
+//       'service client',
+//       'support',
+//       'conseils beauté',
+//       'cosmétique',
+//       'beauté',
+//       'Tunisie'
+//     ],
+//     robots: {
+//       index: true,
+//       follow: true,
+//       googleBot: {
+//         index: true,
+//         follow: true,
+//         'max-image-preview': 'large',
+//         'max-snippet': -1,
+//       },
+//     },
+//   } 
 export default function ContactPage() {
   const { toast } = useToast()
   const [formData, setFormData] = useState({

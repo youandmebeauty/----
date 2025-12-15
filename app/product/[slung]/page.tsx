@@ -33,7 +33,7 @@ export async function generateMetadata({
   const canonicalUrl = `https://youandme.tn/product/${slug}?id=${product.id}`
 
   return {
-    title: `${product.name} - ${product.brand} | YourStore`,
+    title: `${product.name} - ${product.brand}`,
     description: product.description || `Achetez ${product.name} de ${product.brand}. ${product.category}. Prix: ${product.price} TND`,
     
     // Canonical URL (prevents duplicate content issues)
