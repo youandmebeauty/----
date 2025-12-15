@@ -30,7 +30,7 @@ export async function generateMetadata({
   const slug = generateSlug(product.name, { 
     includeBrand: product.brand 
   })
-  const canonicalUrl = `https://yoursite.com/product/${slug}?id=${product.id}`
+  const canonicalUrl = `https://youandme.tn/product/${slug}?id=${product.id}`
 
   return {
     title: `${product.name} - ${product.brand} | YourStore`,
@@ -92,7 +92,7 @@ export async function generateMetadata({
   }
 }
 
-export default async function ProductPage({ params, searchParams }: ProductPageProps) {
+export default async function ProductPage({ searchParams }: ProductPageProps) {
   // Require ID in query params
   if (!searchParams.id) {
     notFound()
@@ -122,7 +122,7 @@ export default async function ProductPage({ params, searchParams }: ProductPageP
     },
     offers: {
       '@type': 'Offer',
-      url: `https://yoursite.com/product/${expectedSlug}?id=${product.id}`,
+      url: `https://youandme.tn/product/${expectedSlug}?id=${product.id}`,
       priceCurrency: 'TND',
       price: product.price,
       availability: product.quantity > 0 

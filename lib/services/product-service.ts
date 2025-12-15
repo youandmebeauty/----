@@ -384,7 +384,11 @@ if (searchTerm) {
           product.name.toLowerCase().includes(lowerSearchTerm) ||
           product.description.toLowerCase().includes(lowerSearchTerm) ||
           (product.ingredients || []).some((ing: string) => ing.toLowerCase().includes(lowerSearchTerm)) ||
-          product.brand.toLowerCase().includes(lowerSearchTerm),
+          product.brand.toLowerCase().includes(lowerSearchTerm) ||
+          // Search in skin types
+          (product.skinType || []).some((type: string) => type.toLowerCase().includes(lowerSearchTerm)) ||
+          // Search in hair types
+          (product.hairType || []).some((type: string) => type.toLowerCase().includes(lowerSearchTerm)),
       )
     }
 
