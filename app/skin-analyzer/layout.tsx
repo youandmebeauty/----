@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-    title: "Analyseur de Peau IA Gratuit",
+    title: "Analyseur de Peau IA",
     description: "Analysez votre peau gratuitement avec notre intelligence artificielle avancée. Détectez acné, rides, taches et recevez des recommandations de produits personnalisées instantanément.",
     keywords: ["analyse peau IA", "diagnostic peau gratuit", "analyseur visage", "AI skin analyzer", "détection acné", "analyse beauté"],
     openGraph: {
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Analyseur de Peau IA Gratuit",
+        title: "Analyseur de Peau IA",
         description: "Analyse de peau par IA + recommandations personnalisées",
         images: ["/og-image.png"],
     },
