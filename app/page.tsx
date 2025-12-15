@@ -14,8 +14,27 @@ export const metadata: Metadata = {
 }
 
 export default function Home() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "You & Me Beauty",
+    "url": "https://youandme.tn",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": {
+        "@type": "EntryPoint",
+        "urlTemplate": "https://youandme.tn/shop?search={search_term_string}"
+      },
+      "query-input": "required name=search_term_string"
+    }
+  }
+
   return (
     <div className="min-h-screen overflow-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <main>
         <ScrollAnimation variant="fadeIn" duration={0.8}>
           <Hero />

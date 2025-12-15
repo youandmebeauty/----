@@ -91,9 +91,38 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "You & Me Beauty",
+    "url": "https://youandme.tn",
+    "logo": "https://youandme.tn/logo.webp",
+    "sameAs": [
+      "https://www.facebook.com/people/YOUME-Beauty/61578933269826/",
+      "https://instagram.com/youme_beauty_sfax"
+    ],
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "telephone": "+216-93-220-902",
+      "contactType": "customer service",
+      "areaServed": "TN",
+      "availableLanguage": ["French", "Arabic"]
+    },
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Route Lafrane KM 5.5, Markez Torki, Sfax Sud",
+      "addressLocality": "Sfax",
+      "addressCountry": "TN"
+    }
+  }
+
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <FirebaseProvider>
             <CartProvider>

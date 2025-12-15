@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+﻿import { Metadata } from "next";
 import dynamic from "next/dynamic";
 import { LoadingAnimation } from "@/components/ui/loading-animation";
 // Remove Loader2 import or keep if used elsewhere (it's not used elsewhere in this file)
@@ -49,5 +49,29 @@ const SkinAnalyzerFeature = dynamic(
 );
 
 export default function SkinAnalyzerPage() {
-  return <SkinAnalyzerFeature />;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Analyseur de Peau IA - You & Me Beauty",
+    "url": "https://youandme.tn/skin-analyzer",
+    "description": "Analysez votre peau gratuitement avec notre IA et obtenez des recommandations de produits personnalisées.",
+    "applicationCategory": "HealthApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "TND"
+    },
+    "featureList": "Détection type de peau, Analyse acné, Recommandation produits"
+  }
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <SkinAnalyzerFeature />
+    </>
+  );
 }

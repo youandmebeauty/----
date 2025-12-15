@@ -114,8 +114,9 @@ export default async function ProductPage({ searchParams }: ProductPageProps) {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.name,
-    image: product.image,
+    image: product.images && product.images.length > 0 ? product.images : [product.image || '/placeholder.svg'],
     description: product.description,
+    sku: product.id,
     brand: {
       '@type': 'Brand',
       name: product.brand,
@@ -128,9 +129,10 @@ export default async function ProductPage({ searchParams }: ProductPageProps) {
       availability: product.quantity > 0 
         ? 'https://schema.org/InStock' 
         : 'https://schema.org/OutOfStock',
+      itemCondition: 'https://schema.org/NewCondition',
       seller: {
         '@type': 'Organization',
-        name: 'You & Me beauty',
+        name: 'You & Me Beauty',
       },
     },
   }
