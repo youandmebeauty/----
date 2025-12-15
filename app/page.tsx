@@ -9,7 +9,6 @@ import { Metadata } from "next"
 
 export const metadata: Metadata = {
   // Keep this short; layout template appends "| You & Me Beauty" automatically
-  title: "Accueil",
   description: "Bienvenue chez You & Me Beauty. Découvrez notre gamme exclusive de produits de beauté, soins du visage et maquillage pour sublimer votre beauté naturelle.",
 }
 
@@ -23,7 +22,7 @@ export default function Home() {
       "@type": "SearchAction",
       "target": {
         "@type": "EntryPoint",
-        "urlTemplate": "https://youandme.tn/shop?search={search_term_string}"
+        "urlTemplate": "https://youandme.tn/shop?q={search_term_string}"
       },
       "query-input": "required name=search_term_string"
     }

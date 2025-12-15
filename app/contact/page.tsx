@@ -46,6 +46,62 @@ import {
 //     },
 //   } 
 export default function ContactPage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ContactPage",
+        "name": "Contactez You & Me Beauty",
+        "description": "Contactez notre équipe d'experts pour toute question sur nos produits ou pour des conseils beauté personnalisés.",
+        "url": "https://youandme.tn/contact",
+        "mainEntity": {
+          "@type": "BeautySalon",
+          "name": "You & Me Beauty",
+          "image": "https://youandme.tn/logo.webp",
+          "telephone": "+216 93 220 902",
+          "email": "youandme282@gmail.com",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Route Lafrane KM 5.5, Markez Torki, Sfax Sud",
+            "addressLocality": "Sfax",
+            "addressCountry": "TN"
+          },
+          "openingHoursSpecification": {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday"
+            ],
+            "opens": "09:00",
+            "closes": "19:00"
+          }
+        }
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "https://youandme.tn"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Contact",
+            "item": "https://youandme.tn/contact"
+          }
+        ]
+      }
+    ]
+  }
+
   const { toast } = useToast()
   const [formData, setFormData] = useState({
     name: "",
@@ -105,6 +161,10 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Header */}
       <div className="relative border border-border/50 bg-gradient-to-br from-secondary/30 via-secondary/20 to-background rounded-3xl m-4 overflow-hidden">
         {/* Animated background elements */}

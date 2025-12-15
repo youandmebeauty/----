@@ -51,18 +51,39 @@ const SkinAnalyzerFeature = dynamic(
 export default function SkinAnalyzerPage() {
   const jsonLd = {
     "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "Analyseur de Peau IA - You & Me Beauty",
-    "url": "https://youandme.tn/skin-analyzer",
-    "description": "Analysez votre peau gratuitement avec notre IA et obtenez des recommandations de produits personnalisées.",
-    "applicationCategory": "HealthApplication",
-    "operatingSystem": "Any",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "TND"
-    },
-    "featureList": "Détection type de peau, Analyse acné, Recommandation produits"
+    "@graph": [
+      {
+        "@type": "WebApplication",
+        "name": "Analyseur de Peau IA - You & Me Beauty",
+        "url": "https://youandme.tn/skin-analyzer",
+        "description": "Analysez votre peau gratuitement avec notre IA et obtenez des recommandations de produits personnalisées.",
+        "applicationCategory": "HealthApplication",
+        "operatingSystem": "Any",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "TND"
+        },
+        "featureList": "Détection type de peau, Analyse acné, Recommandation produits"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "https://youandme.tn"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Analyseur de Peau",
+            "item": "https://youandme.tn/skin-analyzer"
+          }
+        ]
+      }
+    ]
   }
 
   return (

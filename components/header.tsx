@@ -161,17 +161,20 @@ export function Header() {
                     </Link>
 
                     {/* Desktop Navigation */}
-                    <nav className="hidden lg:flex items-center space-x-8 lg:space-x-12">
-                      {navigation.map((item) => (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className="text-sm font-medium uppercase text-foreground hover:text-primary transition-colors whitespace-nowrap"
-                          onClick={(e) => handleNavClick(e, item.href)}
-                        >
-                          {item.name}
-                        </Link>
-                      ))}
+                    <nav className="hidden lg:flex items-center">
+                      <ul className="flex items-center space-x-8 lg:space-x-12">
+                        {navigation.map((item) => (
+                          <li key={item.name}>
+                            <Link
+                              href={item.href}
+                              className="text-sm font-medium uppercase text-foreground hover:text-primary transition-colors whitespace-nowrap"
+                              onClick={(e) => handleNavClick(e, item.href)}
+                            >
+                              {item.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
                     </nav>
 
                     {/* Actions */}
@@ -263,31 +266,33 @@ export function Header() {
                                 <SheetDescription className="sr-only">Menu de navigation principal</SheetDescription>
                               </div>
                               
-                              <nav className="flex flex-col p-6 gap-6 mt-8">
-                                {navigation.map((item, index) => (
-                                  <motion.div
-                                    key={item.name}
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{
-                                      delay: index * 0.05,
-                                      type: "spring",
-                                      stiffness: 400,
-                                      damping: 30,
-                                    }}
-                                  >
-                                    <Link
-                                      href={item.href}
-                                      className="text-2xl font-semibold uppercase tracking-tight text-white/90 hover:text-primary active:scale-95 transition-all block"
-                                      onClick={(e) => {
-                                        handleNavClick(e, item.href)
-                                        setIsOpen(false)
+                              <nav className="flex flex-col p-6 mt-8">
+                                <ul className="flex flex-col gap-6">
+                                  {navigation.map((item, index) => (
+                                    <motion.li
+                                      key={item.name}
+                                      initial={{ opacity: 0, x: 20 }}
+                                      animate={{ opacity: 1, x: 0 }}
+                                      transition={{
+                                        delay: index * 0.05,
+                                        type: "spring",
+                                        stiffness: 400,
+                                        damping: 30,
                                       }}
                                     >
-                                      {item.name}
-                                    </Link>
-                                  </motion.div>
-                                ))}
+                                      <Link
+                                        href={item.href}
+                                        className="text-2xl font-semibold uppercase tracking-tight text-white/90 hover:text-primary active:scale-95 transition-all block"
+                                        onClick={(e) => {
+                                          handleNavClick(e, item.href)
+                                          setIsOpen(false)
+                                        }}
+                                      >
+                                        {item.name}
+                                      </Link>
+                                    </motion.li>
+                                  ))}
+                                </ul>
                               </nav>
 
                               {/* Mobile-only theme toggle in menu */}

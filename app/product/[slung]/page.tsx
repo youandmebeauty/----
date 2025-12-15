@@ -112,29 +112,62 @@ export default async function ProductPage({ searchParams }: ProductPageProps) {
   // JSON-LD Structured Data
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Product',
-    name: product.name,
-    image: product.images && product.images.length > 0 ? product.images : [product.image || '/placeholder.svg'],
-    description: product.description,
-    sku: product.id,
-    brand: {
-      '@type': 'Brand',
-      name: product.brand,
-    },
-    offers: {
-      '@type': 'Offer',
-      url: `https://youandme.tn/product/${expectedSlug}?id=${product.id}`,
-      priceCurrency: 'TND',
-      price: product.price,
-      availability: product.quantity > 0 
-        ? 'https://schema.org/InStock' 
-        : 'https://schema.org/OutOfStock',
-      itemCondition: 'https://schema.org/NewCondition',
-      seller: {
-        '@type': 'Organization',
-        name: 'You & Me Beauty',
+    '@graph': [
+      {
+        '@type': 'Product',
+        name: product.name,
+        image: product.images && product.images.length > 0 ? product.images : [product.image || '/placeholder.svg'],
+        description: product.description,
+        sku: product.id,
+        brand: {
+          '@type': 'Brand',
+          name: product.brand,
+        },
+        offers: {
+          '@type': 'Offer',
+          url: `https://youandme.tn/product/${expectedSlug}?id=${product.id}`,
+          priceCurrency: 'TND',
+          price: product.price,
+          availability: product.quantity > 0 
+            ? 'https://schema.org/InStock' 
+            : 'https://schema.org/OutOfStock',
+          itemCondition: 'https://schema.org/NewCondition',
+          seller: {
+            '@type': 'Organization',
+            name: 'You & Me Beauty',
+          },
+        },
       },
-    },
+      {
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          {
+            '@type': 'ListItem',
+            'position': 1,
+            'name': 'Accueil',
+            'item': 'https://youandme.tn'
+          },
+          {
+            '@type': 'ListItem',
+            'position': 2,
+            'name': 'Boutique',
+            'item': 'https://youandme.tn/shop'
+          },
+          {
+            '@type': 'ListItem',
+            'position': 3,
+            'name': product.category,
+            'item': `https://youandme.tn/shop?category=${product.category}`
+          },
+          {
+            '@type': 'ListItem',
+            'position': 4,
+            'name': product.name,
+            'item': `https://youandme.tn/product/${expectedSlug}?id=${product.id}`
+          }
+        ]
+      }
+    ]
   }
 
   // Fetch related products

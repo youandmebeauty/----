@@ -1,0 +1,116 @@
+{
+    "name": "You & Me Beauty",
+    "short_name": "YouMe",
+    "description": "Votre consultant beauté personnel alimenté par l'IA et votre boutique. Découvrez une analyse de peau personnalisée et achetez des produits de beauté haut de gamme.",
+    "id": "/",
+    "start_url": "/",
+    "display": "standalone",
+    "display_override": [
+        "window-controls-overlay",
+        "standalone",
+        "minimal-ui"
+    ],
+    "orientation": "portrait",
+    "categories": [
+        "shopping",
+        "beauty",
+        "lifestyle"
+    ],
+    "theme_color": "#D16186",
+    "background_color": "#ffffff",
+    "icons": [
+        {
+            "src": "/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Analyseur de Peau",
+            "short_name": "Analyseur",
+            "description": "Analysez votre peau avec l'IA",
+            "url": "/skin-analyzer",
+            "icons": [
+                {
+                    "src": "/android-chrome-192x192.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        },
+        {
+            "name": "Boutique",
+            "short_name": "Boutique",
+            "description": "Parcourir nos produits",
+            "url": "/shop",
+            "icons": [
+                {
+                    "src": "/android-chrome-192x192.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        },
+        {
+            "name": "Panier",
+            "short_name": "Panier",
+            "description": "Voir votre panier",
+            "url": "/cart",
+            "icons": [
+                {
+                    "src": "/android-chrome-192x192.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        },
+        {
+            "name": "Contact",
+            "short_name": "Contact",
+            "description": "Contactez-nous",
+            "url": "/contact",
+            "icons": [
+                {
+                    "src": "/android-chrome-192x192.png",
+                    "sizes": "192x192",
+                    "type": "image/png"
+                }
+            ]
+        }
+    ],
+    "share_target": {
+        "action": "/skin-analyzer",
+        "method": "POST",
+        "enctype": "multipart/form-data",
+        "params": {
+            "title": "title",
+            "text": "text",
+            "url": "url",
+            "files": [
+                {
+                    "name": "image",
+                    "accept": [
+                        "image/*"
+                    ]
+                }
+            ]
+        }
+    },
+    "launch_handler": {
+        "client_mode": "navigate-existing"
+    },
+    "protocol_handlers": [
+        {
+            "protocol": "web+youme",
+            "url": "/shop?ref=%s"
+        }
+    ]
+}

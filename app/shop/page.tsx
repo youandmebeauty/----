@@ -21,6 +21,35 @@ import {
 import { FeaturedSection } from "@/components/shop/featured-section"
 
 function SearchContent() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "name": "Boutique You & Me Beauty",
+        "description": "Découvrez notre large gamme de produits de beauté, soins du visage, maquillage et plus encore.",
+        "url": "https://youandme.tn/shop"
+      },
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Accueil",
+            "item": "https://youandme.tn"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Boutique",
+            "item": "https://youandme.tn/shop"
+          }
+        ]
+      }
+    ]
+  }
+
   const searchParams = useSearchParams()
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
@@ -184,6 +213,10 @@ function SearchContent() {
 
   return (
     <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <main className="container mx-auto px-4 lg:px-6 xl:px-8 py-8">
         {/* Featured Section (New) */}
         <FeaturedSection />
