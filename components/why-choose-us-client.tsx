@@ -52,11 +52,11 @@ const values = [
 ]
 
 
-export function WhyChooseUs() {
+export function WhyChooseUsClient() {
     const { theme } = useTheme()
 
     return (
-        <section className="py-20 mt-24 relative overflow-hidden">
+        <section className="py-20  relative overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0 bg-gradient-to-b from-secondary/50 via-background to-background/50 rounded-3xl m-4"></div>
             <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl"></div>

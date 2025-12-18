@@ -7,7 +7,7 @@ import type { Product } from "@/lib/models"
 import { ScrollAnimation } from "./scroll-animation"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 
-export function FeaturedProducts() {
+export function FeaturedProductsClient() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)

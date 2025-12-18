@@ -1,9 +1,9 @@
 import { Hero } from "@/components/hero"
-import { FeaturedProducts } from "@/components/featured-products"
-import { Categories } from "@/components/categories"
-import { WhyChooseUs } from "@/components/why-choose-us"
+import { FeaturedProductsServer } from "@/components/featured-products-server"
+import { CategoriesServer } from "@/components/categories-server"
+import { WhyChooseUsServer } from "@/components/why-choose-us-server"
 import { MakeupModel3D } from "@/components/makeup-model"
-import { ScrollAnimation } from "@/components/scroll-animation"
+import { ClientScrollAnimation } from "@/components/client-scroll-animation"
 
 import { Metadata } from "next"
 
@@ -37,21 +37,21 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <main>
-        <ScrollAnimation variant="fadeIn" duration={0.8}>
+        <ClientScrollAnimation variant="fadeIn" duration={0.8}>
           <Hero />
-        </ScrollAnimation>
+        </ClientScrollAnimation>
         <div className="hidden lg:block absolute -top-5 right-0 w-1/2 h-[100vh] z-20" >
           <MakeupModel3D />
         </div>
-        <ScrollAnimation variant="slideUp" delay={0.2}>
-          <Categories />
-        </ScrollAnimation>
-        <ScrollAnimation variant="slideUp" delay={0.3}>
-          <FeaturedProducts />
-        </ScrollAnimation>
-        <ScrollAnimation variant="slideUp" delay={0.4}>
-          <WhyChooseUs />
-        </ScrollAnimation>
+        <ClientScrollAnimation variant="slideUp" delay={0.2}>
+          <CategoriesServer />
+        </ClientScrollAnimation>
+        <ClientScrollAnimation variant="slideUp" delay={0.3}>
+          <FeaturedProductsServer />
+        </ClientScrollAnimation>
+        <ClientScrollAnimation variant="slideUp" delay={0.4}>
+          <WhyChooseUsServer />
+        </ClientScrollAnimation>
       </main>
     </div>
   )
