@@ -8,7 +8,9 @@ import { ScrollAnimation } from "@/components/scroll-animation"
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  // Keep this short; layout template appends "| You & Me Beauty" automatically
+  alternates: {
+    canonical: "https://youandme.tn",
+  },
   description: "Bienvenue chez You & Me Beauty. Découvrez notre gamme exclusive de produits de beauté, soins du visage et maquillage pour sublimer votre beauté naturelle.",
 }
 

@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useCart } from "@/components/cart-provider"
 import { useToast } from "@/hooks/use-toast"
 import { createOrder } from "@/lib/services/order-service"
+import type { InvoiceDetails } from "@/lib/generate-invoice-pdf"
 import { getItemStock } from "@/lib/services/product-service"
 import { getPromoCodeByCode } from "@/lib/services/promo-code-service"
 import type { OrderItem, PromoCode } from "@/lib/models"
@@ -244,7 +245,46 @@ export default function CartPage() {
         orderData.discount = discount
       }
 
-      await createOrder(orderData)
+      const createdOrder = await createOrder(orderData)
+
+      // Persist lightweight order snapshot for invoice download on confirmation page
+      if (typeof window !== "undefined") {
+        try {
+          const invoicePayload: InvoiceDetails = {
+            orderId: createdOrder.id,
+            date: createdOrder.createdAt || new Date().toISOString(),
+            products: items.map((item) => ({
+              id: item.id,
+              name: item.name,
+              quantity: item.quantity,
+              price: item.price,
+            })),
+            customer: {
+              name: orderForm.name || "Client",
+              email: orderForm.email || "N/A",
+              phone: orderForm.phone || "N/A",
+              address: orderForm.address
+                ? {
+                    addressLine: orderForm.address,
+                    district: orderForm.city || "",
+                    delegation: orderForm.postalCode || "",
+                    governorate: orderForm.gouvernorat || "",
+                  }
+                : undefined,
+            },
+            subtotal: Math.max(total - discount, 0),
+            tax: 0,
+            shipping,
+            total: finalTotal,
+            paymentMethod: "Paiement à la livraison",
+            ...(discount > 0 && appliedPromo?.code && { promoCode: appliedPromo.code, discount }),
+          }
+
+          localStorage.setItem("lastOrderInvoice", JSON.stringify(invoicePayload))
+        } catch (storageError) {
+          console.error("Error caching invoice payload:", storageError)
+        }
+      }
 
       toast({
         title: "Commande soumise avec succès!",
