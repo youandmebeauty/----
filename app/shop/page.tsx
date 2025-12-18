@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation"
 import { searchProducts } from "@/lib/services/product-service"
 import type { Product, SearchFilters } from "@/lib/models"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
-import { Sparkles, User, Wind } from "lucide-react"
+import { Sparkles, User, Wind, Pill } from "lucide-react"
 
 // Components
 import { ShopHeader } from "@/components/shop/shop-header"
@@ -273,14 +273,14 @@ function SearchContent() {
             }
           }}
         >
-          <DialogContent className="rounded-xl border-2 border-border shadow-lg">
+          <DialogContent className="w-full max-w-3xl md:max-w-4xl rounded-xl border-2 border-border shadow-lg p-6 md:p-8">
             <DialogTitle className="text-center text-2xl font-bold mb-6">
               Que recherchez-vous ?
             </DialogTitle>
             <DialogDescription className="sr-only">
-              Sélectionnez le type de soins que vous recherchez : visage, corps ou cheveux.
+              Sélectionnez le type de soins que vous recherchez : visage, corps, cheveux ou compléments.
             </DialogDescription>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <button
                 onClick={(e) => {
                   e.currentTarget.blur()
@@ -328,6 +328,22 @@ function SearchContent() {
                   <Wind className="w-8 h-8 text-primary" />
                 </div>
                 <span className="font-semibold text-lg">Cheveux</span>
+              </button>
+              <button
+                onClick={(e) => {
+                  e.currentTarget.blur()
+                  setHasDismissedSoinsModal(true)
+                  requestAnimationFrame(() => {
+                    setTimeout(() => handleSubcategoryChange("complement-nutritionnel"), 250)
+                  })
+                }}
+                className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
+                type="button"
+              >
+                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <Pill className="w-8 h-8 text-primary" />
+                </div>
+                <span className="font-semibold text-lg">Compléments</span>
               </button>
             </div>
           </DialogContent>

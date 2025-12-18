@@ -25,6 +25,7 @@ export const SHOP_CATEGORIES: Category[] = [
             { id: "visage", label: "Soin du Visage" },
             { id: "corps", label: "Soin du Corps" },
             { id: "cheveux", label: "Soin des Cheveux" },
+            { id: "complement-nutritionnel", label: "Compléments Nutritionnels" },
         ],
         filters: [
             {
