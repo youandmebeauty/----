@@ -190,6 +190,12 @@ function SearchContent() {
       prev.includes(filterId) ? prev.filter(f => f !== filterId) : [...prev, filterId]
     )
   }
+  const categories = [
+    { id: 'visage', icon: Sparkles, label: 'Visage' },
+    { id: 'corps', icon: User, label: 'Corps' },
+    { id: 'cheveux', icon: Wind, label: 'Cheveux' },
+    { id: 'complement-nutritionnel', icon: Pill, label: 'Compléments' }
+  ];
 
   const filterProps = {
     selectedCategory,
@@ -266,88 +272,47 @@ function SearchContent() {
 
         {/* Soins Subcategory Selection Modal */}
         <Dialog
-          open={selectedCategory === "soins" && !selectedSubcategory && !hasDismissedSoinsModal}
-          onOpenChange={(open) => {
-            if (!open) {
-              setHasDismissedSoinsModal(true)
-            }
-          }}
-        >
-          <DialogContent className="w-full max-w-3xl md:max-w-4xl rounded-xl border-2 border-border shadow-lg p-6 md:p-8">
-            <DialogTitle className="text-center text-2xl font-bold mb-6">
-              Que recherchez-vous ?
-            </DialogTitle>
-            <DialogDescription className="sr-only">
-              Sélectionnez le type de soins que vous recherchez : visage, corps, cheveux ou compléments.
-            </DialogDescription>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <button
-                onClick={(e) => {
-                  e.currentTarget.blur()
-                  setHasDismissedSoinsModal(true)
-                  requestAnimationFrame(() => {
-                    setTimeout(() => handleSubcategoryChange("visage"), 250)
-                  })
-                }}
-                className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
-                type="button"
-              >
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Sparkles className="w-8 h-8 text-primary" />
-                </div>
-                <span className="font-semibold text-lg">Visage</span>
-              </button>
-              <button
-                onClick={(e) => {
-                  e.currentTarget.blur()
-                  setHasDismissedSoinsModal(true)
-                  requestAnimationFrame(() => {
-                    setTimeout(() => handleSubcategoryChange("corps"), 250)
-                  })
-                }}
-                className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
-                type="button"
-              >
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <User className="w-8 h-8 text-primary" />
-                </div>
-                <span className="font-semibold text-lg">Corps</span>
-              </button>
-              <button
-                onClick={(e) => {
-                  e.currentTarget.blur()
-                  setHasDismissedSoinsModal(true)
-                  requestAnimationFrame(() => {
-                    setTimeout(() => handleSubcategoryChange("cheveux"), 250)
-                  })
-                }}
-                className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
-                type="button"
-              >
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Wind className="w-8 h-8 text-primary" />
-                </div>
-                <span className="font-semibold text-lg">Cheveux</span>
-              </button>
-              <button
-                onClick={(e) => {
-                  e.currentTarget.blur()
-                  setHasDismissedSoinsModal(true)
-                  requestAnimationFrame(() => {
-                    setTimeout(() => handleSubcategoryChange("complement-nutritionnel"), 250)
-                  })
-                }}
-                className="flex flex-col items-center justify-center p-6 rounded-xl border-2 border-border hover:border-primary hover:bg-primary/5 transition-all duration-300 group"
-                type="button"
-              >
-                <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                  <Pill className="w-8 h-8 text-primary" />
-                </div>
-                <span className="font-semibold text-lg">Compléments</span>
-              </button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        open={selectedCategory === "soins" && !selectedSubcategory && !hasDismissedSoinsModal}
+        onOpenChange={(open) => {
+          if (!open) {
+            setHasDismissedSoinsModal(true);
+          }
+        }}
+      >
+        <DialogContent className="w-full max-w-md bg-background rounded-xl shadow-xl p-5">
+          <DialogTitle className="text-center text-xl font-bold mb-4">
+            Que recherchez-vous ?
+          </DialogTitle>
+          <DialogDescription className="sr-only">
+            Sélectionnez le type de soins que vous recherchez : visage, corps, cheveux ou compléments.
+          </DialogDescription>
+          
+          <div className="grid grid-cols-2 gap-3">
+            {categories.map((category) => {
+              const Icon = category.icon;
+              return (
+                <button
+                  key={category.id}
+                  onClick={(e) => {
+                    e.currentTarget.blur();
+                    setHasDismissedSoinsModal(true);
+                    requestAnimationFrame(() => {
+                      setTimeout(() => handleSubcategoryChange(category.id), 250);
+                    });
+                  }}
+                  className="flex flex-col items-center justify-center p-4 rounded-lg border-2 border-border hover:border-primary hover:bg-primary/10 transition-all duration-200 group"
+                  type="button"
+                >
+                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-2 group-hover:bg-primary/20 transition-colors">
+                    <Icon className="w-6 h-6 text-primary" />
+                  </div>
+                  <span className="font-semibold text-sm">{category.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </DialogContent>
+      </Dialog>
       </main>
     </div>
   )
