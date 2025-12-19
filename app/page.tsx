@@ -62,9 +62,7 @@ export default function Home() {
         </section>
         
         <section aria-label="Why choose us">
-          <ClientScrollAnimation variant="slideUp" delay={0.4}>
             <WhyChooseUsServer />
-          </ClientScrollAnimation>
         </section>
       </main>
     </div>
