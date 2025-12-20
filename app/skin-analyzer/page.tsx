@@ -7,12 +7,12 @@ export async function generateMetadata({
     const canonicalUrl = `https://youandme.tn/skin-analyzer`;
 
   return {
-    title: "Analyseur de Peau",
+    title: "Analyseur de Peau - You & Me Beauty",
     description: "Découvrez votre type de peau et recevez des recommandations de produits personnalisées avec notre analyseur de peau avancé.",
 alternates: {
       canonical: canonicalUrl,
     },    openGraph: {
-      title: "Analyseur de Peau",
+      title: "Analyseur de Peau - You & Me Beauty",
       description: "Découvrez votre type de peau et recevez des recommandations de produits personnalisées avec notre analyseur de peau avancé.",
     },
     keywords: [

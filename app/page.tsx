@@ -4,7 +4,6 @@ import { CategoriesServer } from "@/components/categories-server"
 import { WhyChooseUsServer } from "@/components/why-choose-us-server"
 import { MakeupModel3D } from "@/components/makeup-model"
 import { ClientScrollAnimation } from "@/components/client-scroll-animation"
-import Link from "next/link"
 
 import { Metadata } from "next"
 
