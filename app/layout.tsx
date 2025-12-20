@@ -14,10 +14,7 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://youandme.tn'),
-  title: {
-    default: "Accueil",
-    template: "%s | You & Me Beauty"
-  },
+  title: "Accueil",
   description: "Découvrez des cosmétiques et produits de beauté premium chez You & Me Beauty à Sfax. Notre analyseur de peau IA vous recommande les meilleurs produits adaptés à vos besoins. Livraison en Tunisie.",
   keywords: [
     "beauté tunisie",
@@ -48,7 +45,7 @@ export const metadata: Metadata = {
     locale: "fr_TN",
     alternateLocale: ["fr_FR", "ar_TN"],
     url: "https://youandme.tn",
-    title: "Accueil | You & Me Beauty",
+    title: "Accueil - You & Me Beauty",
     description: "Découvrez l'excellence de la beauté avec You & Me Beauty à Sfax. Utilisez notre analyseur de peau IA pour des recommandations personnalisées. Livraison gratuite en Tunisie.",
     siteName: "You & Me Beauty",
     images: [
@@ -63,7 +60,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "You & Me Beauty | Cosmétiques Premium",
+    title: "You & Me Beauty - Cosmétiques Premium",
     description: "Boutique de beauté premium à Sfax. Analyseur de peau IA, livraison en Tunisie.",
     images: ["/og-image.png"],
   },

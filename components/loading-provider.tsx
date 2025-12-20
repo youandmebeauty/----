@@ -3,12 +3,10 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
 import { NavigationLoading } from "./navigation-loading"
-import { SplashScreen } from "./splash-screen"
 
 interface LoadingContextType {
   isLoading: boolean
   setIsLoading: (loading: boolean) => void
-  showSplash: boolean
 }
 
 const LoadingContext = createContext<LoadingContextType | undefined>(undefined)
@@ -27,20 +25,11 @@ interface LoadingProviderProps {
 
 export function LoadingProvider({ children }: LoadingProviderProps) {
   const [isLoading, setIsLoading] = useState(false)
-  const [showSplash, setShowSplash] = useState(true)
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  // Handle splash screen completion
-  const handleSplashComplete = () => {
-    setShowSplash(false)
-  }
-
   // Handle route changes
   useEffect(() => {
-    // Skip if splash screen is still showing
-    if (showSplash) return
-
     // Show loading when route starts changing
     setIsLoading(true)
 
@@ -50,12 +39,11 @@ export function LoadingProvider({ children }: LoadingProviderProps) {
     }, 500)
 
     return () => clearTimeout(timer)
-  }, [pathname, searchParams, showSplash])
+  }, [pathname, searchParams])
 
   return (
-    <LoadingContext.Provider value={{ isLoading, setIsLoading, showSplash }}>
-      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-      <NavigationLoading isLoading={isLoading && !showSplash} />
+    <LoadingContext.Provider value={{ isLoading, setIsLoading }}>
+      <NavigationLoading isLoading={isLoading} />
       {children}
     </LoadingContext.Provider>
   )
