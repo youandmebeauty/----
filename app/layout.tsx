@@ -8,7 +8,6 @@ import { LoadingProvider } from "@/components/loading-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { Footer } from "@/components/footer"
 import { Header } from "@/components/header"
-import { SmoothScroll } from "@/components/smooth-scroll"
 const inter = Inter({ subsets: ["latin"] })
 
 
@@ -56,7 +55,6 @@ export default function RootLayout({
           <FirebaseProvider>
             <CartProvider>
               <LoadingProvider>
-                <SmoothScroll />
                 <Header />
                 {children}
                 <Footer />
