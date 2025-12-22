@@ -157,6 +157,7 @@ function EditProductContent() {
       const productData: any = {
         name: formData.name.trim(),
         brand: formData.brand.trim(),
+        barcode: formData.barcode.trim(),
         price: Number.parseFloat(formData.price) || 0,
         category: formData.category,
         subcategory: formData.subcategory?.trim() || undefined,
