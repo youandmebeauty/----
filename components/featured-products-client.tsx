@@ -116,7 +116,7 @@ export function FeaturedProductsClient() {
   }
 
   return (
-    <section className="py-16 mt-24 bg-background border border-border/50 rounded-3xl m-4">
+    <section className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4">
       <div className="container  mx-auto px-4">
         <div className="mb-16 flex items-end justify-between">
           <div className="max-w-xl">
@@ -124,9 +124,9 @@ export function FeaturedProductsClient() {
               <span className="h-px w-8 bg-primary"></span>
               <span className="text-sm font-medium tracking-widest uppercase text-primary">Sélection Exclusive</span>
             </div>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
               Produits Vedettes
-            </h2>
+            </h1>
           </div>
           <span className="text-muted-foreground hidden md:block text-xs tracking-widest uppercase border-l border-border pl-4 ml-4">02 / CURATED</span>
         </div>

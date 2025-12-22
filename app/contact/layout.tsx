@@ -11,6 +11,25 @@ export const metadata: Metadata = {
         description: "Contactez notre équipe pour toute question ou assistance concernant nos produits de beauté premium.",
         url: "https://youandme.tn/contact",
     },
+    keywords: [
+        "contact",
+        "service client",   
+        "assistance",
+        "produits de beauté",
+        "soins du visage",
+        "You & Me Beauty",
+        "Tunisie"
+    ],
+    robots: {
+        index: true,
+        follow: true,
+        googleBot: {
+            index: true,
+            follow: true,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+        },
+    },
 }
 
 export default function ContactLayout({

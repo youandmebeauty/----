@@ -169,8 +169,8 @@ export default function ContactPage() {
       <div className="relative border border-border/50 bg-gradient-to-br from-secondary/30 via-secondary/20 to-background rounded-3xl m-4 overflow-hidden">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-0 right-0 w-96 h-96 bg-primary/30 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
         </div>
 
         {/* Subtle grid pattern */}
@@ -212,12 +212,12 @@ export default function ContactPage() {
       </div>
 
       <main className="container mx-auto px-4 py-16 lg:py-24">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
 
           {/* Contact Info */}
-          <div className="lg:col-span-4 space-y-12">
+          <div className="lg:col-span-4 space-y-10">
             <div>
-              <h2 className="font-serif text-2xl mb-8">Nos Coordonnées</h2>
+              <h2 className="font-serif text-2xl mb-6">Nos Coordonnées</h2>
               <div className="space-y-8">
                 <div className="group">
                   <div className="flex items-center gap-3 mb-2 text-primary">
@@ -237,7 +237,8 @@ export default function ContactPage() {
                   <a href="tel:+21693220902" className="text-lg text-muted-foreground hover:text-foreground transition-colors">
                     +216 93 220 902
                   </a>
-                  <p className="text-sm text-muted-foreground mt-1">Lun-Ven: 9h-18h</p>
+                  <p className="text-sm text-muted-foreground mt-1">Lun-Sam: 9h-19h</p>
+                  <p className="text-sm text-muted-foreground">Dim: 10h-16h</p>
                 </div>
 
                 <div className="group">
@@ -245,57 +246,30 @@ export default function ContactPage() {
                     <MapPin className="h-5 w-5" />
                     <span className="font-medium">Boutique</span>
                   </div>
-                  <address className="text-lg text-muted-foreground not-italic">
-                    Route Lafrane KM 5.5, Markez Torki, Sfax Sud<br />
-                    Sfax, Tunisie
+                  <div className="rounded-xl overflow-hidden border border-border/40 bg-background">
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d652.1485706667269!2d10.71399738873673!3d34.77518241403843!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1301d389d33a9e57%3A0x66ebe5d74f8e7e90!2sYou%20%26%20Me%20Beauty!5e1!3m2!1sen!2stn!4v1766356491605!5m2!1sen!2stn"
+                      width="100%"
+                      height="300"
+                      style={{ border: 0 }}
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="no-referrer-when-downgrade"
+                    />
+                  </div>
+                  <address className="text-xs text-muted-foreground mt-2">
+                    Route Lafrane KM 5.5, Markez Torki, Sfax, Tunisie
                   </address>
                 </div>
               </div>
             </div>
 
-            <div className="pt-12 border-t border-border/50">
-              <h2 className="font-serif text-2xl mb-6">FAQ</h2>
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="item-1" className="border-b border-border/50">
-                  <AccordionTrigger className="text-base hover:no-underline py-4">
-                    Livraison
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-4">
-                    Nous livrons partout en Tunisie sous 2 à 4 jours ouvrables.
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-1" className="border-b border-border/50">
-  <AccordionTrigger className="text-base hover:no-underline py-4">
-    Authenticité Garantie
-  </AccordionTrigger>
-  <AccordionContent className="text-muted-foreground pb-4">
-    Nous garantissons que chaque produit est authentique, vérifié et issu de circuits officiels pour assurer une qualité irréprochable.
-  </AccordionContent>
-</AccordionItem>
 
-                <AccordionItem value="item-2" className="border-b border-border/50">
-                  <AccordionTrigger className="text-base hover:no-underline py-4">
-                    Comment utiliser l'analyseur de peau IA ?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-4">
-                    Notre analyseur de peau utilise l'intelligence artificielle pour détecter les problèmes de peau. Prenez simplement une photo de votre visage et recevez des recommandations personnalisées de produits adaptés à vos besoins.
-                  </AccordionContent>
-                </AccordionItem>
-                <AccordionItem value="item-3" className="border-b border-border/50">
-                  <AccordionTrigger className="text-base hover:no-underline py-4">
-                    Quels moyens de paiement acceptez-vous ?
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-4">
-                    Paiement à la livraison ou visitez-nous sur place dans notre boutique à Sfax. Nous acceptons espèces, carte bancaire et virement.
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
-            </div>
           </div>
 
           {/* Contact Form */}
           <div className="lg:col-span-7 lg:col-start-6">
-            <div className="bg-secondary/10 p-8 md:p-12 rounded-sm">
+            <div className="rounded-2xl border border-border/40 bg-background p-8 md:p-10 shadow-sm">
               <h2 className="font-serif text-3xl mb-8">Envoyez-nous un message</h2>
               <form onSubmit={handleSubmit} className="space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -370,9 +344,50 @@ export default function ContactPage() {
                 </Button>
               </form>
             </div>
+            
           </div>
 
         </div>
+
+        <section className="mt-16 border-t border-border/40 pt-10">
+          <div className="max-w-3xl">
+            <h2 className="font-serif text-2xl mb-4">FAQ</h2>
+            <Accordion type="single" collapsible className="w-full">
+              <AccordionItem value="item-1" className="border-b border-border/50">
+                <AccordionTrigger className="text-base hover:no-underline py-4">
+                  Livraison
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-4">
+                  Nous livrons partout en Tunisie sous 2 à 4 jours ouvrables.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-1b" className="border-b border-border/50">
+                <AccordionTrigger className="text-base hover:no-underline py-4">
+                  Authenticité Garantie
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-4">
+                  Nous garantissons que chaque produit est authentique, vérifié et issu de circuits officiels pour assurer une qualité irréprochable.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-2" className="border-b border-border/50">
+                <AccordionTrigger className="text-base hover:no-underline py-4">
+                  Comment utiliser l'analyseur de peau IA ?
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-4">
+                  Notre analyseur de peau utilise l'intelligence artificielle pour détecter les problèmes de peau. Prenez simplement une photo de votre visage et recevez des recommandations personnalisées de produits adaptés à vos besoins.
+                </AccordionContent>
+              </AccordionItem>
+              <AccordionItem value="item-3" className="border-b border-border/50">
+                <AccordionTrigger className="text-base hover:no-underline py-4">
+                  Quels moyens de paiement acceptez-vous ?
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-4">
+                  Paiement à la livraison ou visitez-nous sur place dans notre boutique à Sfax. Nous acceptons espèces, carte bancaire et virement.
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+        </section>
       </main>
     </div>
   )

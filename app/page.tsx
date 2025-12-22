@@ -5,15 +5,6 @@ import { WhyChooseUsServer } from "@/components/why-choose-us-server"
 import { MakeupModel3D } from "@/components/makeup-model"
 import { ClientScrollAnimation } from "@/components/client-scroll-animation"
 
-import { Metadata } from "next"
-
-export const metadata: Metadata = {
-  title: "You & Me Beauty - Produits de Beauté Premium & Soins du Visage",
-  alternates: {
-    canonical: "https://youandme.tn",
-  },
-  description: "Bienvenue chez You & Me Beauty. Découvrez notre gamme exclusive de produits de beauté, soins du visage et maquillage pour sublimer votre beauté naturelle.",
-}
 
 export default function Home() {
   const jsonLd = {
@@ -44,7 +35,7 @@ export default function Home() {
           </ClientScrollAnimation>
         </section>
         
-        <div className="hidden lg:block absolute -top-5 right-0 w-1/2 h-[100vh] z-20" >
+        <div className="absolute -top-5 md:right-0 -right-40 w-full h-[150vh] md:h-[92vh] md:w-1/2 z-20 overflow-hidden" >
           <MakeupModel3D />
         </div>
         

@@ -25,8 +25,9 @@ export function CategoriesClient({ categories }: CategoriesClientProps) {
     }
   }
      return (
-    <section className="mt-24 pt-24 bg-gradient-to-b rounded-3xl m-4 from-secondary to-background/30">
-      <div className="container mx-auto px-4 ">
+            <section className="relative mt-10 overflow-hidden">
+
+      <div className="container mx-auto px-4  z-10">
         <div className="mb-16 flex items-end justify-between ">
           <div className="max-w-xl">
 
@@ -35,9 +36,9 @@ export function CategoriesClient({ categories }: CategoriesClientProps) {
               <span className="text-sm font-medium tracking-widest uppercase text-primary">Explorer</span>
             </div>
 
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
               Nos Catégories
-            </h2>
+            </h1>
           </div>
           <span className="text-muted-foreground hidden md:block text-xs tracking-widest uppercase border-l border-border pl-4 ml-4">01 / DISCOVER</span>
         </div>

@@ -72,9 +72,9 @@ export function WhyChooseUsClient() {
                         </span>
                     </div>
 
-                    <h2 className="font-serif text-5xl md:text-6xl lg:text-7xl font-medium mb-6 text-foreground">
+                    <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-medium mb-6 text-foreground">
                         Pourquoi <br /> <span className="italic text-primary">You&me Beauty</span>
-                    </h2>
+                    </h1>
 
                     <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
                         Votre destination beauté de confiance pour toutes les grandes marques cosmétiques internationales
@@ -115,9 +115,9 @@ export function WhyChooseUsClient() {
                                         </div>
 
                                         {/* Title */}
-                                        <h3 className="font-serif text-2xl font-semibold mb-4 text-foreground group-hover:text-primary transition-colors duration-500">
+                                        <h2 className="text-2xl font-semibold mb-4 text-foreground group-hover:text-primary transition-colors duration-500">
                                             {value.title}
-                                        </h3>
+                                        </h2>
 
                                         {/* Description */}
                                         <p className="text-muted-foreground leading-relaxed mb-6 font-light">

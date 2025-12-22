@@ -23,6 +23,7 @@ alternates: {
       'cosmétique',
       'beauté',
       'Tunisie'
+      
     ],
     robots: {
       index: true,

@@ -9,6 +9,40 @@ import { Toaster } from "@/components/ui/toaster"
 import { Footer } from "@/components/footer"
 import { Header } from "@/components/header"
 const inter = Inter({ subsets: ["latin"] })
+import { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Accueil - You & Me Beauty",
+  alternates: {
+    canonical: "https://youandme.tn",
+  },
+  description: "Bienvenue chez You & Me Beauty. Découvrez notre gamme exclusive de produits de beauté, soins du visage et maquillage pour sublimer votre beauté naturelle.",
+  openGraph: {
+    title: "Accueil - You & Me Beauty",
+    description: "Bienvenue chez You & Me Beauty. Découvrez notre gamme exclusive de produits de beauté, soins du visage et maquillage pour sublimer votre beauté naturelle.",
+    url: "https://youandme.tn",
+  },
+  keywords: [
+    "beauté",
+    "cosmétique",
+    "soins du visage",
+    "maquillage",
+    "produits de beauté",
+    "You & Me Beauty",
+    "Tunisie"
+  ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+
+}
 
 
 export default function RootLayout({
