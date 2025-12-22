@@ -35,7 +35,7 @@ export default function Home() {
           </ClientScrollAnimation>
         </section>
         
-        <div className="absolute -top-5 md:right-0 -right-40 w-full h-[150vh] md:h-[92vh] md:w-1/2 z-20 overflow-hidden" >
+        <div className="hidden lg:block absolute -top-5 right-0 w-1/2  z-20" >
           <MakeupModel3D />
         </div>
         
