@@ -31,6 +31,31 @@ const initFirestore = async () => {
 const ORDERS_COLLECTION = "orders"
 
 export async function getOrders(): Promise<Order[]> {
+  // Server-side: Use Firebase Admin SDK (matches API route behavior)
+  if (typeof window === "undefined") {
+    try {
+      const { adminDb } = await import("@/lib/firebase-admin")
+      const snapshot = await adminDb
+        .collection(ORDERS_COLLECTION)
+        .orderBy("createdAt", "desc")
+        .get()
+
+      return snapshot.docs.map((doc: any) => {
+        const data = doc.data()
+        return JSON.parse(
+          JSON.stringify({
+            id: doc.id,
+            ...data,
+          }),
+        ) as Order
+      })
+    } catch (error) {
+      console.error("Error fetching orders (server):", error)
+      return []
+    }
+  }
+
+  // Client-side: Use Firebase Client SDK
   await initFirestore()
   if (!firestoreModule || !db) return []
 
@@ -47,12 +72,36 @@ export async function getOrders(): Promise<Order[]> {
         }) as Order,
     )
   } catch (error) {
-    console.error("Error fetching orders:", error)
+    console.error("Error fetching orders (client):", error)
     return []
   }
 }
 
 export async function getOrderById(id: string): Promise<Order | null> {
+  // Server-side: Use Firebase Admin SDK
+  if (typeof window === "undefined") {
+    try {
+      const { adminDb } = await import("@/lib/firebase-admin")
+      const orderDoc = await adminDb.collection(ORDERS_COLLECTION).doc(id).get()
+
+      if (!orderDoc.exists) {
+        return null
+      }
+
+      const data = orderDoc.data()
+      return JSON.parse(
+        JSON.stringify({
+          id: orderDoc.id,
+          ...data,
+        }),
+      ) as Order
+    } catch (error) {
+      console.error("Error getting order (server):", error)
+      return null
+    }
+  }
+
+  // Client-side: Use Firebase Client SDK
   await initFirestore()
   if (!firestoreModule || !db) return null
 
@@ -69,7 +118,7 @@ export async function getOrderById(id: string): Promise<Order | null> {
       ...orderDoc.data(),
     } as Order
   } catch (error) {
-    console.error("Error getting order:", error)
+    console.error("Error getting order (client):", error)
     return null
   }
 }

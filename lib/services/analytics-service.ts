@@ -56,6 +56,14 @@ const initFirestore = async () => {
 
 const ORDERS_COLLECTION = "orders"
 
+const EMPTY_ANALYTICS: AnalyticsPeriod = {
+    today: { totalRevenue: 0, totalOrders: 0, averageOrderValue: 0 },
+    week: { totalRevenue: 0, totalOrders: 0, averageOrderValue: 0 },
+    month: { totalRevenue: 0, totalOrders: 0, averageOrderValue: 0 },
+    salesChart: [],
+    topProducts: [],
+}
+
 /**
  * Filter orders to only include shipped and delivered orders for revenue calculations
  */
@@ -69,15 +77,60 @@ function filterFulfilledOrders(orders: any[]): any[] {
  * Get analytics data for different time periods
  */
 export async function getAnalytics(): Promise<AnalyticsPeriod> {
+    // Server-side: use Firebase Admin SDK so this can run in
+    // route handlers, server components, or cron jobs.
+    if (typeof window === "undefined") {
+        try {
+            const { adminDb } = await import("@/lib/firebase-admin")
+            const snapshot = await adminDb.collection(ORDERS_COLLECTION).get()
+
+            const allOrders = snapshot.docs.map((doc: any) => {
+                const data = doc.data() as any
+                const createdAtValue = (data.createdAt as any) ?? new Date()
+
+                const createdAt =
+                    typeof createdAtValue?.toDate === "function"
+                        ? createdAtValue.toDate()
+                        : new Date(createdAtValue)
+
+                return {
+                    id: doc.id,
+                    ...data,
+                    createdAt,
+                }
+            })
+
+            const fulfilledOrders = filterFulfilledOrders(allOrders)
+
+            const now = new Date()
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+            const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
+            const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+
+            const today = calculatePeriodAnalytics(fulfilledOrders, todayStart)
+            const week = calculatePeriodAnalytics(fulfilledOrders, weekStart)
+            const month = calculatePeriodAnalytics(fulfilledOrders, monthStart)
+
+            const salesChart = generateSalesChart(fulfilledOrders, 7)
+            const topProducts = getTopProducts(fulfilledOrders, 5)
+
+            return {
+                today,
+                week,
+                month,
+                salesChart,
+                topProducts,
+            }
+        } catch (error) {
+            console.error("Error fetching analytics (server):", error)
+            return EMPTY_ANALYTICS
+        }
+    }
+
+    // Client-side: use existing Firestore client logic
     await initFirestore()
     if (!firestoreModule || !db) {
-        return {
-            today: { totalRevenue: 0, totalOrders: 0, averageOrderValue: 0 },
-            week: { totalRevenue: 0, totalOrders: 0, averageOrderValue: 0 },
-            month: { totalRevenue: 0, totalOrders: 0, averageOrderValue: 0 },
-            salesChart: [],
-            topProducts: [],
-        }
+        return EMPTY_ANALYTICS
     }
 
     try {
@@ -90,7 +143,6 @@ export async function getAnalytics(): Promise<AnalyticsPeriod> {
             createdAt: doc.data().createdAt?.toDate?.() || new Date(doc.data().createdAt),
         }))
 
-        // Filter to only fulfilled orders (shipped or delivered)
         const fulfilledOrders = filterFulfilledOrders(allOrders)
 
         const now = new Date()
@@ -98,15 +150,11 @@ export async function getAnalytics(): Promise<AnalyticsPeriod> {
         const weekStart = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
         const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
 
-        // Calculate analytics for different periods (using fulfilled orders only)
         const today = calculatePeriodAnalytics(fulfilledOrders, todayStart)
         const week = calculatePeriodAnalytics(fulfilledOrders, weekStart)
         const month = calculatePeriodAnalytics(fulfilledOrders, monthStart)
 
-        // Generate sales chart data for the last 7 days (fulfilled orders only)
         const salesChart = generateSalesChart(fulfilledOrders, 7)
-
-        // Get top 5 products (from fulfilled orders only)
         const topProducts = getTopProducts(fulfilledOrders, 5)
 
         return {
@@ -117,14 +165,8 @@ export async function getAnalytics(): Promise<AnalyticsPeriod> {
             topProducts,
         }
     } catch (error) {
-        console.error("Error fetching analytics:", error)
-        return {
-            today: { totalRevenue: 0, totalOrders: 0, averageOrderValue: 0 },
-            week: { totalRevenue: 0, totalOrders: 0, averageOrderValue: 0 },
-            month: { totalRevenue: 0, totalOrders: 0, averageOrderValue: 0 },
-            salesChart: [],
-            topProducts: [],
-        }
+        console.error("Error fetching analytics (client):", error)
+        return EMPTY_ANALYTICS
     }
 }
 

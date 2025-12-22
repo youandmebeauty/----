@@ -43,6 +43,30 @@ const initFirestore = async () => {
 const PRODUCTS_COLLECTION = "products"
 
 export async function getProducts(): Promise<Product[]> {
+  // Server-side: use Firebase Admin SDK so it works in sitemap and other
+  // server-only contexts where `window` is not available.
+  if (typeof window === "undefined") {
+    try {
+      const { adminDb } = await import("@/lib/firebase-admin")
+      const snapshot = await adminDb.collection(PRODUCTS_COLLECTION).get()
+
+      return snapshot.docs.map((doc: any) => {
+        const data = doc.data()
+        // Serialize to plain object to avoid any non-serializable values
+        return JSON.parse(
+          JSON.stringify({
+            id: doc.id,
+            ...data,
+          }),
+        ) as Product
+      })
+    } catch (error) {
+      console.error("Error fetching products (server):", error)
+      return []
+    }
+  }
+
+  // Client-side: fall back to the existing Firestore client logic
   await initFirestore()
   if (!firestoreModule || !db) return []
 
@@ -58,7 +82,7 @@ export async function getProducts(): Promise<Product[]> {
         }) as Product,
     )
   } catch (error) {
-    console.error("Error fetching products:", error)
+    console.error("Error fetching products (client):", error)
     return []
   }
 }
@@ -113,6 +137,35 @@ export async function getProductById(id: string): Promise<Product | null> {
 }
 
 export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
+  // Server-side: Use Firebase Admin SDK
+  if (typeof window === "undefined") {
+    try {
+      const { adminDb } = await import("@/lib/firebase-admin")
+
+      let query = adminDb
+        .collection(PRODUCTS_COLLECTION)
+        .where("featured", "==", true)
+        .orderBy("createdAt", "desc")
+        .limit(limitCount)
+
+      const snapshot = await query.get()
+
+      return snapshot.docs.map((doc: any) => {
+        const data = doc.data()
+        return JSON.parse(
+          JSON.stringify({
+            id: doc.id,
+            ...data,
+          }),
+        ) as Product
+      })
+    } catch (error) {
+      console.error("Error fetching featured products (server):", error)
+      return []
+    }
+  }
+
+  // Client-side: Use Firebase Client SDK
   await initFirestore()
   if (!firestoreModule || !db) return []
 
@@ -135,7 +188,7 @@ export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
         }) as Product,
     )
   } catch (error) {
-    console.error("Error fetching featured products:", error)
+    console.error("Error fetching featured products (client):", error)
     return []
   }
 }
@@ -273,6 +326,34 @@ export async function getRelatedProducts(
   }
 }
 export async function getProductsByCategory(category: string): Promise<Product[]> {
+  // Server-side: Use Firebase Admin SDK
+  if (typeof window === "undefined") {
+    try {
+      const { adminDb } = await import("@/lib/firebase-admin")
+
+      const query = adminDb
+        .collection(PRODUCTS_COLLECTION)
+        .where("category", "==", category)
+        .orderBy("createdAt", "desc")
+
+      const snapshot = await query.get()
+
+      return snapshot.docs.map((doc: any) => {
+        const data = doc.data()
+        return JSON.parse(
+          JSON.stringify({
+            id: doc.id,
+            ...data,
+          }),
+        ) as Product
+      })
+    } catch (error) {
+      console.error("Error fetching products by category (server):", error)
+      return []
+    }
+  }
+
+  // Client-side: Use Firebase Client SDK
   await initFirestore()
   if (!firestoreModule || !db) return []
 
@@ -294,12 +375,111 @@ export async function getProductsByCategory(category: string): Promise<Product[]
         }) as Product,
     )
   } catch (error) {
-    console.error("Error fetching products by category:", error)
+    console.error("Error fetching products by category (client):", error)
     return []
   }
 }
 
 export async function searchProducts(searchTerm: string, filters?: SearchFilters): Promise<Product[]> {
+  // Server-side: use Firebase Admin SDK via getProducts and apply
+  // filters in memory so this can be safely used in server components.
+  if (typeof window === "undefined") {
+    try {
+      let products = await getProducts()
+
+      if (filters?.category) {
+        products = products.filter((p) => p.category === filters.category)
+      }
+
+      if (filters?.subcategory) {
+        products = products.filter((p) => p.subcategory === filters.subcategory)
+      }
+
+      if (filters?.skinType && filters.skinType.length > 0) {
+        products = products.filter((p) => {
+          const skinTypes = (p.skinType || []) as string[]
+          return skinTypes.some((t) => filters.skinType!.includes(t))
+        })
+      }
+
+      if (filters?.hairType && filters.hairType.length > 0) {
+        products = products.filter((p) => {
+          const hairTypes = (p.hairType || []) as string[]
+          return hairTypes.some((t) => filters.hairType!.includes(t))
+        })
+      }
+
+      if (filters?.minPrice !== undefined) {
+        products = products.filter((p) => p.price >= (filters.minPrice as number))
+      }
+
+      if (filters?.maxPrice !== undefined) {
+        products = products.filter((p) => p.price <= (filters.maxPrice as number))
+      }
+
+      if (filters?.ingredients && filters.ingredients.length > 0) {
+        products = products.filter((p) => {
+          const ingredients = (p.ingredients || []) as string[]
+          return ingredients.some((ing) => filters.ingredients!.includes(ing))
+        })
+      }
+
+      if (filters?.brand && filters.brand.length > 0) {
+        products = products.filter((p: any) => {
+          const brandValue = p.brand
+          if (Array.isArray(brandValue)) {
+            return brandValue.some((b) => filters.brand!.includes(b))
+          }
+          return filters.brand!.includes(brandValue)
+        })
+      }
+
+      if (filters?.sortBy) {
+        switch (filters.sortBy) {
+          case "price-asc":
+            products = [...products].sort((a, b) => a.price - b.price)
+            break
+          case "price-desc":
+            products = [...products].sort((a, b) => b.price - a.price)
+            break
+          case "name-asc":
+            products = [...products].sort((a, b) => a.name.localeCompare(b.name))
+            break
+          case "name-desc":
+            products = [...products].sort((a, b) => b.name.localeCompare(a.name))
+            break
+          case "newest":
+            products = [...products].sort((a, b) => {
+              const aDate = new Date((a as any).createdAt || 0)
+              const bDate = new Date((b as any).createdAt || 0)
+              return bDate.getTime() - aDate.getTime()
+            })
+            break
+          default:
+            break
+        }
+      }
+
+      if (searchTerm) {
+        const lowerSearchTerm = searchTerm.toLowerCase()
+        products = products.filter((product: Product): boolean =>
+          product.name.toLowerCase().includes(lowerSearchTerm) ||
+          (product.description || "").toLowerCase().includes(lowerSearchTerm) ||
+          (product.ingredients || []).some((ing: string) => ing.toLowerCase().includes(lowerSearchTerm)) ||
+          (product.brand || "").toLowerCase().includes(lowerSearchTerm) ||
+          (product.skinType || []).some((type: string) => type.toLowerCase().includes(lowerSearchTerm)) ||
+          (product.hairType || []).some((type: string) => type.toLowerCase().includes(lowerSearchTerm)),
+        )
+      }
+
+      return products
+    } catch (error) {
+      console.error("Error searching products (server):", error)
+      return []
+    }
+  }
+
+  // Client-side: Use Firebase Client SDK with query constraints
   await initFirestore()
   if (!firestoreModule || !db) return []
 
@@ -376,25 +556,22 @@ export async function searchProducts(searchTerm: string, filters?: SearchFilters
         }) as Product,
     )
 
-    // Client-side search for text matching
-if (searchTerm) {
+    if (searchTerm) {
       const lowerSearchTerm = searchTerm.toLowerCase()
       products = products.filter(
         (product: Product): boolean =>
           product.name.toLowerCase().includes(lowerSearchTerm) ||
-          product.description.toLowerCase().includes(lowerSearchTerm) ||
+          (product.description || "").toLowerCase().includes(lowerSearchTerm) ||
           (product.ingredients || []).some((ing: string) => ing.toLowerCase().includes(lowerSearchTerm)) ||
-          product.brand.toLowerCase().includes(lowerSearchTerm) ||
-          // Search in skin types
+          (product.brand || "").toLowerCase().includes(lowerSearchTerm) ||
           (product.skinType || []).some((type: string) => type.toLowerCase().includes(lowerSearchTerm)) ||
-          // Search in hair types
           (product.hairType || []).some((type: string) => type.toLowerCase().includes(lowerSearchTerm)),
       )
     }
 
     return products
   } catch (error) {
-    console.error("Error searching products:", error)
+    console.error("Error searching products (client):", error)
     return []
   }
 }
@@ -526,6 +703,28 @@ export async function getItemStock(itemId: string): Promise<number> {
 }
 
 export async function updateProductStock(id: string, quantity: number): Promise<void> {
+  // Server-side: Use Firebase Admin SDK
+  if (typeof window === "undefined") {
+    try {
+      const { adminDb } = await import("@/lib/firebase-admin")
+      const productRef = adminDb.collection(PRODUCTS_COLLECTION).doc(id)
+      const productDoc = await productRef.get()
+
+      if (!productDoc.exists) {
+        console.warn(`Product ${id} not found for stock update`)
+        throw new Error("Product not found")
+      }
+
+      await productRef.update({ quantity })
+      console.debug(`Product ${id} stock updated to ${quantity} (server)`)
+      return
+    } catch (error) {
+      console.error("Error updating product stock (server):", error)
+      throw error
+    }
+  }
+
+  // Client-side: Use Firebase Client SDK
   await initFirestore()
   if (!firestoreModule || !db) {
     console.error("Firestore not initialized")
@@ -564,6 +763,45 @@ export async function updateItemStock(itemId: string, quantity: number): Promise
 
 // Update stock for a specific variant
 export async function updateVariantStock(productId: string, variantIndex: number, quantity: number): Promise<void> {
+  // Server-side: Use Firebase Admin SDK
+  if (typeof window === "undefined") {
+    try {
+      const { adminDb } = await import("@/lib/firebase-admin")
+      const productRef = adminDb.collection(PRODUCTS_COLLECTION).doc(productId)
+      const productDoc = await productRef.get()
+
+      if (!productDoc.exists) {
+        console.warn(`Product ${productId} not found for variant stock update`)
+        throw new Error("Product not found")
+      }
+
+      const productData = productDoc.data() as Product
+      if (!productData.hasColorVariants || !productData.colorVariants || !productData.colorVariants[variantIndex]) {
+        throw new Error(`Variant ${variantIndex} not found for product ${productId}`)
+      }
+
+      const updatedVariants = [...productData.colorVariants]
+      updatedVariants[variantIndex] = {
+        ...updatedVariants[variantIndex],
+        quantity,
+      }
+
+      const totalQuantity = updatedVariants.reduce((sum, v) => sum + v.quantity, 0)
+
+      await productRef.update({
+        colorVariants: updatedVariants,
+        quantity: totalQuantity,
+      })
+
+      console.debug(`Product ${productId} variant ${variantIndex} stock updated to ${quantity} (server)`)
+      return
+    } catch (error) {
+      console.error("Error updating variant stock (server):", error)
+      throw error
+    }
+  }
+
+  // Client-side: Use Firebase Client SDK
   await initFirestore()
   if (!firestoreModule || !db) {
     console.error("Firestore not initialized")
@@ -584,19 +822,17 @@ export async function updateVariantStock(productId: string, variantIndex: number
       throw new Error(`Variant ${variantIndex} not found for product ${productId}`)
     }
 
-    // Update the variant's quantity
     const updatedVariants = [...productData.colorVariants]
     updatedVariants[variantIndex] = {
       ...updatedVariants[variantIndex],
-      quantity
+      quantity,
     }
 
-    // Update total quantity (sum of all variants)
     const totalQuantity = updatedVariants.reduce((sum, v) => sum + v.quantity, 0)
 
     await firestoreModule.updateDoc(productRef, {
       colorVariants: updatedVariants,
-      quantity: totalQuantity
+      quantity: totalQuantity,
     })
     
     console.debug(`Product ${productId} variant ${variantIndex} stock updated to ${quantity}`)
