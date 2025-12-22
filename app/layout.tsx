@@ -34,14 +34,23 @@ export const metadata: Metadata = {
     title: "Accueil - You & Me Beauty",
     description: "Bienvenue chez You & Me Beauty. Découvrez notre gamme exclusive de produits de beauté, soins du visage et maquillage pour sublimer votre beauté naturelle.",
     url: "https://youandme.tn",
+    siteName: "You & Me Beauty",
+    locale: "fr_TN",
+    type: "website",
     images: [
       {
-        url: '/og-image.png',
+        url: 'https://youandme.tn/og-image.png',
         width: 1200,
         height: 630,
         alt: 'You & Me Beauty',
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Accueil - You & Me Beauty",
+    description: "Bienvenue chez You & Me Beauty. Découvrez notre gamme exclusive de produits de beauté, soins du visage et maquillage pour sublimer votre beauté naturelle.",
+    images: ["https://youandme.tn/og-image.png"],
   },
   keywords: [
     "beauté",

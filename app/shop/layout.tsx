@@ -24,6 +24,23 @@ export const metadata: Metadata = {
         title: "Boutique | You & Me Beauty",
         description: "Explorez notre boutique complète de produits de beauté.",
         url: "https://youandme.tn/shop",
+        siteName: "You & Me Beauty",
+        locale: "fr_TN",
+        type: "website",
+        images: [
+            {
+                url: "https://youandme.tn/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "You & Me Beauty - Boutique",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Boutique | You & Me Beauty",
+        description: "Explorez notre boutique complète de produits de beauté.",
+        images: ["https://youandme.tn/og-image.png"],
     },
     keywords: [
         "boutique de beauté",

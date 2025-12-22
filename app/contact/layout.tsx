@@ -10,6 +10,23 @@ export const metadata: Metadata = {
         title: "Contactez-Nous - You & Me Beauty",
         description: "Contactez notre équipe pour toute question ou assistance concernant nos produits de beauté premium.",
         url: "https://youandme.tn/contact",
+        siteName: "You & Me Beauty",
+        locale: "fr_TN",
+        type: "website",
+        images: [
+            {
+                url: "https://youandme.tn/og-image.png",
+                width: 1200,
+                height: 630,
+                alt: "You & Me Beauty - Contactez-Nous",
+            },
+        ],
+    },
+    twitter: {
+        card: "summary_large_image",
+        title: "Contactez-Nous - You & Me Beauty",
+        description: "Contactez notre équipe pour toute question ou assistance concernant nos produits de beauté premium.",
+        images: ["https://youandme.tn/og-image.png"],
     },
     keywords: [
         "contact",

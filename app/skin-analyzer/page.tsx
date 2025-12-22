@@ -14,6 +14,24 @@ alternates: {
     },    openGraph: {
       title: "Analyseur de Peau - You & Me Beauty",
       description: "Découvrez votre type de peau et recevez des recommandations de produits personnalisées avec notre analyseur de peau avancé.",
+      url: "https://youandme.tn/skin-analyzer",
+      siteName: "You & Me Beauty",
+      locale: "fr_TN",
+      type: "website",
+      images: [
+        {
+          url: "https://youandme.tn/og-image.png",
+          width: 1200,
+          height: 630,
+          alt: "You & Me Beauty - Analyseur de Peau IA",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Analyseur de Peau - You & Me Beauty",
+      description: "Découvrez votre type de peau et recevez des recommandations de produits personnalisées avec notre analyseur de peau avancé.",
+      images: ["https://youandme.tn/og-image.png"],
     },
     keywords: [
       'analyseur de peau',
