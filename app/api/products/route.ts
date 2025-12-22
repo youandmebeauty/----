@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
     const productData: any = {
       name: name.trim(),
       brand: brand?.trim() || null,
-      barcode: barcode?.trim() || null,
       price: Number(price),
       category,
       subcategory: subcategory?.trim() || null,
@@ -68,7 +67,7 @@ export async function POST(request: NextRequest) {
       updatedAt: Timestamp.now(),
     }
 
-    // Only include images if there are no color variants
+    // Only include images and barcode if there are no color variants
     if (!hasColorVariants) {
       if (Array.isArray(images) && images.length > 0) {
         productData.images = images
@@ -77,6 +76,8 @@ export async function POST(request: NextRequest) {
         productData.image = image.trim()
         productData.images = [image.trim()] // Convert single image to array
       }
+      // Only add barcode for non-variant products
+      productData.barcode = barcode?.trim() || null
     }
 
     const docRef = await adminDb.collection(PRODUCTS_COLLECTION).add(productData)

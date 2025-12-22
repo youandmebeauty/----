@@ -59,11 +59,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     if (subcategory !== undefined) updateData.subcategory = subcategory || null
     if (description !== undefined) updateData.description = description
     if (longDescription !== undefined) updateData.longDescription = longDescription || null
-    // Only update image/images if there are no color variants
-    // If switching to color variants, remove the image and images
+    // Only update image/images/barcode if there are no color variants
+    // If switching to color variants, remove the image, images, and barcode
     if (isSwitchingToColorVariants) {
       updateData.image = null
       updateData.images = null
+      updateData.barcode = null
     } else if (!hasColorVariants) {
       // Handle images array
       if (images !== undefined && Array.isArray(images)) {
@@ -74,6 +75,8 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         updateData.image = image
         updateData.images = image ? [image] : []
       }
+      // Handle barcode for non-variant products
+      if (barcode !== undefined) updateData.barcode = barcode || null
     }
     if (quantity !== undefined) updateData.quantity = Number(quantity)
     if (featured !== undefined) updateData.featured = featured
@@ -83,7 +86,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     if (hasColorVariants !== undefined) updateData.hasColorVariants = hasColorVariants
     if (colorVariants !== undefined) updateData.colorVariants = Array.isArray(colorVariants) ? colorVariants : []
     if (howToUse !== undefined) updateData.howToUse = howToUse || null
-    if (barcode !== undefined) updateData.barcode = barcode || null
+    
     await docRef.update(updateData)
 
     // Fetch updated document

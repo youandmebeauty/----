@@ -3,6 +3,7 @@ export interface ColorVariant {
   color?: string // Hex color code (optional for backward compatibility)
   image: string
   quantity: number
+  barcode: string
 }
 
 export interface Product {

@@ -62,7 +62,7 @@ function AddProductContent() {
   const addColorVariant = () => {
     setColorVariants((prev) => [
       ...prev,
-      { colorName: "", color: "#000000", image: "", quantity: 0 },
+      { colorName: "", color: "#000000", image: "", quantity: 0, barcode: "" },
     ])
   }
 
@@ -131,6 +131,7 @@ function AddProductContent() {
           color: v.color || "#000000",
           image: v.image.trim(),
           quantity: Number(v.quantity) || 0,
+          barcode: v.barcode?.trim() || "",
         }))
       }
 
@@ -210,17 +211,19 @@ function AddProductContent() {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="barcode">Code à barre</Label>
-                  <Input
-                    id="barcode"
-                    name="barcode"
-                    value={formData.barcode}
-                    onChange={handleInputChange}
-                    placeholder="Entrez le code à barre du produit"
-                    className="bg-background/50"
-                  />
-                </div>
+                {!formData.hasColorVariants && (
+                  <div>
+                    <Label htmlFor="barcode">Code à barre</Label>
+                    <Input
+                      id="barcode"
+                      name="barcode"
+                      value={formData.barcode}
+                      onChange={handleInputChange}
+                      placeholder="Entrez le code à barre du produit"
+                      className="bg-background/50"
+                    />
+                  </div>
+                )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -602,6 +605,17 @@ function AddProductContent() {
                               value={variant.quantity}
                               onChange={(e) => updateColorVariant(index, "quantity", Number.parseInt(e.target.value) || 0)}
                               required
+                              className="bg-background/50"
+                            />
+                          </div>
+
+                          <div>
+                            <Label htmlFor={`variant-barcode-${index}`}>Code à barre</Label>
+                            <Input
+                              id={`variant-barcode-${index}`}
+                              value={variant.barcode || ""}
+                              onChange={(e) => updateColorVariant(index, "barcode", e.target.value)}
+                              placeholder="Entrez le code à barre de cette variante"
                               className="bg-background/50"
                             />
                           </div>
