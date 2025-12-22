@@ -20,6 +20,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       brand,
       price,
       category,
+      barcode,
       subcategory,
       description,
       longDescription,
@@ -82,6 +83,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     if (hasColorVariants !== undefined) updateData.hasColorVariants = hasColorVariants
     if (colorVariants !== undefined) updateData.colorVariants = Array.isArray(colorVariants) ? colorVariants : []
     if (howToUse !== undefined) updateData.howToUse = howToUse || null
+    if (barcode !== undefined) updateData.barcode = barcode || null
     await docRef.update(updateData)
 
     // Fetch updated document

@@ -26,6 +26,7 @@ function AddProductContent() {
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
+    barcode: "",
     price: "",
     category: "soins",
     subcategory: "",
@@ -205,6 +206,18 @@ function AddProductContent() {
                     onChange={handleInputChange}
                     required
                     placeholder="Entrez la marque du produit"
+                    className="bg-background/50"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="barcode">Code à barre</Label>
+                  <Input
+                    id="barcode"
+                    name="barcode"
+                    value={formData.barcode}
+                    onChange={handleInputChange}
+                    placeholder="Entrez le code à barre du produit"
                     className="bg-background/50"
                   />
                 </div>

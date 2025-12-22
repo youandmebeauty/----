@@ -3,6 +3,7 @@ import { adminDb } from "@/lib/firebase-admin"
 import { verifyAdminToken } from "@/lib/auth-utils"
 import { Timestamp } from "firebase-admin/firestore"
 import type { Product } from "@/lib/models"
+import { Barcode } from "lucide-react"
 
 const PRODUCTS_COLLECTION = "products"
 
@@ -17,6 +18,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const {
       name,
+      barcode,
       brand,
       price,
       category,
@@ -48,6 +50,7 @@ export async function POST(request: NextRequest) {
     const productData: any = {
       name: name.trim(),
       brand: brand?.trim() || null,
+      barcode: barcode?.trim() || null,
       price: Number(price),
       category,
       subcategory: subcategory?.trim() || null,

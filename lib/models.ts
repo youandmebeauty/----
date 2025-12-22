@@ -8,6 +8,7 @@ export interface ColorVariant {
 export interface Product {
   id: string
   name: string
+  barcode?: string
   brand: string
   price: number
   image?: string // Kept for backward compatibility, will use first image from images array

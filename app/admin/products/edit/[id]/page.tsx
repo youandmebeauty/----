@@ -29,6 +29,7 @@ function EditProductContent() {
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
+    barcode: "",
     price: "",
     category: "",
     subcategory: "",
@@ -59,6 +60,7 @@ function EditProductContent() {
         setFormData({
           name: productData.name,
           brand: productData.brand || "",
+          barcode: productData.barcode || "",
           price: productData.price.toString(),
           category: productData.category,
           subcategory: productData.subcategory || "",
@@ -298,6 +300,18 @@ function EditProductContent() {
                     onChange={handleInputChange}
                     required
                     placeholder="Entrez la marque du produit"
+                    className="bg-background/50"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="barcode">Code à barre</Label>
+                  <Input
+                    id="barcode"
+                    name="barcode"
+                    value={formData.barcode}
+                    onChange={handleInputChange}
+                    placeholder="Entrez le code à barre du produit"
                     className="bg-background/50"
                   />
                 </div>
