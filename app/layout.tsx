@@ -95,7 +95,7 @@ export default function RootLayout({
       "telephone": "+216-93-220-902",
       "contactType": "customer service",
       "areaServed": "TN",
-      "availableLanguage": ["French", "Arabic"]
+      "availableLanguage": ["French"]
     },
     "address": {
       "@type": "PostalAddress",
