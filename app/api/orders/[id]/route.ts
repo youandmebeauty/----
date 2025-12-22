@@ -146,11 +146,68 @@ export async function PATCH(
     const orderData = orderDoc.data() as Order
     const previousStatus = orderData.status
 
-    // Update order status
+    // If status is unchanged, just return current order
+    if (status === previousStatus) {
+      const currentOrder: Order = {
+        ...orderData,
+        id,
+      }
+      return NextResponse.json(currentOrder)
+    }
+
+    // When marking an order as shipped or delivered for the first time, reduce stock for each item
+    if ((status === "shipped" || status === "delivered") && previousStatus !== "shipped" && previousStatus !== "delivered") {
+      if (!orderData.items || !Array.isArray(orderData.items)) {
+        return NextResponse.json(
+          { error: "Order items are invalid, cannot update stock" },
+          { status: 500 }
+        )
+      }
+
+      const stockChanges: { itemId: string; newStock: number }[] = []
+
+      // First validate stock for all items
+      for (const item of orderData.items) {
+        if (!item.id || !item.quantity || item.quantity <= 0) {
+          console.warn(`Invalid item in order ${id}:`, item)
+          return NextResponse.json(
+            { error: "One or more order items are invalid" },
+            { status: 400 }
+          )
+        }
+
+        const currentStock = await getItemStock(item.id)
+        if (currentStock < item.quantity) {
+          return NextResponse.json(
+            {
+              error: `Stock insuffisant pour ${item.name}. Demandé: ${item.quantity}, Disponible: ${currentStock}`
+            },
+            { status: 400 }
+          )
+        }
+
+        stockChanges.push({ itemId: item.id, newStock: currentStock - item.quantity })
+      }
+
+      // Apply stock updates
+      for (const change of stockChanges) {
+        try {
+          await updateItemStock(change.itemId, change.newStock)
+        } catch (stockError) {
+          console.error(`Error reducing stock for item ${change.itemId}:`, stockError)
+          return NextResponse.json(
+            { error: "Failed to update product stock for shipment" },
+            { status: 500 }
+          )
+        }
+      }
+    }
+
+    // Update order status after any necessary stock changes
     await orderRef.update({ status })
 
-    // Handle stock restoration if order is cancelled
-    if (status === "cancelled" && previousStatus !== "cancelled") {
+    // Handle stock restoration only if a previously shipped or delivered order is cancelled
+    if (status === "cancelled" && (previousStatus === "shipped" || previousStatus === "delivered")) {
       if (!orderData.items || !Array.isArray(orderData.items)) {
         console.warn(`Order ${id} has no valid items array`)
       } else {

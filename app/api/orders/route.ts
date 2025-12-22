@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
   try {
     const orderData = await request.json() as Omit<Order, "id" | "createdAt" | "status">
 
-    // Validate and reduce stock before creating order
+    // Validate stock before creating order (stock will be reduced when the order is marked as "shipped")
     for (const item of orderData.items) {
       if (!item.id || !item.quantity || item.quantity <= 0) {
         return NextResponse.json(
@@ -111,10 +111,6 @@ export async function POST(request: NextRequest) {
           { status: 400 }
         )
       }
-
-      // Reduce stock immediately
-      const newStock = availableStock - item.quantity
-      await updateItemStock(item.id, newStock)
     }
 
     // Create order after stock is successfully reduced
