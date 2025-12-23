@@ -2,8 +2,13 @@ import { Hero } from "@/components/hero"
 import { FeaturedProductsServer } from "@/components/featured-products-server"
 import { CategoriesServer } from "@/components/categories-server"
 import { WhyChooseUsServer } from "@/components/why-choose-us-server"
-import { MakeupModel3D } from "@/components/makeup-model"
 import { ClientScrollAnimation } from "@/components/client-scroll-animation"
+import dynamic from "next/dynamic"
+
+const MakeupModel3D = dynamic(() => import("@/components/makeup-model").then(mod => ({ default: mod.MakeupModel3D })), {
+  ssr: false,
+  loading: () => <div className="w-full h-full" />
+})
 
 
 export default function Home() {
