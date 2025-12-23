@@ -3,12 +3,7 @@ import { FeaturedProductsServer } from "@/components/featured-products-server"
 import { CategoriesServer } from "@/components/categories-server"
 import { WhyChooseUsServer } from "@/components/why-choose-us-server"
 import { ClientScrollAnimation } from "@/components/client-scroll-animation"
-import dynamic from "next/dynamic"
-
-const MakeupModel3D = dynamic(() => import("@/components/makeup-model").then(mod => ({ default: mod.MakeupModel3D })), {
-  ssr: false,
-  loading: () => <div className="w-full h-full" />
-})
+import { MakeupModelWrapper } from "@/components/makeup-model-wrapper"
 
 
 export default function Home() {
@@ -41,7 +36,7 @@ export default function Home() {
         </section>
         
         <div className="hidden lg:block absolute -top-5 right-0 h-[92vh] w-1/2 z-20" >
-          <MakeupModel3D />
+          <MakeupModelWrapper />
         </div>
         
         <section aria-label="Product categories">
