@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -29,29 +26,10 @@ const nextConfig = {
       allowedOrigins: ["localhost:3000"],
     },
   },
-  webpack: (config, { isServer }) => {
-    // Externalize onnxruntime-web on both server and client to prevent webpack parsing
-    if (isServer) {
-      config.externals.push('onnxruntime-web');
-    } else {
-      // Client-side configuration
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        path: false,
-        crypto: false,
-      };
-
-      // CRITICAL: Prevent webpack from trying to bundle onnxruntime-web
-      // It will be loaded dynamically at runtime
-      config.resolve.alias = {
-        ...config.resolve.alias,
-        'onnxruntime-web': false,
-      };
-    }
-
-    return config;
-  },
+  
+  // Empty turbopack config to silence warning (most apps work fine without custom config)
+  turbopack: {},
+  
   async headers() {
     return [
       {
