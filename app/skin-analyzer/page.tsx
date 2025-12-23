@@ -1,7 +1,6 @@
 ﻿import { Metadata } from "next";
-import dynamic from "next/dynamic";
-import { LoadingAnimation } from "@/components/ui/loading-animation";
-// Remove Loader2 import or keep if used elsewhere (it's not used elsewhere in this file)
+import { SkinAnalyzerClientWrapper } from "@/components/skin-analyzer/skin-analyzer-client-wrapper";
+
 export async function generateMetadata({ 
 }: {}): Promise<Metadata> {
     const canonicalUrl = `https://youandme.tn/skin-analyzer`;
@@ -56,17 +55,6 @@ export async function generateMetadata({
     },
   };
 }
-const SkinAnalyzerFeature = dynamic(
-  () => import("@/components/skin-analyzer/skin-analyzer-feature"),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingAnimation size={100} className="text-primary" />
-      </div>
-    ),
-  }
-);
 
 export default function SkinAnalyzerPage() {
   const jsonLd = {
@@ -116,3 +104,4 @@ export default function SkinAnalyzerPage() {
     </>
   );
 }
+ClientWrapper
