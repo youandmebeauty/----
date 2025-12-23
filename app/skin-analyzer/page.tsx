@@ -100,8 +100,7 @@ export default function SkinAnalyzerPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <SkinAnalyzerFeature />
+      <SkinAnalyzerClientWrapper />
     </>
   );
 }
-ClientWrapper
