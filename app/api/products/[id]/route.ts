@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { adminDb } from "@/lib/firebase-admin"
 import { verifyAdminToken } from "@/lib/auth-utils"
-import { Timestamp } from "firebase-admin/firestore"
+import { Timestamp, FieldValue } from "firebase-admin/firestore"
 import type { Product } from "@/lib/models"
 
 const PRODUCTS_COLLECTION = "products"
@@ -58,17 +58,23 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     if (brand !== undefined) updateData.brand = brand
     if (price !== undefined) updateData.price = Number(price)
     if (category !== undefined) updateData.category = category
-    if (subcategory !== undefined) updateData.subcategory = subcategory || null
+    if (subcategory !== undefined) {
+      updateData.subcategory = subcategory || FieldValue.delete()
+    }
     if (description !== undefined) updateData.description = description
-    if (longDescription !== undefined) updateData.longDescription = longDescription || null
-    if (howToUse !== undefined) updateData.howToUse = howToUse || null
+    if (longDescription !== undefined) {
+      updateData.longDescription = longDescription || FieldValue.delete()
+    }
+    if (howToUse !== undefined) {
+      updateData.howToUse = howToUse || FieldValue.delete()
+    }
     
     // Handle images, barcode, and colorVariants based on variant status
     if (isSwitchingToColorVariants) {
       // Switching TO color variants: remove image/images/barcode
-      updateData.image = null
-      updateData.images = null
-      updateData.barcode = null
+      updateData.image = FieldValue.delete()
+      updateData.images = FieldValue.delete()
+      updateData.barcode = FieldValue.delete()
       updateData.hasColorVariants = true
       // Set color variants if provided
       if (colorVariants !== undefined && Array.isArray(colorVariants)) {
@@ -76,22 +82,22 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       }
     } else if (isSwitchingFromColorVariants) {
       // Switching FROM color variants: remove colorVariants, add images/barcode
-      updateData.colorVariants = null
+      updateData.colorVariants = FieldValue.delete()
       updateData.hasColorVariants = false
       
       // Handle images array
       if (images !== undefined && Array.isArray(images)) {
         updateData.images = images
-        updateData.image = images.length > 0 ? images[0] : null
+        updateData.image = images.length > 0 ? images[0] : FieldValue.delete()
       } else {
         // Default to empty if not provided
         updateData.images = []
-        updateData.image = null
+        updateData.image = FieldValue.delete()
       }
       
       // Handle barcode for non-variant products
       if (barcode !== undefined) {
-        updateData.barcode = barcode || null
+        updateData.barcode = barcode || FieldValue.delete()
       }
     } else if (nowHasColorVariants) {
       // Already has color variants, update them
@@ -102,7 +108,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       // No color variants: handle regular images and barcode
       if (images !== undefined && Array.isArray(images)) {
         updateData.images = images
-        updateData.image = images.length > 0 ? images[0] : null
+        updateData.image = images.length > 0 ? images[0] : FieldValue.delete()
       } else if (image !== undefined) {
         // Backward compatibility: if only single image provided
         updateData.image = image
@@ -111,7 +117,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       
       // Handle barcode for non-variant products
       if (barcode !== undefined) {
-        updateData.barcode = barcode || null
+        updateData.barcode = barcode || FieldValue.delete()
       }
     }
     
