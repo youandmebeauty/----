@@ -45,7 +45,9 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     const currentData = doc.data()!
     const wasHasColorVariants = currentData.hasColorVariants || false
-    const isSwitchingToColorVariants = hasColorVariants !== undefined && hasColorVariants && !wasHasColorVariants
+    const nowHasColorVariants = hasColorVariants !== undefined ? hasColorVariants : wasHasColorVariants
+    const isSwitchingToColorVariants = nowHasColorVariants && !wasHasColorVariants
+    const isSwitchingFromColorVariants = !nowHasColorVariants && wasHasColorVariants
 
     // Prepare update data
     const updateData: any = {
@@ -59,33 +61,65 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
     if (subcategory !== undefined) updateData.subcategory = subcategory || null
     if (description !== undefined) updateData.description = description
     if (longDescription !== undefined) updateData.longDescription = longDescription || null
-    // Only update image/images/barcode if there are no color variants
-    // If switching to color variants, remove the image, images, and barcode
+    if (howToUse !== undefined) updateData.howToUse = howToUse || null
+    
+    // Handle images, barcode, and colorVariants based on variant status
     if (isSwitchingToColorVariants) {
+      // Switching TO color variants: remove image/images/barcode
       updateData.image = null
       updateData.images = null
       updateData.barcode = null
-    } else if (!hasColorVariants) {
+      updateData.hasColorVariants = true
+      // Set color variants if provided
+      if (colorVariants !== undefined && Array.isArray(colorVariants)) {
+        updateData.colorVariants = colorVariants
+      }
+    } else if (isSwitchingFromColorVariants) {
+      // Switching FROM color variants: remove colorVariants, add images/barcode
+      updateData.colorVariants = null
+      updateData.hasColorVariants = false
+      
       // Handle images array
       if (images !== undefined && Array.isArray(images)) {
         updateData.images = images
-        updateData.image = images.length > 0 ? images[0] : null // First image as main
+        updateData.image = images.length > 0 ? images[0] : null
+      } else {
+        // Default to empty if not provided
+        updateData.images = []
+        updateData.image = null
+      }
+      
+      // Handle barcode for non-variant products
+      if (barcode !== undefined) {
+        updateData.barcode = barcode || null
+      }
+    } else if (nowHasColorVariants) {
+      // Already has color variants, update them
+      if (colorVariants !== undefined) {
+        updateData.colorVariants = Array.isArray(colorVariants) ? colorVariants : []
+      }
+    } else {
+      // No color variants: handle regular images and barcode
+      if (images !== undefined && Array.isArray(images)) {
+        updateData.images = images
+        updateData.image = images.length > 0 ? images[0] : null
       } else if (image !== undefined) {
         // Backward compatibility: if only single image provided
         updateData.image = image
         updateData.images = image ? [image] : []
       }
+      
       // Handle barcode for non-variant products
-      if (barcode !== undefined) updateData.barcode = barcode || null
+      if (barcode !== undefined) {
+        updateData.barcode = barcode || null
+      }
     }
+    
     if (quantity !== undefined) updateData.quantity = Number(quantity)
     if (featured !== undefined) updateData.featured = featured
     if (ingredients !== undefined) updateData.ingredients = Array.isArray(ingredients) ? ingredients : []
     if (skinType !== undefined) updateData.skinType = Array.isArray(skinType) ? skinType : []
     if (hairType !== undefined) updateData.hairType = Array.isArray(hairType) ? hairType : []
-    if (hasColorVariants !== undefined) updateData.hasColorVariants = hasColorVariants
-    if (colorVariants !== undefined) updateData.colorVariants = Array.isArray(colorVariants) ? colorVariants : []
-    if (howToUse !== undefined) updateData.howToUse = howToUse || null
     
     await docRef.update(updateData)
 
