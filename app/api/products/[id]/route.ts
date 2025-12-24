@@ -7,13 +7,14 @@ import type { Product } from "@/lib/models"
 const PRODUCTS_COLLECTION = "products"
 
 // PUT - Update a product (admin only)
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const authResult = await verifyAdminToken(request)
     if (!authResult.valid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const { id } = await params
     const body = await request.json()
     const {
       name,
@@ -36,7 +37,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       colorVariants,
     } = body
 
-    const docRef = adminDb.collection(PRODUCTS_COLLECTION).doc(params.id)
+    const docRef = adminDb.collection(PRODUCTS_COLLECTION).doc(id)
     const doc = await docRef.get()
 
     if (!doc.exists) {
@@ -147,14 +148,15 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // DELETE - Delete a product (admin only)
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const authResult = await verifyAdminToken(request)
     if (!authResult.valid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const docRef = adminDb.collection(PRODUCTS_COLLECTION).doc(params.id)
+    const { id } = await params
+    const docRef = adminDb.collection(PRODUCTS_COLLECTION).doc(id)
     const doc = await docRef.get()
 
     if (!doc.exists) {
