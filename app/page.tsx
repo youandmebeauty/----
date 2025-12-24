@@ -1,7 +1,7 @@
 import { Hero } from "@/components/hero"
 import { FeaturedProductsServer } from "@/components/featured-products-server"
-import { CategoriesServer } from "@/components/categories-server"
-import { WhyChooseUsServer } from "@/components/why-choose-us-server"
+import { Categories } from "@/components/categories"
+import { WhyChooseUs } from "@/components/why-choose-us"
 import { ClientScrollAnimation } from "@/components/client-scroll-animation"
 import { MakeupModelWrapper } from "@/components/makeup-model-wrapper"
 
@@ -41,7 +41,7 @@ export default function Home() {
         
         <section aria-label="Product categories">
           <ClientScrollAnimation variant="slideUp" delay={0.2}>
-            <CategoriesServer />
+            <Categories />
           </ClientScrollAnimation>
         </section>
         
@@ -52,7 +52,7 @@ export default function Home() {
         </section>
         
         <section aria-label="Why choose us">
-            <WhyChooseUsServer />
+            <WhyChooseUs />
         </section>
       </main>
     </div>

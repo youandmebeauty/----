@@ -1,5 +1,3 @@
-"use client"
-
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import { Sparkles, Heart, Package, Award, Shield, Truck, ArrowRight } from "lucide-react"
@@ -52,7 +50,7 @@ const values = [
 ]
 
 
-export function WhyChooseUsClient() {
+export function WhyChooseUs() {
     const { theme } = useTheme()
 
     return (

@@ -1,4 +1,3 @@
-"use client"
 
 import Link from "next/link"
 import Image from "next/image"
@@ -6,15 +5,34 @@ import { ScrollAnimation } from "./scroll-animation"
 import { useLoading } from "./loading-provider"
 import {  usePathname } from "next/navigation"
 
-export interface CategoriesClientProps {
-  categories: {
-    id: string
-    name: string
-    image: string
-    href: string
-  }[]
-}   
-export function CategoriesClient({ categories }: CategoriesClientProps) {
+const categories = [
+  {
+    id: "soins",
+    name: "Soins",
+    image: "/categories/skincare.webp",
+    href: "/shop?category=soins",
+  },
+  {
+    id: "maquillage",
+    name: "Maquillage",
+    image: "/categories/makeup.webp",
+    href: "/shop?category=maquillage",
+  },
+  {
+    id: "parfum",
+    name: "Parfum",
+    image: "/categories/perfume.webp",
+    href: "/shop?category=parfum",
+  },
+  {
+    id: "outils",
+    name: "Outils de Beauté",
+    image: "/categories/tools.webp",
+    href: "/shop?category=outils",
+  },
+]
+
+export function Categories() {
   const pathname = usePathname()
   const { setIsLoading: setGlobalLoading } = useLoading()
   
