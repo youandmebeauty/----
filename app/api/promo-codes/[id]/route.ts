@@ -7,14 +7,15 @@ import type { PromoCode } from "@/lib/models"
 const PROMO_CODES_COLLECTION = "promoCodes"
 
 // GET - Get a specific promo code by ID (admin only)
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const authResult = await verifyAdminToken(request)
     if (!authResult.valid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const docRef = adminDb.collection(PROMO_CODES_COLLECTION).doc(params.id)
+    const { id } = await params
+    const docRef = adminDb.collection(PROMO_CODES_COLLECTION).doc(id)
     const doc = await docRef.get()
 
     if (!doc.exists) {
@@ -38,17 +39,18 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 }
 
 // PUT - Update a promo code (admin only)
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const authResult = await verifyAdminToken(request)
     if (!authResult.valid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
+    const { id } = await params
     const body = await request.json()
     const { code, type, value, minPurchase, expiryDate, description, active, usageLimit } = body
 
-    const docRef = adminDb.collection(PROMO_CODES_COLLECTION).doc(params.id)
+    const docRef = adminDb.collection(PROMO_CODES_COLLECTION).doc(id)
     const doc = await docRef.get()
 
     if (!doc.exists) {
@@ -63,7 +65,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         .where("code", "==", normalizedCode)
         .get()
 
-      const existingDoc = existingSnapshot.docs.find((d) => d.id !== params.id)
+      const existingDoc = existingSnapshot.docs.find((d) => d.id !== id)
       if (existingDoc) {
         return NextResponse.json({ error: "Un code promo avec ce code existe déjà" }, { status: 400 })
       }
@@ -104,14 +106,15 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 }
 
 // DELETE - Delete a promo code (admin only)
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const authResult = await verifyAdminToken(request)
     if (!authResult.valid) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
     }
 
-    const docRef = adminDb.collection(PROMO_CODES_COLLECTION).doc(params.id)
+    const { id } = await params
+    const docRef = adminDb.collection(PROMO_CODES_COLLECTION).doc(id)
     const doc = await docRef.get()
 
     if (!doc.exists) {

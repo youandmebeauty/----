@@ -90,10 +90,10 @@ async function updateItemStock(itemId: string, quantity: number): Promise<void> 
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const orderDoc = await adminDb.collection(ORDERS_COLLECTION).doc(id).get()
 
     if (!orderDoc.exists) {
@@ -120,10 +120,10 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params
+    const { id } = await params
     const { status } = await request.json()
 
     if (!status) {
