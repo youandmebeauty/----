@@ -1,8 +1,8 @@
 import Link from "next/link"
-import { useTheme } from "next-themes"
 import { Sparkles, Heart, Package, Award, Shield, Truck, ArrowRight } from "lucide-react"
 import { ScrollAnimation } from "./scroll-animation"
 import Image from "next/image"
+import { useTheme } from "next-themes"
 
 const values = [
     {
@@ -51,8 +51,6 @@ const values = [
 
 
 export function WhyChooseUs() {
-    const { theme } = useTheme()
-
     return (
         <section className="py-20  relative overflow-hidden">
             {/* Background Elements */}
@@ -141,12 +139,19 @@ export function WhyChooseUs() {
                     {/* Logo Background - Integrated as Watermark */}
                     <div className="absolute inset-0 mr-20 flex items-center justify-end">
                         <Image
-                            src={theme === "light" ? "/logo-light.webp" : "/logo-white.webp"}
-                            alt="Youme Beauty Logo Background"
-                            width={1000}
-                            height={800}
-                            className="opacity-[0.08] dark:opacity-[0.05] pointer-events-none"
-                        />
+    src="/logo-light.webp"
+    alt="Youme Beauty Logo Background"
+    width={1000}
+    height={800}
+    className="opacity-[0.08] dark:opacity-0 pointer-events-none block dark:hidden"
+/>
+<Image
+    src="/logo-white.webp"
+    alt="Youme Beauty Logo Background"
+    width={1000}
+    height={800}
+    className="opacity-0 dark:opacity-[0.05] pointer-events-none hidden dark:block"
+/>
                     </div>
 
                     {/* Animated gradient orbs */}
