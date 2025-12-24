@@ -1,11 +1,29 @@
 import type { Product, SearchFilters } from "@/lib/models"
 
-// Simple in-memory cache for products
-const productCache = new Map<string, { data: Product, timestamp: number }>()
-const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+// Simple in-memory cache for products (no expiration - only cleared on admin changes)
+const productCache = new Map<string, Product>()
 
 // Cache for product lists
-const featuredProductsCache = new Map<number, { data: Product[], timestamp: number }>()
+const featuredProductsCache = new Map<number, Product[]>()
+
+// Cache invalidation functions
+export function clearProductCache(productId?: string) {
+  if (productId) {
+    productCache.delete(productId)
+    console.log(`Cleared cache for product: ${productId}`)
+  } else {
+    productCache.clear()
+    console.log('Cleared all product cache')
+  }
+  // Clear featured products cache when any product changes
+  featuredProductsCache.clear()
+}
+
+export function clearAllCache() {
+  productCache.clear()
+  featuredProductsCache.clear()
+  console.log('Cleared all caches')
+}
 
 // Dynamic imports for client-side Firebase
 let firestoreModule: any = null
@@ -95,11 +113,11 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
-  // Check cache first
+  // Check cache first (no time expiration)
   const cached = productCache.get(id)
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+  if (cached) {
     console.log(`Using cached product: ${id}`)
-    return cached.data
+    return cached
   }
 
   // Server-side: Use Firebase Admin SDK
@@ -120,14 +138,14 @@ export async function getProductById(id: string): Promise<Product | null> {
       })) as Product
       
       // Cache the result
-      productCache.set(id, { data: product, timestamp: Date.now() })
+      productCache.set(id, product)
       return product
     } catch (error) {
       console.error("Error getting product (server):", error)
-      // Return cached data if available, even if expired
+      // Return cached data if available
       if (cached) {
-        console.log(`Returning stale cached product due to error: ${id}`)
-        return cached.data
+        console.log(`Returning cached product due to error: ${id}`)
+        return cached
       }
       return null
     }
@@ -139,7 +157,7 @@ export async function getProductById(id: string): Promise<Product | null> {
     // Return cached data if Firebase is not available
     if (cached) {
       console.log(`Returning cached product (Firebase unavailable): ${id}`)
-      return cached.data
+      return cached
     }
     return null
   }
@@ -159,26 +177,26 @@ export async function getProductById(id: string): Promise<Product | null> {
     } as Product
 
     // Cache the result
-    productCache.set(id, { data: product, timestamp: Date.now() })
+    productCache.set(id, product)
     
     return product
   } catch (error) {
     console.error("Error getting product (client):", error)
-    // Return cached data if available, even if expired
+    // Return cached data if available
     if (cached) {
-      console.log(`Returning stale cached product due to error: ${id}`)
-      return cached.data
+      console.log(`Returning cached product due to error: ${id}`)
+      return cached
     }
     return null
   }
 }
 
 export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
-  // Check cache first
+  // Check cache first (no time expiration)
   const cached = featuredProductsCache.get(limitCount)
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+  if (cached) {
     console.log(`Using cached featured products (limit: ${limitCount})`)
-    return cached.data
+    return cached
   }
 
   // Server-side: Use Firebase Admin SDK
@@ -205,14 +223,14 @@ export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
       })
       
       // Cache the result
-      featuredProductsCache.set(limitCount, { data: products, timestamp: Date.now() })
+      featuredProductsCache.set(limitCount, products)
       return products
     } catch (error) {
       console.error("Error fetching featured products (server):", error)
-      // Return cached data if available, even if expired
+      // Return cached data if available
       if (cached) {
-        console.log(`Returning stale cached featured products due to error`)
-        return cached.data
+        console.log(`Returning cached featured products due to error`)
+        return cached
       }
       return []
     }
@@ -224,7 +242,7 @@ export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
     // Return cached data if Firebase is not available
     if (cached) {
       console.log(`Returning cached featured products (Firebase unavailable)`)
-      return cached.data
+      return cached
     }
     return []
   }
@@ -249,14 +267,14 @@ export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
     )
     
     // Cache the result
-    featuredProductsCache.set(limitCount, { data: products, timestamp: Date.now() })
+    featuredProductsCache.set(limitCount, products)
     return products
   } catch (error) {
     console.error("Error fetching featured products (client):", error)
-    // Return cached data if available, even if expired
+    // Return cached data if available
     if (cached) {
-      console.log(`Returning stale cached featured products due to error`)
-      return cached.data
+      console.log(`Returning cached featured products due to error`)
+      return cached
     }
     return []
   }
@@ -660,7 +678,10 @@ export async function createProduct(product: Omit<Product, "id" | "createdAt" | 
       throw new Error(errorData.error || "Failed to create product")
     }
 
-    return await response.json()
+    const newProduct = await response.json()
+    // Clear cache when admin creates a product
+    clearAllCache()
+    return newProduct
   } catch (error) {
     console.error("Error creating product:", error)
     throw error
@@ -685,7 +706,10 @@ export async function updateProduct(
       throw new Error(errorData.error || "Failed to update product")
     }
 
-    return await response.json()
+    const updatedProduct = await response.json()
+    // Clear cache for this product when admin updates it
+    clearProductCache(id)
+    return updatedProduct
   } catch (error) {
     console.error("Error updating product:", error)
     throw error
@@ -702,6 +726,9 @@ export async function deleteProduct(id: string): Promise<void> {
       const errorData = await response.json()
       throw new Error(errorData.error || "Failed to delete product")
     }
+    
+    // Clear cache when admin deletes a product
+    clearProductCache(id)
   } catch (error) {
     console.error("Error deleting product:", error)
     throw error
