@@ -1,192 +1,92 @@
-import { Metadata } from "next"
-import { notFound } from "next/navigation"
+"use client"
+
+import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { getProductById, getRelatedProducts } from "@/lib/services/product-service"
 import { ProductClient } from "@/components/product/product-client"
 import { RelatedProducts } from "@/components/product/related-products"
-import { generateSlug } from "@/lib/product-url"
+import type { Product } from "@/lib/models"
 
-interface ProductPageProps {
-  params: {
-    slug: string
-  }
-  searchParams: {
-    id?: string
-  }
-}
+export default function ProductPage() {
+  const searchParams = useSearchParams()
+  const [product, setProduct] = useState<Product | null>(null)
+  const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
 
-export async function generateMetadata({ 
-  searchParams 
-}: ProductPageProps): Promise<Metadata> {
-  if (!searchParams.id) {
-    return { title: "Produit Non Trouvé" }
-  }
-
-  const product = await getProductById(searchParams.id)
-
-  if (!product) {
-    return { title: "Produit Non Trouvé" }
-  }
-
-  const slug = generateSlug(product.name, { 
-    includeBrand: product.brand 
-  })
-  const canonicalUrl = `https://youandme.tn/product/${slug}?id=${product.id}`
-
-  return {
-    title: `${product.name} - ${product.brand}`,
-    description: product.description || `Achetez ${product.name} de ${product.brand}. ${product.category}. Prix: ${product.price} TND`,
+  useEffect(() => {
+    const productId = searchParams.get("id")
     
-    // Canonical URL (prevents duplicate content issues)
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    
-    // Keywords
-    keywords: [
-      product.name,
-      product.brand,
-      product.category,
-      product.subcategory!,
-      'cosmétique',
-      'beauté',
-      'Tunisie'
-    ],
-    
-    // Open Graph (for social media)
-    openGraph: {
-      title: `${product.name} - ${product.brand}`,
-      description: product.description,
-      url: canonicalUrl,
-      siteName: 'You & Me Beauty',
-      images: [
-        {
-          url: product.image || '/placeholder.svg',
-          width: 1200,
-          height: 630,
-          alt: `${product.name} - ${product.brand}`,
-        },
-      ],
-      locale: 'fr_TN',
-      type: 'website',
-    },
-    
-    // Twitter Card
-    twitter: {
-      card: 'summary_large_image',
-      title: `${product.name} - ${product.brand}`,
-      description: product.description,
-      images: [product.image || '/placeholder.svg'],
-    },
-    
-    // Robots
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
-  }
-}
+    if (!productId) {
+      setError(true)
+      setLoading(false)
+      return
+    }
 
-export default async function ProductPage({ searchParams }: ProductPageProps) {
-  // Require ID in query params
-  if (!searchParams.id) {
-    notFound()
-  }
+    const fetchProduct = async () => {
+      try {
+        const fetchedProduct = await getProductById(productId)
+        
+        if (!fetchedProduct) {
+          setError(true)
+          setLoading(false)
+          return
+        }
 
-  const product = await getProductById(searchParams.id)
+        setProduct(fetchedProduct)
 
-  if (!product) {
-    notFound()
-  }
-
-  // Generate expected slug
-  const expectedSlug = generateSlug(product.name, {
-    includeBrand: product.brand
-  })
-
-  // JSON-LD Structured Data
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'Product',
-        name: product.name,
-        image: product.images && product.images.length > 0 ? product.images : [product.image || '/placeholder.svg'],
-        description: product.description,
-        sku: product.id,
-        brand: {
-          '@type': 'Brand',
-          name: product.brand,
-        },
-        offers: {
-          '@type': 'Offer',
-          url: `https://youandme.tn/product/${expectedSlug}?id=${product.id}`,
-          priceCurrency: 'TND',
-          price: product.price,
-          availability: product.quantity > 0 
-            ? 'https://schema.org/InStock' 
-            : 'https://schema.org/OutOfStock',
-          itemCondition: 'https://schema.org/NewCondition',
-          seller: {
-            '@type': 'Organization',
-            name: 'You & Me Beauty',
-          },
-        },
-      },
-      {
-        '@type': 'BreadcrumbList',
-        'itemListElement': [
-          {
-            '@type': 'ListItem',
-            'position': 1,
-            'name': 'Accueil',
-            'item': 'https://youandme.tn'
-          },
-          {
-            '@type': 'ListItem',
-            'position': 2,
-            'name': 'Boutique',
-            'item': 'https://youandme.tn/shop'
-          },
-          {
-            '@type': 'ListItem',
-            'position': 3,
-            'name': product.category,
-            'item': `https://youandme.tn/shop?category=${product.category}`
-          },
-          {
-            '@type': 'ListItem',
-            'position': 4,
-            'name': product.name,
-            'item': `https://youandme.tn/product/${expectedSlug}?id=${product.id}`
-          }
-        ]
+        // Fetch related products
+        const related = await getRelatedProducts(
+          fetchedProduct.id,
+          fetchedProduct.category,
+          fetchedProduct.brand,
+          fetchedProduct.subcategory,
+          4
+        )
+        setRelatedProducts(related)
+      } catch (err) {
+        console.error("Error fetching product:", err)
+        setError(true)
+      } finally {
+        setLoading(false)
       }
-    ]
+    }
+
+    fetchProduct()
+  }, [searchParams])
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-16">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Chargement du produit...</p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
-  // Fetch related products
-  const relatedProducts = await getRelatedProducts(
-    product.id,
-    product.category,
-    product.brand,
-    product.subcategory,
-    4
-  )
+  if (error || !product) {
+    return (
+      <div className="container mx-auto px-4 py-16">
+        <div className="flex flex-col items-center justify-center min-h-[400px]">
+          <h1 className="text-4xl font-bold mb-4">404</h1>
+          <p className="text-xl text-muted-foreground mb-8">Produit non trouvé</p>
+          <a 
+            href="/shop" 
+            className="px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+          >
+            Retourner à la boutique
+          </a>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <>
-      {/* Structured Data for SEO */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      
       <ProductClient product={product} />
       <RelatedProducts products={relatedProducts} currentProduct={product} />
     </>

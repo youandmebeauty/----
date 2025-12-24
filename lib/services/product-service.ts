@@ -1,5 +1,12 @@
 import type { Product, SearchFilters } from "@/lib/models"
 
+// Simple in-memory cache for products
+const productCache = new Map<string, { data: Product, timestamp: number }>()
+const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+
+// Cache for product lists
+const featuredProductsCache = new Map<number, { data: Product[], timestamp: number }>()
+
 // Dynamic imports for client-side Firebase
 let firestoreModule: any = null
 let db: any = null
@@ -88,6 +95,13 @@ export async function getProducts(): Promise<Product[]> {
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
+  // Check cache first
+  const cached = productCache.get(id)
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    console.log(`Using cached product: ${id}`)
+    return cached.data
+  }
+
   // Server-side: Use Firebase Admin SDK
   if (typeof window === "undefined") {
     try {
@@ -100,19 +114,35 @@ export async function getProductById(id: string): Promise<Product | null> {
 
       // Serialize to plain object to avoid Next.js serialization errors
       const data = productDoc.data()
-      return JSON.parse(JSON.stringify({
+      const product = JSON.parse(JSON.stringify({
         id: productDoc.id,
         ...data,
       })) as Product
+      
+      // Cache the result
+      productCache.set(id, { data: product, timestamp: Date.now() })
+      return product
     } catch (error) {
       console.error("Error getting product (server):", error)
+      // Return cached data if available, even if expired
+      if (cached) {
+        console.log(`Returning stale cached product due to error: ${id}`)
+        return cached.data
+      }
       return null
     }
   }
 
   // Client-side: Use Firebase Client SDK
   await initFirestore()
-  if (!firestoreModule || !db) return null
+  if (!firestoreModule || !db) {
+    // Return cached data if Firebase is not available
+    if (cached) {
+      console.log(`Returning cached product (Firebase unavailable): ${id}`)
+      return cached.data
+    }
+    return null
+  }
 
   try {
     const productRef = firestoreModule.doc(db, PRODUCTS_COLLECTION, id)
@@ -128,15 +158,29 @@ export async function getProductById(id: string): Promise<Product | null> {
       ...data,
     } as Product
 
+    // Cache the result
+    productCache.set(id, { data: product, timestamp: Date.now() })
     
     return product
   } catch (error) {
     console.error("Error getting product (client):", error)
+    // Return cached data if available, even if expired
+    if (cached) {
+      console.log(`Returning stale cached product due to error: ${id}`)
+      return cached.data
+    }
     return null
   }
 }
 
 export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
+  // Check cache first
+  const cached = featuredProductsCache.get(limitCount)
+  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+    console.log(`Using cached featured products (limit: ${limitCount})`)
+    return cached.data
+  }
+
   // Server-side: Use Firebase Admin SDK
   if (typeof window === "undefined") {
     try {
@@ -150,7 +194,7 @@ export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
 
       const snapshot = await query.get()
 
-      return snapshot.docs.map((doc: any) => {
+      const products = snapshot.docs.map((doc: any) => {
         const data = doc.data()
         return JSON.parse(
           JSON.stringify({
@@ -159,15 +203,31 @@ export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
           }),
         ) as Product
       })
+      
+      // Cache the result
+      featuredProductsCache.set(limitCount, { data: products, timestamp: Date.now() })
+      return products
     } catch (error) {
       console.error("Error fetching featured products (server):", error)
+      // Return cached data if available, even if expired
+      if (cached) {
+        console.log(`Returning stale cached featured products due to error`)
+        return cached.data
+      }
       return []
     }
   }
 
   // Client-side: Use Firebase Client SDK
   await initFirestore()
-  if (!firestoreModule || !db) return []
+  if (!firestoreModule || !db) {
+    // Return cached data if Firebase is not available
+    if (cached) {
+      console.log(`Returning cached featured products (Firebase unavailable)`)
+      return cached.data
+    }
+    return []
+  }
 
   try {
     const productsRef = firestoreModule.collection(db, PRODUCTS_COLLECTION)
@@ -180,15 +240,24 @@ export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
 
     const snapshot = await firestoreModule.getDocs(q)
 
-    return snapshot.docs.map(
+    const products = snapshot.docs.map(
       (doc: any) =>
         ({
           id: doc.id,
           ...doc.data(),
         }) as Product,
     )
+    
+    // Cache the result
+    featuredProductsCache.set(limitCount, { data: products, timestamp: Date.now() })
+    return products
   } catch (error) {
     console.error("Error fetching featured products (client):", error)
+    // Return cached data if available, even if expired
+    if (cached) {
+      console.log(`Returning stale cached featured products due to error`)
+      return cached.data
+    }
     return []
   }
 }
