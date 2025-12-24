@@ -10,10 +10,8 @@ const featuredProductsCache = new Map<number, Product[]>()
 export function clearProductCache(productId?: string) {
   if (productId) {
     productCache.delete(productId)
-    console.log(`Cleared cache for product: ${productId}`)
   } else {
     productCache.clear()
-    console.log('Cleared all product cache')
   }
   // Clear featured products cache when any product changes
   featuredProductsCache.clear()
@@ -22,7 +20,6 @@ export function clearProductCache(productId?: string) {
 export function clearAllCache() {
   productCache.clear()
   featuredProductsCache.clear()
-  console.log('Cleared all caches')
 }
 
 // Dynamic imports for client-side Firebase
@@ -116,7 +113,6 @@ export async function getProductById(id: string): Promise<Product | null> {
   // Check cache first (no time expiration)
   const cached = productCache.get(id)
   if (cached) {
-    console.log(`Using cached product: ${id}`)
     return cached
   }
 
@@ -144,7 +140,6 @@ export async function getProductById(id: string): Promise<Product | null> {
       console.error("Error getting product (server):", error)
       // Return cached data if available
       if (cached) {
-        console.log(`Returning cached product due to error: ${id}`)
         return cached
       }
       return null
@@ -156,7 +151,6 @@ export async function getProductById(id: string): Promise<Product | null> {
   if (!firestoreModule || !db) {
     // Return cached data if Firebase is not available
     if (cached) {
-      console.log(`Returning cached product (Firebase unavailable): ${id}`)
       return cached
     }
     return null
@@ -184,7 +178,6 @@ export async function getProductById(id: string): Promise<Product | null> {
     console.error("Error getting product (client):", error)
     // Return cached data if available
     if (cached) {
-      console.log(`Returning cached product due to error: ${id}`)
       return cached
     }
     return null
@@ -195,7 +188,6 @@ export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
   // Check cache first (no time expiration)
   const cached = featuredProductsCache.get(limitCount)
   if (cached) {
-    console.log(`Using cached featured products (limit: ${limitCount})`)
     return cached
   }
 
@@ -229,7 +221,6 @@ export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
       console.error("Error fetching featured products (server):", error)
       // Return cached data if available
       if (cached) {
-        console.log(`Returning cached featured products due to error`)
         return cached
       }
       return []
@@ -241,7 +232,6 @@ export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
   if (!firestoreModule || !db) {
     // Return cached data if Firebase is not available
     if (cached) {
-      console.log(`Returning cached featured products (Firebase unavailable)`)
       return cached
     }
     return []
@@ -273,7 +263,6 @@ export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
     console.error("Error fetching featured products (client):", error)
     // Return cached data if available
     if (cached) {
-      console.log(`Returning cached featured products due to error`)
       return cached
     }
     return []
