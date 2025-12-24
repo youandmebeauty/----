@@ -5,7 +5,6 @@ import { WhyChooseUs } from "@/components/why-choose-us"
 import { ClientScrollAnimation } from "@/components/client-scroll-animation"
 import { MakeupModelWrapper } from "@/components/makeup-model-wrapper"
 
-
 export default function Home() {
   const jsonLd = {
     "@context": "https://schema.org",
