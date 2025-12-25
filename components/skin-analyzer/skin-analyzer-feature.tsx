@@ -7,6 +7,7 @@ import {
     AlertCircle,
     X,
 } from "lucide-react";
+import { Breadcrumb } from "@/components/breadcrumb";
 import { CameraView } from "@/components/skin-analyzer/camera-view";
 import { UploadView } from "@/components/skin-analyzer/upload-view";
 import { AnalysisResults } from "@/components/skin-analyzer/analysis-results";
@@ -518,6 +519,13 @@ export default function SkinAnalyzerFeature() {
 
                 <div className="container relative mx-auto px-4 py-20 lg:py-28">
                     <div className="max-w-4xl mx-auto text-center">
+                        {/* Breadcrumb */}
+                        <div className="flex justify-start mb-8">
+                            <Breadcrumb 
+                                items={[{ name: "Analyseur de Peau", href: "/skin-analyzer", current: true }]} 
+                            />
+                        </div>
+                        
                         <div className="inline-flex items-center justify-center gap-2 mb-8 bg-primary/10 hover:bg-primary/15 px-5 py-2 rounded-full border border-primary/20 backdrop-blur-sm transition-all duration-300 cursor-default group">
                             <Sparkles className="w-4 h-4 text-primary group-hover:rotate-12 transition-transform duration-300" />
                             <span className="text-sm font-semibold text-primary uppercase tracking-widest">AI Technology</span>

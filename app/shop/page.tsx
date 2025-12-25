@@ -11,6 +11,7 @@ import { Sparkles, User, Wind, Pill } from "lucide-react"
 import { ShopHeader } from "@/components/shop/shop-header"
 import { ShopFilters } from "@/components/shop/shop-filters"
 import { ProductGrid } from "@/components/shop/product-grid"
+import { Breadcrumb, BreadcrumbJsonLd } from "@/components/breadcrumb"
 import { cn } from "@/lib/utils"
 import {
   Dialog,
@@ -21,35 +22,6 @@ import {
 import { FeaturedSection } from "@/components/shop/featured-section"
 
 function SearchContent() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "CollectionPage",
-        "name": "Boutique You & Me Beauty",
-        "description": "Découvrez notre large gamme de produits de beauté, soins du visage, maquillage et plus encore.",
-        "url": "https://youandme.tn/shop"
-      },
-      {
-        "@type": "BreadcrumbList",
-        "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Accueil",
-            "item": "https://youandme.tn"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": "Boutique",
-            "item": "https://youandme.tn/shop"
-          }
-        ]
-      }
-    ]
-  }
-
   const searchParams = useSearchParams()
   const router = useRouter()
   const [products, setProducts] = useState<Product[]>([])
@@ -219,11 +191,14 @@ function SearchContent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <BreadcrumbJsonLd items={[{ name: "Boutique", url: "https://youandme.tn/shop" }]} />
       <main className="container mx-auto px-4 lg:px-6 xl:px-8 py-8">
+        {/* Breadcrumb */}
+        <Breadcrumb 
+          items={[{ name: "Boutique", href: "/shop", current: true }]} 
+          className="mb-6"
+        />
+        
         {/* Featured Section (New) */}
         <FeaturedSection />
         {/* Header & Controls */}

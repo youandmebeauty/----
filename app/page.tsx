@@ -29,12 +29,12 @@ export default function Home() {
       />
       <main>
         <section aria-label="Hero section">
-          <ClientScrollAnimation variant="fadeIn" duration={0.8}>
+          <ClientScrollAnimation variant="fadeIn" duration={0.2}>
             <Hero />
           </ClientScrollAnimation>
         </section>
         
-        <div className="hidden lg:block absolute -top-5 right-0 h-[92vh] w-1/2 z-20" >
+        <div className="hidden lg:block absolute mt-5 top-0 right-0 h-[92vh] w-1/2 z-20" >
           <MakeupModelWrapper />
         </div>
         

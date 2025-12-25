@@ -19,11 +19,11 @@ const variants: Record<string, Variants> = {
         visible: { opacity: 1 },
     },
     slideUp: {
-        hidden: { opacity: 0, y: 25 },
+        hidden: { opacity: 0, y: 5 },
         visible: { opacity: 1, y: 0 },
     },
     slideDown: {
-        hidden: { opacity: 0, y: -25 },
+        hidden: { opacity: 0, y: -5 },
         visible: { opacity: 1, y: 0 },
     },
     slideLeft: {

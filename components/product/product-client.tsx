@@ -14,8 +14,10 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
+import { generateSlung } from "@/lib/product-url"
 import { cn } from "@/lib/utils"
 import { SHOP_CATEGORIES } from "@/lib/category-data" // adjust path as needed
+import { Breadcrumb, BreadcrumbJsonLd } from "@/components/breadcrumb"
 
 interface ProductClientProps {
     product: Product
@@ -183,10 +185,31 @@ export function ProductClient({ product }: ProductClientProps) {
 
     const inStock = displayQuantity > cartQuantity
     const remainingStock = displayQuantity - cartQuantity
+const slung = generateSlung(product.name, { 
+    includeBrand: product.brand 
+  })
+  
+    // Build breadcrumb items
+    const categoryLabel = getCategoryLabel(product.category)
+    const breadcrumbItems = [
+        { name: "Boutique", href: "/shop" },
+        { name: categoryLabel, href: `/shop?category=${product.category}` },
+        { name: product.name, href: "#", current: true }
+    ]
+
+    const jsonLdItems = [
+        { name: "Boutique", url: "https://youandme.tn/shop" },
+        { name: categoryLabel, url: `https://youandme.tn/shop?category=${product.category}` },
+        { name: product.name, url: `https://youandme.tn/product/${slung}?id=${product.id}` }
+    ]
 
     return (
         <div className="min-h-screen bg-background">
+            <BreadcrumbJsonLd items={jsonLdItems} />
             <main className="container mx-auto px-4 lg:px-8 py-8 lg:py-16">
+                {/* Breadcrumb */}
+                <Breadcrumb items={breadcrumbItems} className="mb-6" />
+                
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 xl:gap-24">
 
                     {/* Left Column: Image (Sticky on Desktop) */}

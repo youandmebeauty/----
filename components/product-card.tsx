@@ -9,7 +9,7 @@ import { toast } from "@/components/ui/use-toast"
 import { cn } from "@/lib/utils"
 import { ShoppingBag } from "lucide-react"
 import { useState } from "react"
-import { generateSlug } from "@/lib/product-url"
+import { generateSlung } from "@/lib/product-url"
 
 interface Product {
   id: string
@@ -84,13 +84,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
   }
 
   const isOutOfStock = product.quantity <= cartQuantity
-const slug = generateSlug(product.name, { 
+const slung = generateSlung(product.name, { 
     includeBrand: product.brand 
   })
   return (
     <div className={cn("group relative", className)}>
       <Link 
-        href={`/product/${slug}?id=${product.id}`}
+        href={`/product/${slung}?id=${product.id}`}
         className="block"
         onClick={handleNavigationClick}
       >

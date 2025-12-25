@@ -14,6 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
+import { Breadcrumb } from "@/components/breadcrumb"
 // export const metadata: Metadata = {
 
 
@@ -178,6 +179,13 @@ export default function ContactPage() {
 
         <div className="container relative mx-auto px-4 py-20 lg:py-28">
           <div className="max-w-4xl mx-auto text-center">
+            {/* Breadcrumb */}
+            <div className="flex justify-start mb-8">
+              <Breadcrumb 
+                items={[{ name: "Contact", href: "/contact", current: true }]} 
+              />
+            </div>
+            
             {/* Badge with hover effect */}
             <div className="inline-flex items-center justify-center gap-2 mb-8 bg-primary/10 hover:bg-primary/15 px-5 py-2 rounded-full border border-primary/20 backdrop-blur-sm transition-all duration-300 cursor-default group">
               <Mail className="w-4 h-4 text-primary group-hover:rotate-12 transition-transform duration-300" />
