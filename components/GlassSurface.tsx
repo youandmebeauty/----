@@ -105,14 +105,16 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     setIsReady(true);
   }, []);
 
+  const cachedDimensions = useRef({ width: 0, height: 0 });
+
   const generateDisplacementMap = useCallback(() => {
-    const rect = containerRef.current?.getBoundingClientRect();
-    if (!rect || rect.width === 0 || rect.height === 0) {
+    const { width, height } = cachedDimensions.current;
+    if (width === 0 || height === 0) {
       return '';
     }
     
-    const actualWidth = Math.max(Math.round(rect.width), 100);
-    const actualHeight = Math.max(Math.round(rect.height), 50);
+    const actualWidth = Math.max(Math.round(width), 100);
+    const actualHeight = Math.max(Math.round(height), 50);
     const edgeSize = Math.min(actualWidth, actualHeight) * (borderWidth * 0.5);
 
     const svgContent = `
@@ -199,6 +201,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         if (Math.abs(width - lastWidth) > 1 || Math.abs(height - lastHeight) > 1) {
           lastWidth = width;
           lastHeight = height;
+          cachedDimensions.current = { width, height };
           
           requestAnimationFrame(() => {
             updateDisplacementMap();

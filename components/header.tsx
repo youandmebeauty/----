@@ -36,8 +36,16 @@ export function Header() {
 
   // Handle scroll for adaptive header
   useEffect(() => {
+    let ticking = false
+    
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20)
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 20)
+          ticking = false
+        })
+        ticking = true
+      }
     }
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
