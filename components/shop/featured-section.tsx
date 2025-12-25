@@ -104,10 +104,12 @@ export function FeaturedSection() {
     const content = getContent()
 
     const handleDiscoverClick = () => {
-        const productSection = document.getElementById('product-section')
-        if (productSection) {
-            productSection.scrollIntoView({ behavior: 'smooth' })
-        }
+        requestAnimationFrame(() => {
+            const productSection = document.getElementById('product-section')
+            if (productSection) {
+                productSection.scrollIntoView({ behavior: 'smooth' })
+            }
+        })
     }
 
     return (
