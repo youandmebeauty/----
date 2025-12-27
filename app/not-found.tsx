@@ -1,7 +1,5 @@
 import Link from "next/link"
-import { Header } from "@/components/header"
 import { Button } from "@/components/ui/button"
-import { Search } from "lucide-react"
 
 export default function NotFound() {
   return (

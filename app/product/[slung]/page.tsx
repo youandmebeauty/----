@@ -1,94 +1,130 @@
-"use client"
-
-import { useEffect, useState } from "react"
-import { useSearchParams } from "next/navigation"
 import { getProductById, getRelatedProducts } from "@/lib/services/product-service"
 import { ProductClient } from "@/components/product/product-client"
 import { RelatedProducts } from "@/components/product/related-products"
-import type { Product } from "@/lib/models"
+import { generateSlung } from "@/lib/product-url"
+import { Metadata } from "next"
+import { notFound } from "next/navigation"
 
-export default function ProductPage() {
-  const searchParams = useSearchParams()
-  const [product, setProduct] = useState<Product | null>(null)
-  const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(false)
+interface ProductPageProps {
+  params: { slung: string }
+  searchParams: { [key: string]: string | undefined }
+}
 
-  useEffect(() => {
-    const productId = searchParams.get("id")
-    
-    if (!productId) {
-      setError(true)
-      setLoading(false)
-      return
+export async function generateMetadata({ 
+  params, 
+  searchParams 
+}: ProductPageProps): Promise<Metadata> {
+  const resolvedParams = await params
+  const resolvedSearchParams = await searchParams
+  const productId = resolvedSearchParams.id
+  
+  if (!productId) {
+    return {
+      title: "Produit non trouvé - You & Me Beauty",
+      description: "Le produit demandé n'existe pas.",
     }
+  }
 
-    const fetchProduct = async () => {
-      try {
-        const fetchedProduct = await getProductById(productId)
-        
-        if (!fetchedProduct) {
-          setError(true)
-          setLoading(false)
-          return
-        }
-
-        setProduct(fetchedProduct)
-
-        // Fetch related products
-        const related = await getRelatedProducts(
-          fetchedProduct.id,
-          fetchedProduct.category,
-          fetchedProduct.brand,
-          fetchedProduct.subcategory,
-          4
-        )
-        setRelatedProducts(related)
-      } catch (err) {
-        console.error("Error fetching product:", err)
-        setError(true)
-      } finally {
-        setLoading(false)
+  try {
+    const product = await getProductById(productId)
+    
+    if (!product) {
+      return {
+        title: "Produit non trouvé - You & Me Beauty",
+        description: "Le produit demandé n'existe pas.",
       }
     }
 
-    fetchProduct()
-  }, [searchParams])
+    // Use the actual slug from URL params for canonical URL
+    const canonicalUrl = `https://youandme.tn/product/${resolvedParams.slung}?id=${product.id}`
+    
+    // Get first image
+    const productImage = product.images && product.images.length > 0 
+      ? product.images[0] 
+      : product.image || "https://youandme.tn/og-image.png"
 
-  if (loading) {
-    return (
-      <div className="container mx-auto px-4 py-16">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Chargement du produit...</p>
-          </div>
-        </div>
-      </div>
-    )
+    // Create SEO-friendly description
+    const description = product.description 
+      ? product.description.substring(0, 160) + (product.description.length > 160 ? '...' : '')
+      : `${product.name} - ${product.brand || ''} disponible chez You & Me Beauty. Prix: ${product.price} TND.`
+
+    return {
+      title: `${product.name} - ${product.brand || 'You & Me Beauty'}`,
+      description,
+      alternates: {
+        canonical: canonicalUrl,
+      },
+      openGraph: {
+        title: `${product.name} - ${product.brand || 'You & Me Beauty'}`,
+        description,
+        url: canonicalUrl,
+        siteName: "You & Me Beauty",
+        locale: "fr_TN",
+        type: "website",
+        images: [
+          {
+            url: productImage,
+            width: 800,
+            height: 800,
+            alt: product.name,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${product.name} - ${product.brand || 'You & Me Beauty'}`,
+        description,
+        images: [productImage],
+      },
+      other: {
+        "product:price:amount": product.price.toString(),
+        "product:price:currency": "TND",
+        "product:availability": product.quantity > 0 ? "in stock" : "out of stock",
+        "product:brand": product.brand || "You & Me Beauty",
+        "product:category": product.category,
+      },
+    }
+  } catch (error) {
+    console.error("Error generating metadata:", error)
+    return {
+      title: "Produit - You & Me Beauty",
+      description: "Découvrez nos produits de beauté de qualité.",
+    }
+  }
+}
+
+export default async function ProductPage({ searchParams }: ProductPageProps) {
+  const resolvedSearchParams = await searchParams
+  const productId = resolvedSearchParams.id
+  
+  if (!productId) {
+    notFound()
   }
 
-  if (error || !product) {
-    return (
-      <div className="container mx-auto px-4 py-16">
-        <div className="flex flex-col items-center justify-center min-h-[400px]">
-          <h1 className="text-4xl font-bold mb-4">404</h1>
-          <p className="text-xl text-muted-foreground mb-8">Produit non trouvé</p>
-          <a 
-            href="/shop" 
-            className="px-6 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-          >
-            Retourner à la boutique
-          </a>
-        </div>
-      </div>
-    )
-  }
+  try {
+    const product = await getProductById(productId)
+    
+    if (!product) {
+      notFound()
+    }
 
-  return (
-    <>
-      <ProductClient product={product} />
-      <RelatedProducts products={relatedProducts} currentProduct={product} />
-    </>
-  )
+    // Fetch related products
+    const relatedProducts = await getRelatedProducts(
+      product.id,
+      product.category,
+      product.brand,
+      product.subcategory,
+      4
+    )
+
+    return (
+      <>
+        <ProductClient product={product} />
+        <RelatedProducts products={relatedProducts} currentProduct={product} />
+      </>
+    )
+  } catch (error) {
+    console.error("Error fetching product:", error)
+    notFound()
+  }
 }

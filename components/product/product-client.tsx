@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/accordion"
 import { generateSlung } from "@/lib/product-url"
 import { cn } from "@/lib/utils"
-import { SHOP_CATEGORIES } from "@/lib/category-data" // adjust path as needed
+import { SHOP_CATEGORIES } from "@/lib/category-data"
 import { Breadcrumb, BreadcrumbJsonLd } from "@/components/breadcrumb"
 
 interface ProductClientProps {
