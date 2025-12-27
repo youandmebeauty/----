@@ -8,37 +8,45 @@ const values = [
     {
         icon: Package,
         title: "Large Sélection",
-        description: "Des centaines de marques de beauté premium et produits cosmétiques soigneusement sélectionnés",
+        description: "Des centaines de produits cosmétiques soigneusement sélectionnés : maquillage professionnel, soins du visage, parfums originaux et accessoires beauté",
         gradient: "from-pink-500/10 via-rose-500/10 to-purple-500/10",
         iconBg: "bg-gradient-to-br from-pink-500/20 to-rose-500/20",
+        link: "/shop",
+        linkText: "Découvrir tous nos produits"
     },
     {
         icon: Award,
         title: "Marques Authentiques",
-        description: "Uniquement des produits originaux des meilleures marques mondiales certifiées",
+        description: "Uniquement des produits originaux des meilleures marques mondiales certifiées, garantis 100% authentiques",
         gradient: "from-amber-500/10 via-orange-500/10 to-red-500/10",
         iconBg: "bg-gradient-to-br from-amber-500/20 to-orange-500/20",
+        link: "/shop?category=parfum",
+        linkText: "Voir nos parfums originaux"
     },
     {
         icon: Shield,
         title: "Contrôle Rigoureux",
         description: "Chaque produit bénéficie d’une vérification stricte de sa provenance, fraîcheur et conformité",
         gradient: "from-emerald-500/10 via-teal-500/10 to-cyan-500/10",
-        iconBg: "bg-gradient-to-br from-emerald-500/20 to-teal-500/20",
-    },
+        iconBg: "bg-gradient-to-br from-emerald-500/20 to-teal-500/20",        link: "/shop?category=soins",
+        linkText: "Explorer nos soins"    },
     {
         icon: Sparkles,
         title: "Nouveautés",
         description: "Les dernières tendances et nouveaux produits beauté ajoutés régulièrement à notre catalogue",
         gradient: "from-violet-500/10 via-purple-500/10 to-fuchsia-500/10",
         iconBg: "bg-gradient-to-br from-violet-500/20 to-purple-500/20",
+        link: "/shop?category=maquillage",
+        linkText: "Voir le maquillage tendance"
     },
     {
         icon: Truck,
         title: "Livraison Rapide",
-        description: "Livraison gratuite dès 200 DT partout en Tunisie avec suivi en temps réel",
+        description: "Livraison gratuite dès 200 DT partout en Tunisie : Tunis, Sfax, Sousse, Monastir et toutes les régions",
         gradient: "from-blue-500/10 via-indigo-500/10 to-violet-500/10",
         iconBg: "bg-gradient-to-br from-blue-500/20 to-indigo-500/20",
+        link: "/contact",
+        linkText: "En savoir plus"
     },
     {
         icon: Heart,
@@ -46,6 +54,8 @@ const values = [
         description: "Conseils personnalisés et support client dédié disponible 7j/7 pour vous accompagner",
         gradient: "from-red-500/10 via-pink-500/10 to-rose-500/10",
         iconBg: "bg-gradient-to-br from-red-500/20 to-pink-500/20",
+        link: "/contact",
+        linkText: "Nous contacter"
     },
 ]
 
@@ -73,7 +83,7 @@ export function WhyChooseUs() {
                     </h1>
 
                     <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
-                        Votre destination beauté de confiance pour toutes les grandes marques cosmétiques internationales
+                        Votre boutique cosmétique en ligne de confiance en Tunisie pour toutes les grandes marques de maquillage, parfums et soins authentiques
                     </p>
                 </div>
 
@@ -119,6 +129,16 @@ export function WhyChooseUs() {
                                         <p className="text-muted-foreground leading-relaxed mb-6 font-light">
                                             {value.description}
                                         </p>
+
+                                        {/* Link */}
+                                        {value.link && (
+                                            <Link 
+                                                href={value.link} 
+                                                className="text-primary hover:underline text-sm font-medium inline-flex items-center gap-1 mb-4"
+                                            >
+                                                {value.linkText} →
+                                            </Link>
+                                        )}
 
                                         {/* Decorative animated line */}
                                         <div className="relative h-1 bg-border/30 rounded-full overflow-hidden">

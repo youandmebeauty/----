@@ -37,7 +37,7 @@ export function Categories() {
 
       <div className="container mx-auto px-4  z-10">
         <div className="mb-16 flex items-end justify-between ">
-          <div className="max-w-xl">
+          <div className="max-w-2xl">
 
             <div className="inline-flex items-center gap-2">
               <span className="h-px w-8 bg-primary"></span>
@@ -47,6 +47,10 @@ export function Categories() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
               Nos Catégories
             </h1>
+            
+            <p className="mt-4 text-xs md:text-sm text-muted-foreground leading-relaxed">
+              Explorez notre <Link href="/shop" className="text-foreground hover:underline font-medium">boutique cosmétique en ligne</Link> et découvrez nos catégories de produits : <Link href="/shop?category=maquillage" className="text-foreground hover:underline">maquillage professionnel</Link>, <Link href="/shop?category=soins" className="text-foreground hover:underline">soins du visage et du corps</Link>, <Link href="/shop?category=parfum" className="text-foreground hover:underline">parfums originaux</Link>, et <Link href="/shop?category=outils" className="text-foreground hover:underline">accessoires beauté</Link>.
+            </p>
           </div>
           <span className="text-muted-foreground hidden md:block text-xs tracking-widest uppercase border-l border-border pl-4 ml-4">01 / DISCOVER</span>
         </div>

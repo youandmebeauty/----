@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import Link from "next/link"
 import { ProductCard } from "./product-card"
 import { getFeaturedProducts } from "@/lib/services/product-service"
 import type { Product } from "@/lib/models"
@@ -119,7 +120,7 @@ export function FeaturedProductsClient() {
     <section className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4">
       <div className="container  mx-auto px-4">
         <div className="mb-16 flex items-end justify-between">
-          <div className="max-w-xl">
+          <div className="max-w-2xl">
             <div className="inline-flex items-center gap-2">
               <span className="h-px w-8 bg-primary"></span>
               <span className="text-sm font-medium tracking-widest uppercase text-primary">Sélection Exclusive</span>
@@ -127,6 +128,10 @@ export function FeaturedProductsClient() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
               Produits Vedettes
             </h1>
+            
+            <p className="mt-4 text-xs md:text-sm text-muted-foreground leading-relaxed">
+              Découvrez notre sélection de <Link href="/shop" className="text-foreground hover:underline font-medium">produits cosmétiques premium</Link>, incluant les meilleurs <Link href="/shop?category=maquillage" className="text-foreground hover:underline">articles de maquillage</Link>, <Link href="/shop?category=soins" className="text-foreground hover:underline">soins visage</Link> et <Link href="/shop?category=parfum" className="text-foreground hover:underline">parfums de marque</Link>.
+            </p>
           </div>
           <span className="text-muted-foreground hidden md:block text-xs tracking-widest uppercase border-l border-border pl-4 ml-4">02 / CURATED</span>
         </div>

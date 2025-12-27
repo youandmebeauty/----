@@ -12,11 +12,11 @@ const inter = Inter({ subsets: ["latin"] })
 import { Metadata } from "next"
 
 export const metadata: Metadata = {
-  title: "Accueil - You & Me Beauty",
+  title: "You & Me Beauty - Parapharmacie et Cosmétique Sfax | Maquillage & Parfums en Ligne Tunisie",
   alternates: {
     canonical: "https://youandme.tn",
   },
-  description: "Bienvenue chez You & Me Beauty. Découvrez notre gamme exclusive de produits de beauté, soins du visage et maquillage pour sublimer votre beauté naturelle.",
+  description: "Découvrez You & Me Beauty, votre parapharmacie et cosmétique à Sfax avec vente en ligne. Large sélection de maquillage professionnel, parfums originaux et produits de beauté authentiques. Livraison rapide dans toute la Tunisie.",
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
@@ -30,8 +30,8 @@ export const metadata: Metadata = {
   },
   manifest: '/site.webmanifest',
   openGraph: {
-    title: "Accueil - You & Me Beauty",
-    description: "Bienvenue chez You & Me Beauty. Découvrez notre gamme exclusive de produits de beauté, soins du visage et maquillage pour sublimer votre beauté naturelle.",
+    title: "You & Me Beauty - Parapharmacie et Cosmétique Sfax | Maquillage & Parfums en Ligne Tunisie",
+    description: "Découvrez You & Me Beauty, votre parapharmacie et cosmétique à Sfax avec vente en ligne. Large sélection de maquillage professionnel, parfums originaux et produits de beauté authentiques. Livraison rapide dans toute la Tunisie.",
     url: "https://youandme.tn",
     siteName: "You & Me Beauty",
     locale: "fr_TN",
@@ -47,18 +47,21 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Accueil - You & Me Beauty",
-    description: "Bienvenue chez You & Me Beauty. Découvrez notre gamme exclusive de produits de beauté, soins du visage et maquillage pour sublimer votre beauté naturelle.",
+    title: "You & Me Beauty - Parapharmacie et Cosmétique Sfax | Maquillage & Parfums en Ligne Tunisie",
+    description: "Découvrez You & Me Beauty, votre parapharmacie et cosmétique à Sfax avec vente en ligne. Large sélection de maquillage professionnel, parfums originaux et produits de beauté authentiques. Livraison rapide dans toute la Tunisie.",
     images: ["https://youandme.tn/og-image.png"],
   },
   keywords: [
-    "beauté",
-    "cosmétique",
+    "parapharmacie Sfax",
+    "cosmétique Sfax",
+    "parapharmacie en ligne Tunisie",
+    "maquillage Tunisie",
+    "parfums originaux Tunisie",
+    "produits de beauté Sfax",
+    "maquillage professionnel",
     "soins du visage",
-    "maquillage",
-    "produits de beauté",
-    "You & Me Beauty",
-    "Tunisie"
+    "parfumerie Sfax",
+    "You & Me Beauty"
   ],
   robots: {
     index: true,

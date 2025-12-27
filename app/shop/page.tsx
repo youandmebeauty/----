@@ -201,6 +201,7 @@ function SearchContent() {
         
         {/* Featured Section (New) */}
         <FeaturedSection />
+        
         {/* Header & Controls */}
         <div id="product-section" className="scroll-mt-24">
           <ShopHeader
