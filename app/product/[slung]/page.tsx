@@ -1,7 +1,6 @@
 import { getProductById, getRelatedProducts } from "@/lib/services/product-service"
 import { ProductClient } from "@/components/product/product-client"
 import { RelatedProducts } from "@/components/product/related-products"
-import { generateSlung } from "@/lib/product-url"
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 
