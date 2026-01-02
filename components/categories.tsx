@@ -33,7 +33,7 @@ const categories = [
 
 export function Categories() {
      return (
-            <section className="relative mt-10 overflow-hidden">
+            <div className="relative mt-10 overflow-hidden">
 
       <div className="container mx-auto px-4  z-10">
         <div className="mb-16 flex items-end justify-between ">
@@ -93,6 +93,6 @@ export function Categories() {
           </div>
         </ScrollAnimation>
       </div>
-    </section>
+    </div>
   )
 }

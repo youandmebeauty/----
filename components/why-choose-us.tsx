@@ -62,7 +62,7 @@ const values = [
 
 export function WhyChooseUs() {
     return (
-        <section className="py-20 relative overflow-hidden">
+        <div className="py-20 relative overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0 bg-gradient-to-b from-secondary/50 via-background to-background/50 rounded-3xl m-4"></div>
             <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl"></div>
@@ -219,6 +219,6 @@ export function WhyChooseUs() {
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
     )
 }

@@ -97,7 +97,7 @@ export function FeaturedProductsClient() {
 
   if (loading) {
     return (
-      <section className="py-16 mt-24 bg-background rounded-3xl m-4">
+      <div className="py-16 mt-24 bg-background rounded-3xl m-4">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-medium tracking-tight text-foreground">Produits Vedettes</h2>
@@ -112,7 +112,7 @@ export function FeaturedProductsClient() {
             ))}
           </div>
         </div>
-      </section>
+      </div>
     )
   }
 

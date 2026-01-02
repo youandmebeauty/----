@@ -1,7 +1,7 @@
 "use client"
 
-import type React from "react"
-import { useEffect, useRef, useCallback } from "react"
+import type { HTMLAttributes, ReactNode } from "react"
+import { useEffect, useRef } from "react"
 import { gsap } from "@/lib/gsap"
 
 type ScrollAnimationVariant =
@@ -125,8 +125,8 @@ const easePresets = {
     sine: "sine.inOut",
 } as const
 
-interface ScrollAnimationProps {
-    children: React.ReactNode
+interface ScrollAnimationProps extends Omit<HTMLAttributes<HTMLDivElement>, "onToggle"> {
+    children: ReactNode
     className?: string
     variant?: ScrollAnimationVariant
     customAnimation?: AnimationDefinition
@@ -141,14 +141,8 @@ interface ScrollAnimationProps {
     stagger?: number | { amount: number; from?: "start" | "center" | "end" | "random" | "edges" }
     childSelector?: string
     perspective?: number | string
-    pin?: boolean
-    pinSpacing?: boolean
-    snap?: boolean | number | number[]
-    anticipatePin?: number
-    refreshPriority?: number
-    invalidateOnRefresh?: boolean
-    fastScrollEnd?: boolean | number
-    preventOverlaps?: boolean | string
+    disabled?: boolean
+    viewport?: { margin?: string }
     onEnter?: () => void
     onLeave?: () => void
     onEnterBack?: () => void
@@ -157,8 +151,6 @@ interface ScrollAnimationProps {
     onToggle?: (self: ScrollTrigger) => void
     onRefresh?: (self: ScrollTrigger) => void
     onScrubComplete?: () => void
-    disabled?: boolean
-    viewport?: { margin?: string; amount?: number | "all" | "some" }
 }
 
 export function ScrollAnimation({
@@ -177,14 +169,8 @@ export function ScrollAnimation({
     stagger = 0,
     childSelector,
     perspective,
-    pin = false,
-    pinSpacing = true,
-    snap,
-    anticipatePin,
-    refreshPriority,
-    invalidateOnRefresh = false,
-    fastScrollEnd,
-    preventOverlaps,
+    disabled = false,
+    viewport,
     onEnter,
     onLeave,
     onEnterBack,
@@ -193,177 +179,73 @@ export function ScrollAnimation({
     onToggle,
     onRefresh,
     onScrubComplete,
-    disabled = false,
-    viewport,
+    ...props
 }: ScrollAnimationProps) {
-    const ref = useRef<HTMLDivElement | null>(null)
-    const scrollTriggerRef = useRef<ScrollTrigger | null>(null)
-
-    const resolvedEase = typeof ease === "string" && ease in easePresets 
-        ? easePresets[ease as keyof typeof easePresets] 
+    const ref = useRef<HTMLDivElement>(null)
+    const resolvedEase = typeof ease === "string" && ease in easePresets
+        ? easePresets[ease as keyof typeof easePresets]
         : ease
 
-    const handleUpdate = useCallback((self: ScrollTrigger) => {
-        onUpdate?.(self.progress)
-    }, [onUpdate])
-
     useEffect(() => {
-        if (disabled) return
+        if (disabled || !ref.current) return
 
         const element = ref.current
-        if (!element) return
-
-        const preset = customAnimation ?? animationPresets[variant] ?? animationPresets.fadeIn
-
-        const targets = childSelector
-            ? Array.from(element.querySelectorAll<HTMLElement>(childSelector))
-            : typeof stagger === "object" || (typeof stagger === "number" && stagger > 0 && element.children.length > 0)
-                ? Array.from(element.children) as HTMLElement[]
-                : [element]
-
-        if (targets.length === 0) return
+        const preset = customAnimation || animationPresets[variant] || animationPresets.fadeIn
+        const perspectiveValue = typeof perspective === "number" ? `${perspective}px` : perspective
 
         const ctx = gsap.context(() => {
-            preset.before?.(element)
-
-            if (perspective) {
-                const value = typeof perspective === "number" ? `${perspective}px` : perspective
-                gsap.set(element, { transformPerspective: value })
+            if (preset.before) preset.before(element)
+            if (perspectiveValue) {
+                gsap.set(element, { transformPerspective: perspectiveValue })
             }
 
-           
+            // Resolve the collection of elements to animate based on the provided options.
+            const targets = childSelector
+                ? Array.from(element.querySelectorAll<HTMLElement>(childSelector))
+                : typeof stagger === "object" || (typeof stagger === "number" && stagger > 0 && element.children.length > 0)
+                    ? Array.from(element.children) as HTMLElement[]
+                    : [element]
 
-            const triggerStart = start ?? (viewport?.margin ? `top ${viewport.margin}` : "top 80%")
-            const triggerEnd = end ?? (scrub ? "bottom top" : undefined)
+            if (!targets.length) return
 
-            // Optimize animation duration for mobile/touch devices
-
-
-            const scrollTriggerConfig: ScrollTrigger.Vars = {
-                trigger: element,
-                start: triggerStart,
-                end: triggerEnd,
-                scrub,
-                markers,
-                once,
-                pin,
-                pinSpacing,
-                anticipatePin,
-                refreshPriority,
-                invalidateOnRefresh,
-                fastScrollEnd,
-                preventOverlaps,
-                toggleActions: scrub ? undefined : once ? "play none none none" : "play none none reverse",
-                onEnter: () => {
-                    onEnter?.()
+            gsap.fromTo(targets, preset.from, {
+                ...preset.to,
+                duration,
+                delay,
+                ease: resolvedEase,
+                stagger,
+                scrollTrigger: {
+                    trigger: element,
+                    start: start || (viewport?.margin ? `top ${viewport.margin}` : "top 80%"),
+                    end: end || (scrub ? "bottom top" : undefined),
+                    scrub,
+                    markers,
+                    once,
+                    toggleActions: scrub ? undefined : once ? "play none none none" : "play none none reverse",
+                    onEnter,
+                    onLeave,
+                    onEnterBack,
+                    onLeaveBack,
+                    onUpdate: onUpdate ? (self) => onUpdate(self.progress) : undefined,
+                    onToggle,
+                    onRefresh,
+                    onScrubComplete,
                 },
-                onLeave: () => {
-                    onLeave?.()
-                },
-                onEnterBack: () => {
-                    onEnterBack?.()
-                },
-                onLeaveBack: () => {
-                    onLeaveBack?.()
-                },
-                onUpdate: onUpdate ? handleUpdate : undefined,
-                onToggle,
-                onRefresh,
-                onScrubComplete,
-            }
-
-            const timeline = gsap.timeline({
-                scrollTrigger: scrollTriggerConfig,
                 onComplete: () => preset.after?.(element),
             })
-
-
-            scrollTriggerRef.current = timeline.scrollTrigger as ScrollTrigger
         }, element)
 
-        return () => {
-            scrollTriggerRef.current = null
-            ctx.revert()
-        }
+        return () => ctx.revert()
     }, [
-        variant,
-        customAnimation,
-        delay,
-        duration,
-        once,
-        scrub,
-        start,
-        end,
-        markers,
-        resolvedEase,
-        stagger,
-        childSelector,
-        perspective,
-        pin,
-        pinSpacing,
-        snap,
-        anticipatePin,
-        refreshPriority,
-        invalidateOnRefresh,
-        fastScrollEnd,
-        preventOverlaps,
-        onEnter,
-        onLeave,
-        onEnterBack,
-        onLeaveBack,
-        handleUpdate,
-        onToggle,
-        onRefresh,
-        onScrubComplete,
-        disabled,
-        viewport,
+        variant, customAnimation, delay, duration, once, scrub, start, end, markers, 
+        resolvedEase, stagger, childSelector, perspective, disabled, viewport,
+        onEnter, onLeave, onEnterBack, onLeaveBack, onUpdate, onToggle, onRefresh, onScrubComplete
     ])
 
     return (
-        <div ref={ref} className={className} data-animation-variant={variant}>
+        <div ref={ref} className={className} data-animation-variant={variant} {...props}>
             {children}
         </div>
     )
 }
 
-// Utility hook for programmatic control
-export function useScrollAnimation(ref: React.RefObject<HTMLElement>) {
-    const scrollTriggerRef = useRef<ScrollTrigger | null>(null)
-
-    useEffect(() => {
-        if (!ref.current) return
-
-        const triggers = ScrollTrigger.getAll()
-        scrollTriggerRef.current = triggers.find(
-            (trigger) => trigger.trigger === ref.current
-        ) || null
-    }, [ref])
-
-    const refresh = useCallback(() => {
-        scrollTriggerRef.current?.refresh()
-    }, [])
-
-    const kill = useCallback(() => {
-        scrollTriggerRef.current?.kill()
-    }, [])
-
-    const enable = useCallback(() => {
-        scrollTriggerRef.current?.enable()
-    }, [])
-
-    const disable = useCallback(() => {
-        scrollTriggerRef.current?.disable()
-    }, [])
-
-    const getProgress = useCallback((value?: number) => {
-        const trigger = scrollTriggerRef.current
-        if (!trigger) return 0
-        
-        if (value !== undefined) {
-            ;(trigger as unknown as { progress(value?: number): number }).progress(value)
-        }
-        return trigger.progress
-    }, [])
-
-    return { refresh, kill, enable, disable, progress: getProgress, trigger: scrollTriggerRef.current }
-}

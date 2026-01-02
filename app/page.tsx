@@ -130,14 +130,9 @@ export default function Home() {
           </ScrollAnimation>
         </section>
         
-        <ScrollAnimation
-            variant="slideUp"
-            duration={1.2}
-            ease="power2.out"
-            start="top 80%"
-            end="bottom center"
-          >
-            <WhyChooseUs /></ScrollAnimation>
+        <section aria-label="Why choose us">
+            <WhyChooseUs />
+        </section>
       </main>
     </div>
   )
