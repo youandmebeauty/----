@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
 import { ChevronDown, ChevronRight } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Slider } from "@/components/ui/slider"
+import { Collapse } from "@/components/ui/collapse"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 import { cn } from "@/lib/utils"
 interface ShopFiltersProps {
@@ -91,22 +91,16 @@ export function ShopFilters({
                             Catégorie
                         </span>
                     </div>
-                    <motion.div
-                        animate={{ rotate: expandedFilters.includes('category') ? 180 : 0 }}
-                        transition={{ duration: 0.2 }}
+                    <div
+                        className={cn(
+                            "transition-transform duration-200",
+                            expandedFilters.includes("category") && "rotate-180"
+                        )}
                     >
-                        <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                    </motion.div>
+                        <ChevronDown className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+                    </div>
                 </button>
-                <AnimatePresence>
-                    {expandedFilters.includes('category') && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="space-y-3 overflow-hidden"
-                        >
+                <Collapse isOpen={expandedFilters.includes("category")} className="space-y-3">
                             <label className="flex items-center py-2 cursor-pointer group">
                                 <div className="relative flex items-center">
                                     <input
@@ -122,13 +116,12 @@ export function ShopFilters({
                                             ? "border-primary" 
                                             : "border-border group-hover:border-foreground/30"
                                     )}>
-                                        {selectedCategory === "all" && (
-                                            <motion.div
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                className="w-2 h-2 rounded-full bg-primary"
-                                            />
-                                        )}
+                                        <div
+                                            className={cn(
+                                                "h-2 w-2 rounded-full bg-primary transition-transform duration-200",
+                                                selectedCategory === "all" ? "scale-100" : "scale-0"
+                                            )}
+                                        />
                                     </div>
                                 </div>
                                 <span className={cn(
@@ -156,13 +149,12 @@ export function ShopFilters({
                                                 ? "border-primary" 
                                                 : "border-border group-hover:border-foreground/30"
                                         )}>
-                                            {selectedCategory === category.id && (
-                                                <motion.div
-                                                    initial={{ scale: 0 }}
-                                                    animate={{ scale: 1 }}
-                                                    className="w-2 h-2 rounded-full bg-primary"
-                                                />
-                                            )}
+                                            <div
+                                                className={cn(
+                                                    "h-2 w-2 rounded-full bg-primary transition-transform duration-200",
+                                                    selectedCategory === category.id ? "scale-100" : "scale-0"
+                                                )}
+                                            />
                                         </div>
                                     </div>
                                     <span className={cn(
@@ -175,9 +167,7 @@ export function ShopFilters({
                                     </span>
                                 </label>
                             ))}
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                </Collapse>
             </div>
 
             {/* Subcategories */}
@@ -193,22 +183,16 @@ export function ShopFilters({
                                 Type
                             </span>
                         </div>
-                        <motion.div
-                            animate={{ rotate: expandedFilters.includes('subcategory') ? 180 : 0 }}
-                            transition={{ duration: 0.2 }}
+                        <div
+                            className={cn(
+                                "transition-transform duration-200",
+                                expandedFilters.includes("subcategory") && "rotate-180"
+                            )}
                         >
-                            <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                        </motion.div>
+                            <ChevronDown className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+                        </div>
                     </button>
-                    <AnimatePresence>
-                        {expandedFilters.includes('subcategory') && (
-                            <motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: "auto", opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                transition={{ duration: 0.2 }}
-                                className="space-y-3 overflow-hidden"
-                            >
+                    <Collapse isOpen={expandedFilters.includes("subcategory")} className="space-y-3">
                                 {activeCategory.subcategories.map((sub) => {
                                     const hasChildren = sub.subcategories && sub.subcategories.length > 0
                                     const isExpanded = expandedSubcats.includes(sub.id)
@@ -224,12 +208,14 @@ export function ShopFilters({
                                                     }}
                                                     className="flex items-center gap-2 w-full py-2 group/btn"
                                                 >
-                                                    <motion.div
-                                                        animate={{ rotate: isExpanded ? 90 : 0 }}
-                                                        transition={{ duration: 0.2 }}
+                                                    <div
+                                                        className={cn(
+                                                            "transition-transform duration-200",
+                                                            isExpanded && "rotate-90"
+                                                        )}
                                                     >
-                                                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover/btn:text-foreground transition-colors flex-shrink-0" />
-                                                    </motion.div>
+                                                        <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground transition-colors group-hover/btn:text-foreground" />
+                                                    </div>
                                                     <span className="text-sm text-muted-foreground group-hover/btn:text-foreground transition-colors">
                                                         {sub.label}
                                                     </span>
@@ -253,48 +239,39 @@ export function ShopFilters({
                                                 </label>
                                             )}
                                             {/* Nested Subcategories */}
-                                            <AnimatePresence>
-                                                {hasChildren && isExpanded && (
-                                                    <motion.div
-                                                        initial={{ height: 0, opacity: 0 }}
-                                                        animate={{ height: "auto", opacity: 1 }}
-                                                        exit={{ height: 0, opacity: 0 }}
-                                                        transition={{ duration: 0.2 }}
-                                                        className="ml-6 space-y-2 border-l border-border pl-4 overflow-hidden"
-                                                    >
-                                                        {sub.subcategories!.map((child) => {
-                                                            const isChildSelected = selectedSubcategory === child.id
-                                                            return (
-                                                                <label 
-                                                                    key={child.id} 
-                                                                    className="flex items-center gap-3 cursor-pointer group/child"
-                                                                >
-                                                                    <Checkbox
-                                                                        id={`${isMobile ? 'mobile' : 'desktop'}-sub-${child.id}`}
-                                                                        checked={isChildSelected}
-                                                                        onCheckedChange={() => handleSubcategoryChange(child.id)}
-                                                                        className="w-3.5 h-3.5 border-2 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all"
-                                                                    />
-                                                                    <span className={cn(
-                                                                        "text-sm transition-colors",
-                                                                        isChildSelected 
-                                                                            ? "text-foreground font-semibold" 
-                                                                            : "text-muted-foreground group-hover/child:text-foreground"
-                                                                    )}>
-                                                                        {child.label}
-                                                                    </span>
-                                                                </label>
-                                                            )
-                                                        })}
-                                                    </motion.div>
-                                                )}
-                                            </AnimatePresence>
+                                            <Collapse
+                                                isOpen={hasChildren && isExpanded}
+                                                className="ml-6 space-y-2 border-l border-border pl-4"
+                                            >
+                                                {sub.subcategories?.map((child) => {
+                                                    const isChildSelected = selectedSubcategory === child.id
+                                                    return (
+                                                        <label 
+                                                            key={child.id} 
+                                                            className="flex items-center gap-3 cursor-pointer group/child"
+                                                        >
+                                                            <Checkbox
+                                                                id={`${isMobile ? 'mobile' : 'desktop'}-sub-${child.id}`}
+                                                                checked={isChildSelected}
+                                                                onCheckedChange={() => handleSubcategoryChange(child.id)}
+                                                                className="w-3.5 h-3.5 border-2 border-border data-[state=checked]:bg-primary data-[state=checked]:border-primary transition-all"
+                                                            />
+                                                            <span className={cn(
+                                                                "text-sm transition-colors",
+                                                                isChildSelected 
+                                                                    ? "text-foreground font-semibold" 
+                                                                    : "text-muted-foreground group-hover/child:text-foreground"
+                                                            )}>
+                                                                {child.label}
+                                                            </span>
+                                                        </label>
+                                                    )
+                                                })}
+                                            </Collapse>
                                         </div>
                                     )
                                 })}
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
+                    </Collapse>
                 </div>
             )}
 
@@ -315,22 +292,16 @@ export function ShopFilters({
                                     {filter.label}
                                 </span>
                             </div>
-                            <motion.div
-                                animate={{ rotate: expandedFilters.includes(filter.id) ? 180 : 0 }}
-                                transition={{ duration: 0.2 }}
+                            <div
+                                className={cn(
+                                    "transition-transform duration-200",
+                                    expandedFilters.includes(filter.id) && "rotate-180"
+                                )}
                             >
-                                <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                            </motion.div>
+                                <ChevronDown className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+                            </div>
                         </button>
-                        <AnimatePresence>
-                            {expandedFilters.includes(filter.id) && (
-                                <motion.div
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: "auto", opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    transition={{ duration: 0.2 }}
-                                    className="space-y-3 overflow-hidden"
-                                >
+                        <Collapse isOpen={expandedFilters.includes(filter.id)} className="space-y-3">
                                     {filter.options.map((option) => {
                                         const isChecked = filter.id === "skinType" 
                                             ? selectedSkinTypes.includes(option)
@@ -363,9 +334,7 @@ export function ShopFilters({
                                             </label>
                                         )
                                     })}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        </Collapse>
                     </div>
                 )
             })}
@@ -382,22 +351,16 @@ export function ShopFilters({
                             Prix
                         </span>
                     </div>
-                    <motion.div
-                        animate={{ rotate: expandedFilters.includes('price') ? 180 : 0 }}
-                        transition={{ duration: 0.2 }}
+                    <div
+                        className={cn(
+                            "transition-transform duration-200",
+                            expandedFilters.includes("price") && "rotate-180"
+                        )}
                     >
-                        <ChevronDown className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
-                    </motion.div>
+                        <ChevronDown className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
+                    </div>
                 </button>
-                <AnimatePresence>
-                    {expandedFilters.includes('price') && (
-                        <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: "auto", opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="space-y-6 overflow-hidden"
-                        >
+                <Collapse isOpen={expandedFilters.includes("price")} className="space-y-6">
                             <Slider
                                 defaultValue={priceRange}
                                 onValueChange={setPriceRange}
@@ -410,9 +373,7 @@ export function ShopFilters({
                                 <span className="text-muted-foreground">{priceRange[0]} DT</span>
                                 <span className="text-muted-foreground">{priceRange[1]} DT</span>
                             </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                </Collapse>
             </div>
         </div>
     )

@@ -13,6 +13,7 @@ import { ShopFilters } from "@/components/shop/shop-filters"
 import { ProductGrid } from "@/components/shop/product-grid"
 import { Breadcrumb, BreadcrumbJsonLd } from "@/components/breadcrumb"
 import { cn } from "@/lib/utils"
+import { ScrollAnimation } from "@/components/scroll-animation"
 import {
   Dialog,
   DialogContent,
@@ -194,57 +195,83 @@ function SearchContent() {
       <BreadcrumbJsonLd items={[{ name: "Boutique", url: "https://youandme.tn/shop" }]} />
       <main className="container mx-auto px-4 lg:px-6 xl:px-8 py-8">
         {/* Breadcrumb */}
-        <Breadcrumb 
-          items={[{ name: "Boutique", href: "/shop", current: true }]} 
-          className="mb-6"
-        />
-        
-        {/* Featured Section (New) */}
-        <FeaturedSection />
-        
-        {/* Header & Controls */}
-        <div id="product-section" className="scroll-mt-24">
-          <ShopHeader
-            title={pageTitle}
-            productCount={products.length}
-            sortBy={sortBy}
-            setSortBy={setSortBy}
-            activeFiltersCount={activeFiltersCount}
-            clearAllFilters={clearAllFilters}
-            isFilterOpen={isFilterOpen}
-            setIsFilterOpen={setIsFilterOpen}
-            filterProps={filterProps}
+        <ScrollAnimation variant="slideUp" className="mb-6">
+          <Breadcrumb
+            items={[{ name: "Boutique", href: "/shop", current: true }]}
           />
-        </div>
+        </ScrollAnimation>
 
-        <div className="flex gap-8 lg:gap-12 mt-8">
+        {/* Featured Section (New) */}
+        <ScrollAnimation variant="blurRise" className="mb-12">
+          <FeaturedSection />
+        </ScrollAnimation>
+
+        {/* Header & Controls */}
+        <ScrollAnimation
+          variant="flipUp"
+          perspective={1200}
+          ease="expo.out"
+          className="mb-6"
+        >
+          <div id="product-section" className="scroll-mt-24">
+            <ShopHeader
+              title={pageTitle}
+              productCount={products.length}
+              sortBy={sortBy}
+              setSortBy={setSortBy}
+              activeFiltersCount={activeFiltersCount}
+              clearAllFilters={clearAllFilters}
+              isFilterOpen={isFilterOpen}
+              setIsFilterOpen={setIsFilterOpen}
+              filterProps={filterProps}
+            />
+          </div>
+        </ScrollAnimation>
+
+        <ScrollAnimation
+          variant="slideUp"
+          stagger={0.16}
+          childSelector=".shop-layout-pane"
+          className="mt-8 flex gap-8 lg:gap-12"
+        >
           {/* Desktop Sidebar */}
-          <aside className="hidden lg:block w-64 flex-shrink-0">
-            <div className="sticky top-24">
-              <ShopFilters {...filterProps} />
-            </div>
+          <aside className="shop-layout-pane hidden w-64 flex-shrink-0 lg:block">
+            <ScrollAnimation
+              variant="parallax"
+              scrub={0.4}
+              start="top 85%"
+              end="bottom top"
+            >
+              <div className="sticky top-24">
+                <ShopFilters {...filterProps} />
+              </div>
+            </ScrollAnimation>
           </aside>
 
           {/* Main Content */}
-          <div className="flex-1">
+          <div className="shop-layout-pane flex-1">
             <div className={cn("transition-opacity duration-300", isRefetching ? "opacity-50" : "opacity-100")}>
               {products.length === 0 && !isInitialLoading ? (
-                <div className="text-center py-12">
-                  <p className="text-muted-foreground text-lg mb-4">Aucun produit trouvé pour votre recherche.</p>
-                  <button onClick={clearAllFilters} className="text-primary hover:underline">
-                    Effacer les filtres
-                  </button>
-                </div>
+                <ScrollAnimation variant="fadeIn">
+                  <div className="py-12 text-center">
+                    <p className="mb-4 text-lg text-muted-foreground">Aucun produit trouvé pour votre recherche.</p>
+                    <button onClick={clearAllFilters} className="text-primary hover:underline">
+                      Effacer les filtres
+                    </button>
+                  </div>
+                </ScrollAnimation>
               ) : (
-                <ProductGrid
-                  products={products}
-                  loading={isInitialLoading}
-                  clearAllFilters={clearAllFilters}
-                />
+                <ScrollAnimation variant="blurRise" childSelector=".product-grid-item" stagger={0.08}>
+                  <ProductGrid
+                    products={products}
+                    loading={isInitialLoading}
+                    clearAllFilters={clearAllFilters}
+                  />
+                </ScrollAnimation>
               )}
             </div>
           </div>
-        </div>
+        </ScrollAnimation>
 
         {/* Soins Subcategory Selection Modal */}
         <Dialog

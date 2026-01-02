@@ -1,11 +1,10 @@
 "use client"
 
 import type React from "react"
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useMemo } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
-import { motion, AnimatePresence } from "framer-motion"
 import { useCart } from "./cart-provider"
 import { useLoading } from "./loading-provider"
 import { Button } from "@/components/ui/button"
@@ -14,6 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Moon, Sun, ShoppingBag, Menu, Search, X } from "lucide-react"
 import GlassSurface from "./GlassSurface"
+import { gsap } from "@/lib/gsap"
 
 export function Header() {
   const { theme, setTheme } = useTheme()
@@ -26,6 +26,10 @@ export function Header() {
   const router = useRouter()
   const pathname = usePathname()
   const searchInputRef = useRef<HTMLInputElement>(null)
+  const animatedContentRef = useRef<HTMLDivElement | null>(null)
+  const badgeRef = useRef<HTMLDivElement | null>(null)
+  const mobileNavRef = useRef<HTMLUListElement | null>(null)
+  const mobileThemeRef = useRef<HTMLDivElement | null>(null)
 
   const navigation = [
     { name: "Accueil", href: "/" },
@@ -33,6 +37,15 @@ export function Header() {
     { name: "Analyseur de peau", href: "/skin-analyzer" },
     { name: "Contact", href: "/contact" },
   ]
+
+  const containerStyle = useMemo(
+    () => ({
+      width: "70%",
+      transform: scrolled ? "translateY(-8px) scale(0.95)" : "translateY(0) scale(1)",
+      transition: "transform 0.35s cubic-bezier(0.25, 0.4, 0.25, 1)",
+    }),
+    [scrolled]
+  )
 
   // Handle scroll for adaptive header
   useEffect(() => {
@@ -55,6 +68,75 @@ export function Header() {
   useEffect(() => {
     setIsOpen(false)
   }, [pathname])
+
+  useEffect(() => {
+    const container = animatedContentRef.current
+    if (!container) return
+
+    const target = container.firstElementChild as HTMLElement | null
+    if (!target) return
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        target,
+        { opacity: 0, scale: 0.95 },
+        { opacity: 1, scale: 1, duration: 0.2, ease: "power1.out" }
+      )
+    }, target)
+
+    return () => ctx.revert()
+  }, [isSearchOpen])
+
+  useEffect(() => {
+    if (!itemCount || itemCount <= 0) return
+
+    const badge = badgeRef.current
+    if (!badge) return
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        badge,
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.7)" }
+      )
+    }, badge)
+
+    return () => ctx.revert()
+  }, [itemCount])
+
+  useEffect(() => {
+    if (!isOpen) return
+
+    const list = mobileNavRef.current
+    const themeContainer = mobileThemeRef.current
+    if (!list) return
+
+    const items = Array.from(list.children) as HTMLElement[]
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        items,
+        { opacity: 0, x: 20 },
+        { opacity: 1, x: 0, duration: 0.3, ease: "power2.out", stagger: 0.05 }
+      )
+
+      if (themeContainer) {
+        gsap.fromTo(
+          themeContainer,
+          { opacity: 0, y: 20 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.3,
+            ease: "power2.out",
+            delay: items.length * 0.05 + 0.1,
+          }
+        )
+      }
+    }, list)
+
+    return () => ctx.revert()
+  }, [isOpen])
 
 
 
@@ -79,32 +161,19 @@ export function Header() {
 
   return (
     <header className="sticky top-4 z-50 w-full flex justify-center px-4">
-      <motion.div
-        initial={false}
-        animate={{
-          scale: scrolled ? 0.95 : 1,
-          y: scrolled ? -8 : 0,
-        }}
-        transition={{
-          type: "spring",
-          stiffness: 400,
-          damping: 40,
-          mass: 0.5,
-        }}
-        style={{ width: "70%" }}
-      >
+      <div style={containerStyle}>
         <GlassSurface
-          displace={0.5}
+          displace={1}
           distortionScale={-180}
-          redOffset={0}
+          redOffset={20}
           saturation={1}
           greenOffset={10}
           blueOffset={20}
-          blur={11}
+          blur={10}
           brightness={50}
-          opacity={0.93}
-          backgroundOpacity={0.1}
-          mixBlendMode="screen"
+          opacity={0.9}
+          backgroundOpacity={0.2}
+          mixBlendMode="darken"
           width="100%"
           height="70px"
           borderRadius={50}
@@ -112,16 +181,9 @@ export function Header() {
         >
           <div className="container mx-auto px-3 sm:px-4">
             <div className="flex h-20 items-center justify-between relative">
-              <AnimatePresence mode="wait">
+              <div ref={animatedContentRef} className="w-full">
                 {isSearchOpen ? (
-                  <motion.div
-                    key="search"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.2 }}
-                    className="w-full h-full flex items-center"
-                  >
+                  <div key="search" className="flex h-full w-full items-center">
                     <Search className="h-5 w-5 text-muted-foreground mr-2 sm:mr-4 flex-shrink-0" />
                     <div className="flex-1 min-w-0">
                       <Input
@@ -145,16 +207,9 @@ export function Header() {
                       <X className="h-5 w-5" />
                       <span className="sr-only">Fermer</span>
                     </Button>
-                  </motion.div>
+                  </div>
                 ) : (
-                  <motion.div
-                    key="header"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                    className="w-full flex items-center justify-between"
-                  >
+                  <div key="header" className="flex w-full items-center justify-between">
                     {/* Logo - Always visible on mobile */}
                     <Link 
                       href="/" 
@@ -218,20 +273,13 @@ export function Header() {
                       >
                         <Button variant="ghost" size="icon" className="relative hover:bg-transparent hover:text-primary h-9 w-9 sm:h-10 sm:w-10">
                           <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5" />
-                          <AnimatePresence>
-                            {!isLoading && itemCount > 0 && (
-                              <motion.div
-                                initial={{ scale: 0, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0, opacity: 0 }}
-                                transition={{ type: "spring", stiffness: 500, damping: 30 }}
-                              >
-                                <Badge className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 text-[10px] flex items-center justify-center bg-primary text-primary-foreground border-2 border-background">
-                                  {itemCount > 9 ? '9+' : itemCount}
-                                </Badge>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
+                          {!isLoading && itemCount > 0 && (
+                            <div ref={badgeRef} className="absolute -top-1 -right-1">
+                              <Badge className="flex h-5 w-5 items-center justify-center rounded-full border-2 border-background bg-primary p-0 text-[10px] text-primary-foreground">
+                                {itemCount > 9 ? '9+' : itemCount}
+                              </Badge>
+                            </div>
+                          )}
                           <span className="sr-only">Panier ({itemCount})</span>
                         </Button>
                       </Link>
@@ -275,19 +323,9 @@ export function Header() {
                               </div>
                               
                               <nav className="flex flex-col p-6 mt-8">
-                                <ul className="flex flex-col gap-6">
-                                  {navigation.map((item, index) => (
-                                    <motion.li
-                                      key={item.name}
-                                      initial={{ opacity: 0, x: 20 }}
-                                      animate={{ opacity: 1, x: 0 }}
-                                      transition={{
-                                        delay: index * 0.05,
-                                        type: "spring",
-                                        stiffness: 400,
-                                        damping: 30,
-                                      }}
-                                    >
+                                <ul ref={mobileNavRef} className="flex flex-col gap-6">
+                                  {navigation.map((item) => (
+                                    <li key={item.name}>
                                       <Link
                                         href={item.href}
                                         className="text-2xl font-semibold uppercase tracking-tight text-white/90 hover:text-primary active:scale-95 transition-all block"
@@ -298,22 +336,15 @@ export function Header() {
                                       >
                                         {item.name}
                                       </Link>
-                                    </motion.li>
+                                    </li>
                                   ))}
                                 </ul>
                               </nav>
 
                               {/* Mobile-only theme toggle in menu */}
-                              <motion.div
-                                className="md:hidden p-6 mt-auto border-t text-white/90 border-white/50"
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{
-                                  delay: navigation.length * 0.05 + 0.1,
-                                  type: "spring",
-                                  stiffness: 400,
-                                  damping: 30,
-                                }}
+                              <div
+                                ref={mobileThemeRef}
+                                className="md:hidden p-6 mt-auto border-t text-white/90 border-white/50 opacity-0"
                               >
                                 <Button
                                   variant="outline"
@@ -327,19 +358,19 @@ export function Header() {
                                   </div>
                                   <span>Changer de thème</span>
                                 </Button>
-                              </motion.div>
+                              </div>
                             </div>
                           </GlassSurface>
                         </SheetContent>
                       </Sheet>
                     </div>
-                  </motion.div>
+                  </div>
                 )}
-              </AnimatePresence>
+              </div>
             </div>
           </div>
         </GlassSurface>
-      </motion.div>
+      </div>
 
       <style jsx global>{`
         @media (min-width: 400px) {

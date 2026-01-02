@@ -1,9 +1,9 @@
 "use client"
 
-import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { useSearchParams } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { gsap } from "@/lib/gsap"
 
 const CATEGORY_VIDEOS: Record<string, string> = {
     maquillage: "/boutique/maquillage.mp4",
@@ -70,6 +70,8 @@ export function FeaturedSection() {
     const category = searchParams.get("category")
     const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
     const [isSlideshow, setIsSlideshow] = useState(true)
+    const videoRef = useRef<HTMLVideoElement | null>(null)
+    const contentRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
         if (!category || category === "all") {
@@ -101,7 +103,39 @@ export function FeaturedSection() {
         return CATEGORY_CONTENT.default
     }
 
-    const content = getContent()
+    const videoSrc = useMemo(() => getVideoSrc(), [category, currentVideoIndex, isSlideshow])
+    const content = useMemo(() => getContent(), [category])
+    const contentKey = category || "default"
+
+    useEffect(() => {
+        const videoElement = videoRef.current
+        if (!videoElement) return
+
+        const ctx = gsap.context(() => {
+            gsap.fromTo(
+                videoElement,
+                { opacity: 0 },
+                { opacity: 1, duration: 0.5, ease: "power1.out" }
+            )
+        }, videoElement)
+
+        return () => ctx.revert()
+    }, [videoSrc])
+
+    useEffect(() => {
+        const contentElement = contentRef.current
+        if (!contentElement) return
+
+        const ctx = gsap.context(() => {
+            gsap.fromTo(
+                contentElement,
+                { opacity: 0, y: 20 },
+                { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+            )
+        }, contentElement)
+
+        return () => ctx.revert()
+    }, [contentKey])
 
     const handleDiscoverClick = () => {
         requestAnimationFrame(() => {
@@ -115,48 +149,34 @@ export function FeaturedSection() {
     return (
         <section className="relative w-full h-[400px] lg:h-[500px] mb-16 overflow-hidden rounded-2xl">
             <div className="absolute inset-0 bg-black">
-                <AnimatePresence mode="wait">
-                    <motion.video
-                        key={getVideoSrc()}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.5 }}
-                        src={getVideoSrc()}
-                        autoPlay
-                        loop
-                        muted
-                        playsInline
-                        className="absolute inset-0 w-full h-full object-cover"
-                    />
-                </AnimatePresence>
+                <video
+                    key={videoSrc}
+                    ref={videoRef}
+                    src={videoSrc}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 h-full w-full object-cover opacity-0"
+                />
                 <div className="absolute inset-0 bg-black/40" />
             </div>
 
             <div className="relative h-full flex flex-col justify-center items-center text-center text-white px-4">
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={category || "default"}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.6 }}
-                        className="space-y-6"
+                <div ref={contentRef} key={contentKey} className="space-y-6 opacity-0">
+                    <span className="text-sm font-medium uppercase tracking-[0.2em]">{content.subtitle}</span>
+                    <h2 className="text-4xl font-light md:text-5xl lg:text-6xl">{content.title}</h2>
+                    <p className="mx-auto max-w-lg text-lg font-light text-white/90">
+                        {content.description}
+                    </p>
+                    <Button
+                        onClick={handleDiscoverClick}
+                        variant="outline"
+                        className="rounded-full bg-white/10 px-8 text-white transition-all duration-300 hover:bg-white hover:text-black backdrop-blur-md border-white"
                     >
-                        <span className="text-sm font-medium tracking-[0.2em] uppercase">{content.subtitle}</span>
-                        <h2 className="text-4xl md:text-5xl lg:text-6xl font-light">{content.title}</h2>
-                        <p className="max-w-lg mx-auto text-lg text-white/90 font-light">
-                            {content.description}
-                        </p>
-                        <Button
-                            onClick={handleDiscoverClick}
-                            variant="outline"
-                            className="bg-white/10 backdrop-blur-md border-white text-white hover:bg-white hover:text-black transition-all duration-300 rounded-full px-8"
-                        >
-                            Découvrir
-                        </Button>
-                    </motion.div>
-                </AnimatePresence>
+                        Découvrir
+                    </Button>
+                </div>
             </div>
         </section>
     )

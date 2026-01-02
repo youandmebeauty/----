@@ -2,6 +2,7 @@ import type React from "react"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
 import { CartProvider } from "@/components/cart-provider"
 import { FirebaseProvider } from "@/components/firebase-provider"
 import { LoadingProvider } from "@/components/loading-provider"
@@ -50,16 +51,18 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <FirebaseProvider>
-            <CartProvider>
-              <LoadingProvider>
-                <Header />
-                {children}
-                <Footer />
-                <Toaster />
-              </LoadingProvider>
-            </CartProvider>
-          </FirebaseProvider>
+          <SmoothScrollProvider>
+            <FirebaseProvider>
+              <CartProvider>
+                <LoadingProvider>
+                  <Header />
+                  {children}
+                  <Footer />
+                  <Toaster />
+                </LoadingProvider>
+              </CartProvider>
+            </FirebaseProvider>
+          </SmoothScrollProvider>
         </ThemeProvider>
       </body>
     </html>

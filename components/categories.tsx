@@ -55,16 +55,19 @@ export function Categories() {
           <span className="text-muted-foreground hidden md:block text-xs tracking-widest uppercase border-l border-border pl-4 ml-4">01 / DISCOVER</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {categories.map((category, index) => (
-            <ScrollAnimation
-              key={category.id}
-              variant="scaleUp"
-              delay={index * 0.15}
-            >
+        <ScrollAnimation
+          variant="parallax"
+          perspective={1400}
+          ease="expo.out"
+          stagger={0.18}
+          childSelector=".category-card"
+        >
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {categories.map((category) => (
               <Link
+                key={category.id}
                 href={category.href}
-                className="rounded-xl group relative aspect-[3/4] overflow-hidden bg-secondary block"
+                className="category-card group relative block aspect-[3/4] overflow-hidden rounded-xl bg-secondary"
               >
                 <Image
                   src={category.image}
@@ -72,20 +75,20 @@ export function Categories() {
                   fill
                   className="object-cover transition-transform duration-1000 group-hover:scale-110"
                 />
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors duration-500" />
+                <div className="absolute inset-0 bg-black/20 transition-colors duration-500 group-hover:bg-black/40" />
 
-                <div className="absolute inset-0 p-8 flex flex-col justify-end">
+                <div className="absolute inset-0 flex flex-col justify-end p-8">
                   <div>
-                    <h3 className="font-serif text-3xl text-white mb-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                    <h3 className="font-serif text-3xl text-white mb-2 transform translate-y-4 transition-transform duration-500 group-hover:translate-y-0">
                       {category.name}
                     </h3>
-                    <div className="w-full h-px bg-white/50 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                    <div className="h-px w-full origin-left scale-x-0 bg-white/50 transition-transform duration-500 group-hover:scale-x-100"></div>
                   </div>
                 </div>
               </Link>
-            </ScrollAnimation>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollAnimation>
       </div>
     </section>
   )

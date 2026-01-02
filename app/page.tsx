@@ -2,10 +2,9 @@ import { Hero } from "@/components/hero"
 import { FeaturedProductsServer } from "@/components/featured-products-server"
 import { Categories } from "@/components/categories"
 import { WhyChooseUs } from "@/components/why-choose-us"
-import { ClientScrollAnimation } from "@/components/client-scroll-animation"
 import { MakeupModelWrapper } from "@/components/makeup-model-wrapper"
 import { Metadata } from "next"
-
+import { ScrollAnimation } from "@/components/scroll-animation"
 export const metadata: Metadata = {
   title: "You & Me Beauty - Parapharmacie et Cosmétique Sfax | Maquillage & Parfums en Ligne Tunisie",
   alternates: {
@@ -93,9 +92,14 @@ export default function Home() {
       />
       <main>
         <section aria-label="Hero section">
-          <ClientScrollAnimation variant="fadeIn" duration={0.2}>
+          <ScrollAnimation
+            variant="flipUp"
+            duration={1}
+            perspective={1600}
+            ease="expo.out"
+          >
             <Hero />
-          </ClientScrollAnimation>
+          </ScrollAnimation>
         </section>
         
         <div className="hidden lg:block absolute mt-5 top-0 right-0 h-[92vh] w-1/2 z-20" >
@@ -103,15 +107,27 @@ export default function Home() {
         </div>
         
         <section aria-label="Product categories">
-          <ClientScrollAnimation variant="slideUp" delay={0.2}>
+          <ScrollAnimation
+            variant="parallax"
+            duration={1.2}
+            ease="power2.out"
+            start="top 85%"
+            end="bottom center"
+            scrub={0.3}
+          >
             <Categories />
-          </ClientScrollAnimation>
+          </ScrollAnimation>
         </section>
         
         <section aria-label="Featured products">
-          <ClientScrollAnimation variant="slideUp" delay={0.3}>
+          <ScrollAnimation
+            variant="blurRise"
+            duration={0.9}
+            ease="power3.out"
+            delay={0.15}
+          >
             <FeaturedProductsServer />
-          </ClientScrollAnimation>
+          </ScrollAnimation>
         </section>
         
         <section aria-label="Why choose us">

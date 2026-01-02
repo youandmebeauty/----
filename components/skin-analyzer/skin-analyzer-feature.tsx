@@ -12,6 +12,7 @@ import { CameraView } from "@/components/skin-analyzer/camera-view";
 import { UploadView } from "@/components/skin-analyzer/upload-view";
 import { AnalysisResults } from "@/components/skin-analyzer/analysis-results";
 import { LoadingAnimation } from "@/components/ui/loading-animation";
+import { ScrollAnimation } from "@/components/scroll-animation";
 import { getProductsForSkinConcern } from "@/lib/services/skin-product-matcher";
 import type { DetectionRaw, MappedDetection, GroupedDetection, Product } from "@/lib/skin-analyzer";
 
@@ -517,87 +518,122 @@ export default function SkinAnalyzerFeature() {
 
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
 
-                <div className="container relative mx-auto px-4 py-20 lg:py-28">
+                <ScrollAnimation
+                    variant="blurRise"
+                    duration={0.9}
+                    ease="power4.out"
+                    className="container relative mx-auto px-4 py-20 lg:py-28"
+                >
                     <div className="max-w-4xl mx-auto text-center">
                         {/* Breadcrumb */}
-                        <div className="flex justify-start mb-8">
-                            <Breadcrumb 
-                                items={[{ name: "Analyseur de Peau", href: "/skin-analyzer", current: true }]} 
+                        <ScrollAnimation
+                            variant="flipUp"
+                            perspective={1400}
+                            ease="expo.out"
+                            className="flex justify-start mb-8"
+                        >
+                            <Breadcrumb
+                                items={[{ name: "Analyseur de Peau", href: "/skin-analyzer", current: true }]}
                             />
-                        </div>
-                        
-                        <div className="inline-flex items-center justify-center gap-2 mb-8 bg-primary/10 hover:bg-primary/15 px-5 py-2 rounded-full border border-primary/20 backdrop-blur-sm transition-all duration-300 cursor-default group">
-                            <Sparkles className="w-4 h-4 text-primary group-hover:rotate-12 transition-transform duration-300" />
-                            <span className="text-sm font-semibold text-primary uppercase tracking-widest">AI Technology</span>
-                        </div>
+                        </ScrollAnimation>
 
-                        <h1 className="font-serif text-5xl md:text-6xl lg:text-7xl font-medium tracking-tight mb-8 bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text text-transparent">
-                            Analyse de Peau
-                        </h1>
+                        <ScrollAnimation
+                            variant="scaleUp"
+                            delay={0.08}
+                            className="inline-flex items-center justify-center gap-2 mb-8 rounded-full border border-primary/20 bg-primary/10 px-5 py-2 backdrop-blur-sm transition-all duration-300 cursor-default group"
+                        >
+                            <Sparkles className="w-4 h-4 text-primary transition-transform duration-300 group-hover:rotate-12" />
+                            <span className="text-sm font-semibold uppercase tracking-widest text-primary">AI Technology</span>
+                        </ScrollAnimation>
 
-                        <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-10">
-                            Découvrez les besoins uniques de votre peau grâce à notre technologie d'analyse avancée et recevez des recommandations personnalisées.
-                        </p>
+                        <ScrollAnimation
+                            variant="blurRise"
+                            delay={0.1}
+                            className="mb-8"
+                        >
+                            <h1 className="font-serif text-5xl font-medium tracking-tight text-transparent md:text-6xl lg:text-7xl bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text">
+                                Analyse de Peau
+                            </h1>
+                        </ScrollAnimation>
 
-                        <div className="flex flex-wrap justify-center gap-4 text-sm">
+                        <ScrollAnimation variant="slideUp" delay={0.12} className="mb-10">
+                            <p className="text-lg text-muted-foreground leading-relaxed md:text-xl max-w-2xl mx-auto">
+                                Découvrez les besoins uniques de votre peau grâce à notre technologie d'analyse avancée et recevez des recommandations personnalisées.
+                            </p>
+                        </ScrollAnimation>
+
+                        <ScrollAnimation
+                            variant="rotateSkew"
+                            stagger={0.12}
+                            childSelector=".skin-feature"
+                            className="flex flex-wrap justify-center gap-4 text-sm"
+                        >
                             {['Analyse instantanée', 'IA avancée', 'Recommandations sur mesure'].map((feature, index) => (
                                 <div
                                     key={index}
-                                    className="flex items-center gap-2 px-4 py-2 bg-background/50 backdrop-blur-sm rounded-full border border-border/50"
+                                    className="skin-feature flex items-center gap-2 rounded-full border border-border/50 bg-background/50 px-4 py-2 backdrop-blur-sm"
                                 >
-                                    <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
+                                    <div className="h-1.5 w-1.5 rounded-full bg-primary"></div>
                                     <span className="text-muted-foreground">{feature}</span>
                                 </div>
                             ))}
-                        </div>
+                        </ScrollAnimation>
                     </div>
-                </div>
+                </ScrollAnimation>
             </div>
 
             <div className="container mx-auto px-4 py-12">
                 {error && (
-                    <div className="max-w-2xl mx-auto mb-8">
-                        <div className="border border-destructive/50 bg-destructive/5 rounded-lg p-4 flex items-start gap-3">
-                            <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
+                    <ScrollAnimation variant="slideUp" className="max-w-2xl mx-auto mb-8">
+                        <div className="flex items-start gap-3 rounded-lg border border-destructive/50 bg-destructive/5 p-4">
+                            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
                             <div className="flex-1">
                                 <p className="text-sm text-destructive">{error}</p>
                             </div>
                             <button
                                 onClick={() => setError(null)}
-                                className="text-destructive hover:opacity-70 transition-opacity"
+                                className="text-destructive transition-opacity hover:opacity-70"
                                 aria-label="dismiss"
                             >
-                                <X className="w-5 h-5" />
+                                <X className="h-5 w-5" />
                             </button>
                         </div>
-                    </div>
+                    </ScrollAnimation>
                 )}
 
                 {step === "capture" && !useCamera && (
-                    <UploadView
-                        onStartCamera={handleStartCamera}
-                        onFileUpload={handleFileUpload}
-                        onError={setError}
-                    />
+                    <ScrollAnimation
+                        variant="flipUp"
+                        perspective={1400}
+                        ease="expo.out"
+                    >
+                        <UploadView
+                            onStartCamera={handleStartCamera}
+                            onFileUpload={handleFileUpload}
+                            onError={setError}
+                        />
+                    </ScrollAnimation>
                 )}
 
                 {useCamera && (
-                    <CameraView
-                        onCapture={handleCapture}
-                        onCancel={handleCancelCamera}
-                        onError={setError}
-                    />
+                    <ScrollAnimation variant="fadeIn">
+                        <CameraView
+                            onCapture={handleCapture}
+                            onCancel={handleCancelCamera}
+                            onError={setError}
+                        />
+                    </ScrollAnimation>
                 )}
 
                 {step === "analyzing" && (
-                    <div className="max-w-xl mx-auto py-12">
-                        <div className="text-center space-y-8">
+                    <ScrollAnimation variant="blurRise" className="max-w-xl mx-auto py-12">
+                        <div className="space-y-8 text-center">
                             {imageSrc && (
-                                <div className="relative w-64 h-64 mx-auto rounded-full overflow-hidden border-4 border-background shadow-2xl">
+                                <div className="relative mx-auto h-64 w-64 overflow-hidden rounded-full border-4 border-background shadow-2xl">
                                     <img
                                         src={imageSrc}
                                         alt="Analyzing..."
-                                        className="w-full h-full object-cover opacity-50"
+                                        className="h-full w-full object-cover opacity-50"
                                     />
                                     <div className="absolute inset-0 flex items-center justify-center bg-black/10">
                                         <div className="h-8 w-8 animate-spin rounded-full border-4 border-muted border-t-primary" />
@@ -614,16 +650,18 @@ export default function SkinAnalyzerFeature() {
                                 </p>
                             </div>
                         </div>
-                    </div>
+                    </ScrollAnimation>
                 )}
 
                 {step === "results" && imageSrc && (
-                    <AnalysisResults
-                        imageSrc={imageSrc}
-                        detections={detections}
-                        groupedDetections={groupedDetections}
-                        onReset={handleReset}
-                    />
+                    <ScrollAnimation variant="blurRise">
+                        <AnalysisResults
+                            imageSrc={imageSrc}
+                            detections={detections}
+                            groupedDetections={groupedDetections}
+                            onReset={handleReset}
+                        />
+                    </ScrollAnimation>
                 )}
             </div>
         </div>

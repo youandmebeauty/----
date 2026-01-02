@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
+import { useEffect, useRef, useState } from "react"
+import { gsap } from "@/lib/gsap"
 import { ProductCard } from "@/components/product-card"
 import type { Product } from "@/lib/models"
 
@@ -16,13 +16,54 @@ export function ProductGrid({ products, loading, clearAllFilters }: ProductGridP
     const LOAD_MORE_STEP = 12
 
     const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_COUNT)
-    const [hasAnimated, setHasAnimated] = useState<Set<string>>(new Set())
+    const animatedIdsRef = useRef<Set<string>>(new Set())
+    const gridRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
         // Reset visible products when a new product list is loaded
         setVisibleCount(INITIAL_VISIBLE_COUNT)
-        setHasAnimated(new Set())
+        animatedIdsRef.current.clear()
     }, [products])
+
+    const visibleProducts = products.slice(0, visibleCount)
+    const hasMore = visibleCount < products.length
+
+    useEffect(() => {
+        const container = gridRef.current
+        if (!container) return
+
+        const ctx = gsap.context(() => {
+            visibleProducts.forEach((product, index) => {
+                if (animatedIdsRef.current.has(product.id)) {
+                    return
+                }
+
+                const element = container.querySelector<HTMLDivElement>(
+                    `[data-product-id="${product.id}"]`
+                )
+
+                if (!element) return
+
+                animatedIdsRef.current.add(product.id)
+
+                const delay = (index % LOAD_MORE_STEP) * 0.05
+
+                gsap.fromTo(
+                    element,
+                    { opacity: 0, y: 20 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.4,
+                        delay,
+                        ease: "power1.out",
+                    }
+                )
+            })
+        }, container)
+
+        return () => ctx.revert()
+    }, [visibleProducts, LOAD_MORE_STEP])
 
     if (loading && products.length === 0) {
         return (
@@ -53,33 +94,21 @@ export function ProductGrid({ products, loading, clearAllFilters }: ProductGridP
         )
     }
 
-    const visibleProducts = products.slice(0, visibleCount)
-    const hasMore = visibleCount < products.length
-
     return (
         <div className="space-y-10">
-            <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 lg:gap-x-6 lg:gap-y-12">
-                {visibleProducts.map((product, index) => {
-                    const shouldAnimate = !hasAnimated.has(product.id)
-                    if (shouldAnimate) {
-                        setHasAnimated(prev => new Set(prev).add(product.id))
-                    }
-
-                    return (
-                        <motion.div
-                            key={product.id}
-                            initial={shouldAnimate ? { opacity: 0, y: 20 } : false}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.4, delay: shouldAnimate ? (index % LOAD_MORE_STEP) * 0.05 : 0 }}
-                        >
-                            <ProductCard product={product} />
-                        </motion.div>
-                    )
-                })}
+            <div
+                ref={gridRef}
+                className="grid grid-cols-2 gap-x-4 gap-y-8 md:grid-cols-3 lg:gap-x-6 lg:gap-y-12 xl:grid-cols-4"
+            >
+                {visibleProducts.map((product) => (
+                    <div key={product.id} data-product-id={product.id} className="product-grid-item">
+                        <ProductCard product={product} />
+                    </div>
+                ))}
 
                 {loading && products.length > 0 && (
                     [...Array(8)].map((_, i) => (
-                        <div key={`skeleton-${i}`} className="space-y-3 animate-pulse">
+                        <div key={`skeleton-${i}`} className="product-grid-item space-y-3 animate-pulse">
                             <div className="aspect-[3/4] bg-muted rounded" />
                             <div className="h-3 bg-muted w-3/4 rounded" />
                             <div className="h-3 bg-muted w-1/2 rounded" />
