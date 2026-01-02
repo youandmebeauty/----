@@ -1,9 +1,7 @@
 import Link from "next/link"
 import { Sparkles, Heart, Package, Award, Shield, Truck, ArrowRight } from "lucide-react"
-import { ScrollAnimation } from "./scroll-animation"
 import Image from "next/image"
-import { useTheme } from "next-themes"
-
+import { ScrollAnimation } from "./scroll-animation"
 const values = [
     {
         icon: Package,
@@ -26,10 +24,12 @@ const values = [
     {
         icon: Shield,
         title: "Contrôle Rigoureux",
-        description: "Chaque produit bénéficie d’une vérification stricte de sa provenance, fraîcheur et conformité",
+        description: "Chaque produit bénéficie d'une vérification stricte de sa provenance, fraîcheur et conformité",
         gradient: "from-emerald-500/10 via-teal-500/10 to-cyan-500/10",
-        iconBg: "bg-gradient-to-br from-emerald-500/20 to-teal-500/20",        link: "/shop?category=soins",
-        linkText: "Explorer nos soins"    },
+        iconBg: "bg-gradient-to-br from-emerald-500/20 to-teal-500/20",
+        link: "/shop?category=soins",
+        linkText: "Explorer nos soins"
+    },
     {
         icon: Sparkles,
         title: "Nouveautés",
@@ -62,7 +62,7 @@ const values = [
 
 export function WhyChooseUs() {
     return (
-        <section className="py-20  relative overflow-hidden">
+        <section className="py-20 relative overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0 bg-gradient-to-b from-secondary/50 via-background to-background/50 rounded-3xl m-4"></div>
             <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl"></div>
@@ -87,23 +87,22 @@ export function WhyChooseUs() {
                     </p>
                 </div>
 
-                {/* Values Grid */}
-                <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3  gap-6 lg:gap-8 mb-20">
-                    {values.map((value, index) => {
-                        const Icon = value.icon
-                        return (
-                            <ScrollAnimation
-                                key={index}
-                                variant="slideUp"
-                                delay={index * 0.1}
-                            >
+                <ScrollAnimation
+                    variant="slideUp"
+                    perspective={1400}
+                    ease="expo.out"
+                    delay={0}
+                    duration={0.2}
+                    stagger={0.18}
+                    childSelector=".value-card"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-20">
+                        {values.map((value) => {
+                            const Icon = value.icon
+                            return (
                                 <div
-                                    className="group sticky bg-card/50 h-full backdrop-blur-sm border border-border/50 rounded-3xl p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-700 hover:-translate-y-3 overflow-hidden"
-                                    style={{
-                                        top: `calc(8rem + ${index * 1.5}rem)`,
-                                        zIndex: values.length - index,
-                                        animationDelay: `${index * 100}ms`
-                                    }}
+                                    key={value.title}
+                                    className="value-card group block relative bg-card/50 backdrop-blur-sm border border-border/50 rounded-3xl p-8 lg:p-10 shadow-lg hover:shadow-2xl transition-all duration-700 hover:-translate-y-3 overflow-hidden"
                                 >
                                     {/* Animated gradient background */}
                                     <div className={`absolute inset-0 bg-gradient-to-br ${value.gradient} rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
@@ -146,37 +145,38 @@ export function WhyChooseUs() {
                                         </div>
                                     </div>
                                 </div>
-                            </ScrollAnimation>
-                        )
-                    })}
-                </div>
+                            )
+                        })}
+                    </div>
+                </ScrollAnimation>
 
                 {/* Enhanced CTA Section with Logo Background */}
-                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 shadow-2xl">
+                <div className=" relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 shadow-2xl">
                     {/* Background Pattern */}
                     <div className="absolute inset-0 bg-[url('/hero-beauty.webp')] bg-cover bg-center opacity-10 dark:opacity-5"></div>
 
                     {/* Logo Background - Integrated as Watermark */}
                     <div className="absolute inset-0 mr-20 flex items-center justify-end">
                         <Image
-    src="/logo-light.webp"
-    alt="Youme Beauty Logo Background"
-    width={1000}
-    height={800}
-    className="opacity-[0.08] dark:opacity-0 pointer-events-none block dark:hidden"
-/>
-<Image
-    src="/logo-white.webp"
-    alt="Youme Beauty Logo Background"
-    width={1000}
-    height={800}
-    className="opacity-0 dark:opacity-[0.05] pointer-events-none hidden dark:block"
-/>
+                            src="/logo-light.webp"
+                            alt="Youme Beauty Logo Background"
+                            width={1000}
+                            height={800}
+                            className="opacity-[0.08] dark:opacity-0 pointer-events-none block dark:hidden"
+                        />
+                        <Image
+                            src="/logo-white.webp"
+                            alt="Youme Beauty Logo Background"
+                            width={1000}
+                            height={800}
+                            className="opacity-0 dark:opacity-[0.05] pointer-events-none hidden dark:block"
+                        />
                     </div>
 
                     {/* Animated gradient orbs */}
                     <div className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse"></div>
                     <div className="absolute bottom-0 left-0 w-80 h-80 bg-primary/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+                    
                     <div className="relative z-10 p-12 md:p-16 lg:p-20">
                         <div className="max-w-2xl space-y-8">
                             <div className="space-y-6">
@@ -215,10 +215,10 @@ export function WhyChooseUs() {
                                     <Sparkles className="w-4 h-4 group-hover:rotate-12 transition-transform duration-300" />
                                 </Link>
                             </div>
-                        </div >
-                    </div >
-                </div >
-            </div >
-        </section >
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     )
 }

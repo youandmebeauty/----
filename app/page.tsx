@@ -96,7 +96,8 @@ export default function Home() {
             variant="flipUp"
             duration={1}
             perspective={1600}
-            ease="expo.out"
+            start="top 85%"
+            end="bottom center"
           >
             <Hero />
           </ScrollAnimation>
@@ -108,12 +109,11 @@ export default function Home() {
         
         <section aria-label="Product categories">
           <ScrollAnimation
-            variant="parallax"
+            variant="slideUp"
             duration={1.2}
             ease="power2.out"
-            start="top 85%"
+            start="top 80%"
             end="bottom center"
-            scrub={0.3}
           >
             <Categories />
           </ScrollAnimation>
@@ -130,9 +130,14 @@ export default function Home() {
           </ScrollAnimation>
         </section>
         
-        <section aria-label="Why choose us">
-            <WhyChooseUs />
-        </section>
+        <ScrollAnimation
+            variant="slideUp"
+            duration={1.2}
+            ease="power2.out"
+            start="top 80%"
+            end="bottom center"
+          >
+            <WhyChooseUs /></ScrollAnimation>
       </main>
     </div>
   )

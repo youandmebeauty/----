@@ -56,9 +56,12 @@ export function Categories() {
         </div>
 
         <ScrollAnimation
-          variant="parallax"
+          variant="slideUp"
           perspective={1400}
           ease="expo.out"
+          delay={0}
+
+          duration={0.2}
           stagger={0.18}
           childSelector=".category-card"
         >

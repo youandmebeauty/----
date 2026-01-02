@@ -237,8 +237,7 @@ function SearchContent() {
           {/* Desktop Sidebar */}
           <aside className="shop-layout-pane hidden w-64 flex-shrink-0 lg:block">
             <ScrollAnimation
-              variant="parallax"
-              scrub={0.4}
+              variant="slideUp"
               start="top 85%"
               end="bottom top"
             >

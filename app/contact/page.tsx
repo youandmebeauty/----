@@ -251,8 +251,7 @@ export default function ContactPage() {
 
           {/* Contact Info */}
           <ScrollAnimation
-            variant="parallax"
-            scrub={0.6}
+            variant="slideUp"
             start="top 85%"
             end="bottom center"
             className="lg:col-span-4 space-y-10"
