@@ -100,9 +100,9 @@ export function WhyChooseUs() {
                 {/* Cards Grid */}
                 <ScrollAnimation
                     variant="blurRise"
-                    duration={1.2}
-                    stagger={0.5}
-                    delay={0.5}
+                    delay={0.3}
+            duration={1}
+            stagger={0.15}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-20"
                 >
                     {values.map((value) => {
@@ -160,7 +160,7 @@ export function WhyChooseUs() {
                 {/* Enhanced CTA Section */}
                 <ScrollAnimation
                     variant="scaleUp"
-                    duration={1.2}
+                    duration={0.8}
                     delay={0.5}
                     
                     className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 shadow-2xl"
@@ -238,8 +238,11 @@ export function WhyChooseUs() {
 
                 <div className="container mx-auto px-4 relative z-10">
                     {/* Header */}
-                <div
-
+                <ScrollAnimation
+                    variant="blurRise"
+                    duration={1.2}
+                    stagger={0.5}
+                    delay={0.5}
                     className="text-center mb-20"
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6">
@@ -256,7 +259,7 @@ export function WhyChooseUs() {
                     <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
                         Votre boutique cosmétique en ligne de confiance en Tunisie pour toutes les grandes marques de maquillage, parfums et soins authentiques
                     </p>
-</div>
+</ScrollAnimation>
                     {/* Cards Grid */}
                     <ScrollStack
                         useWindowScroll={true}

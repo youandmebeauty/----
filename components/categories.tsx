@@ -96,7 +96,7 @@ export  function Categories() {
 
                 {/* Label */}
                 <div className="text-center">
-                  <h3 className="text-2xl md:text-3xl font-serif text-black/90 tracking-tight">
+                  <h3 className="text-2xl md:text-3xl text-black/90 tracking-tight">
                     {category.name}
                   </h3>
                 </div>
