@@ -75,9 +75,10 @@ export function WhyChooseUs() {
             <div className="container mx-auto px-4 relative z-10">
                 {/* Header */}
                 <ScrollAnimation
-                    variant="slideUp"
-                    duration={0.8}
-                    start="top 85%"
+                    variant="blurRise"
+                    duration={1.2}
+                    stagger={0.5}
+                    delay={0.5}
                     className="text-center mb-20"
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6">
@@ -98,10 +99,10 @@ export function WhyChooseUs() {
 
                 {/* Cards Grid */}
                 <ScrollAnimation
-                    variant="slideUp"
-                    duration={0.7}
-                    stagger={0.1}
-                    start="top 85%"
+                    variant="blurRise"
+                    duration={1.2}
+                    stagger={0.5}
+                    delay={0.5}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-20"
                 >
                     {values.map((value) => {
@@ -159,8 +160,9 @@ export function WhyChooseUs() {
                 {/* Enhanced CTA Section */}
                 <ScrollAnimation
                     variant="scaleUp"
-                    duration={0.8}
-                    start="top 85%"
+                    duration={1.2}
+                    delay={0.5}
+                    
                     className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 shadow-2xl"
                 >
                     {/* Background Pattern */}
@@ -267,7 +269,7 @@ export function WhyChooseUs() {
                             return (
                                 <ScrollStackItem
                                     key={value.title}
-                                    itemClassName="group bg-card/50 backdrop-blur-sm border border-border/50 rounded-3xl p-8 shadow-lg overflow-hidden"
+                                    itemClassName="group bg-card backdrop-blur-sm border border-border/50 rounded-3xl p-8 shadow-lg overflow-hidden"
                                 >
                                     {/* Animated gradient background */}
                                     <div className={`absolute inset-0 bg-gradient-to-br ${value.gradient} rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>

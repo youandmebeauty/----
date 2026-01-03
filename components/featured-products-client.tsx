@@ -43,7 +43,7 @@ export function FeaturedProductsClient() {
 
     autoPlayRef.current = setInterval(() => {
       nextSlide()
-    }, 3000) // Change slide every 4 seconds
+    }, 3000) 
 
     return () => {
       if (autoPlayRef.current) {
@@ -117,32 +117,39 @@ export function FeaturedProductsClient() {
   }
 
   return (
-    <section className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4">
+    <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4">
       <div className="container  mx-auto px-4">
-        <div className="mb-16 flex items-end justify-between">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2">
-              <span className="h-px w-8 bg-primary"></span>
-              <span className="text-sm font-medium tracking-widest uppercase text-primary">Sélection Exclusive</span>
-            </div>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-medium tracking-tight text-foreground">
-              Produits Vedettes
-            </h1>
-            
+                <ScrollAnimation
+          variant="blurRise"
+          duration={1.2}
+          stagger={0.5}
+          delay={0.5}
+         className="mb-10 text-center">
+          <div className="inline-flex items-center gap-2 mb-4">
+            <span className="h-px w-10 bg-primary"></span>
+            <span className="text-xs font-medium tracking-[0.3em] uppercase text-primary">Sélection Exclusive</span>
+            <span className="h-px w-10 bg-primary"></span>
           </div>
-          <span className="text-muted-foreground hidden md:block text-xs tracking-widest uppercase border-l border-border pl-4 ml-4">02 / CURATED</span>
-        </div>
+
+          <h1 className="text-5xl md:text-6xl  tracking-tight leading-none ">
+            Produits Vedettes
+          </h1>
+        </ScrollAnimation>
 
         {showSlider ? (
           <div className="relative px-8 sm:px-12 lg:px-0">
             <div className="flex flex-col justify-around  " ref={scrollRef}>
-              <div className="grid grid-cols-1 gap-y-16 gap-x-8 sm:grid-cols-3 lg:grid-cols-5 transition-all duration-500">
+              <ScrollAnimation
+                variant="blurRise"
+                delay={0.5}
+                duration={1.2}
+                stagger={0.7} className="grid grid-cols-1 gap-y-16 gap-x-8 sm:grid-cols-3 lg:grid-cols-5 transition-all duration-500">
                 {getVisibleProducts().map((product, index) => (
                   <div key={`${product.id}-${currentIndex}-${index}`}>
                     <ProductCard product={product} />
                   </div>
                 ))}
-              </div>
+              </ScrollAnimation>
               <div className="flex justify-center gap-2 mt-8">
               {Array.from({ length: maxDots }).map((_, index) => (
                 <button
@@ -173,17 +180,17 @@ export function FeaturedProductsClient() {
               aria-label="Next products"
             >
               <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
-
-            
+            </button>            
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-y-16  gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
             {products.map((product, index) => (
               <ScrollAnimation
                 key={product.id}
-                variant="slideUp"
-                delay={index * 0.1}
+                variant="splitReveal"
+                delay={0.5}
+                duration={1.2}
+                stagger={0.5}
               >
                 <ProductCard product={product} />
               </ScrollAnimation>
@@ -191,6 +198,6 @@ export function FeaturedProductsClient() {
           </div>
         )}
       </div>
-    </section>
+    </div>
   )
 }

@@ -32,7 +32,6 @@ export default function MakeupModel3D() {
         auto-rotate
         camera-controls
         disable-zoom
-        disable-pan
         shadow-intensity="1.5"
         
         style={{
@@ -43,8 +42,7 @@ export default function MakeupModel3D() {
         exposure="1.5"
         shadow-softness="0.5"
         lighting-environment="studio"
-        min-camera-orbit="auto auto auto"
-        max-camera-orbit="auto auto auto"
+
       />
     </div>
   )
