@@ -55,12 +55,10 @@ export function Categories() {
 
         <ScrollAnimation
           variant="slideUp"
-          perspective={1400}
+          perspective={1000}
           ease="expo.out"
-          delay={0}
-
-          duration={0.2}
-          stagger={0.18}
+          delay={0.5}
+          duration={1.2}
           childSelector=".category-card"
         >
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">

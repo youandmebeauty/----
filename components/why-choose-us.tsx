@@ -258,8 +258,8 @@ export function WhyChooseUs() {
                     {/* Cards Grid */}
                     <ScrollStack
                         useWindowScroll={true}
-                        itemStackDistance={15}
-                        baseScale={0.9}
+                        itemStackDistance={10}
+
                         
                     >
                         {values.map((value) => {
@@ -309,10 +309,15 @@ export function WhyChooseUs() {
                                             <div className="absolute inset-0 bg-gradient-to-r from-primary/50 via-primary to-primary/50 rounded-full w-12 group-hover:w-full transition-all duration-700"></div>
                                         </div>
                                     </div>
+                                    
                                 </ScrollStackItem>
+                                
                             )
+                            
                         })}
-                                            <div
+                     
+                    </ScrollStack>
+                    <div
                         className="relative overflow-hidden backdrop-blur-lg rounded-3xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 shadow-2xl"
                     >
                         {/* Background Pattern */}
@@ -379,8 +384,6 @@ export function WhyChooseUs() {
                             </div>
                         </div>
                     </div>
-                    </ScrollStack>
-                    {/* Enhanced CTA Section */}
 
                 </div>
             </div></>

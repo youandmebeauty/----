@@ -111,14 +111,7 @@ export default function Home() {
         </ScrollAnimation>
         
         <section aria-label="Product categories">
-          <ScrollAnimation
-            variant="liquidRise"
-            duration={1.2}
-            start="top 80%"
-            end="bottom center"
-          >
             <Categories />
-          </ScrollAnimation>
         </section>
         
         <section aria-label="Featured products">
