@@ -231,10 +231,10 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       const lenis = new Lenis({
         wrapper: scroller,
         content: scroller.querySelector('.scroll-stack-inner') as HTMLElement,
-        duration: 1.2,
-        easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        duration: 0.7,
+easing: t => 0.5 * (1 - Math.cos(Math.PI * t)),
         smoothWheel: true,
-        touchMultiplier: 2,
+        touchMultiplier: 1,
         infinite: false,
         gestureOrientation: 'vertical',
         wheelMultiplier: 1,
@@ -347,7 +347,6 @@ useLayoutEffect(() => {
       ref={scrollerRef}
       style={{
         overscrollBehavior: 'contain',
-        WebkitOverflowScrolling: 'touch'
       }}
     >
       <div className="scroll-stack-inner pb-32">

@@ -238,11 +238,7 @@ export function WhyChooseUs() {
 
                 <div className="container mx-auto px-4 relative z-10">
                     {/* Header */}
-                <ScrollAnimation
-                    variant="blurRise"
-                    duration={1.2}
-                    stagger={0.5}
-                    delay={0.5}
+                <div
                     className="text-center mb-20"
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6">
@@ -259,11 +255,12 @@ export function WhyChooseUs() {
                     <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
                         Votre boutique cosmétique en ligne de confiance en Tunisie pour toutes les grandes marques de maquillage, parfums et soins authentiques
                     </p>
-</ScrollAnimation>
+</div>
                     {/* Cards Grid */}
                     <ScrollStack
                         useWindowScroll={true}
                         itemStackDistance={10}
+    
 
                         
                     >
