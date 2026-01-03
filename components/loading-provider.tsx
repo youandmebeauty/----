@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
-import { NavigationLoading } from "./navigation-loading"
 
 interface LoadingContextType {
   isLoading: boolean
@@ -43,7 +42,6 @@ export function LoadingProvider({ children }: LoadingProviderProps) {
 
   return (
     <LoadingContext.Provider value={{ isLoading, setIsLoading }}>
-      <NavigationLoading isLoading={isLoading} />
       {children}
     </LoadingContext.Provider>
   )

@@ -39,7 +39,7 @@ export function Footer() {
   }
 
   return (
-    <footer className="bg-primary/10 dark:bg-primary/20 rounded-3xl m-4 border border-primary/20 mt-20 ">
+    <footer className="bg-primary/10 dark:bg-primary/20 rounded-3xl m-4 border border-primary/20  ">
       <div className="container mx-auto px-4 py-16">
         <div className="grid md:grid-cols-4 gap-12">
           {/* Brand */}

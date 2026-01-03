@@ -4,6 +4,8 @@ import type { HTMLAttributes, ReactNode } from "react"
 import { useEffect, useRef } from "react"
 import { gsap } from "@/lib/gsap"
 
+
+
 type ScrollAnimationVariant =
     | "fadeIn"
     | "slideUp"
@@ -148,8 +150,8 @@ interface ScrollAnimationProps extends Omit<HTMLAttributes<HTMLDivElement>, "onT
     onEnterBack?: () => void
     onLeaveBack?: () => void
     onUpdate?: (progress: number) => void
-    onToggle?: (self: ScrollTrigger) => void
-    onRefresh?: (self: ScrollTrigger) => void
+    onToggle?: (self: any) => void
+    onRefresh?: (self: any) => void
     onScrubComplete?: () => void
 }
 
@@ -185,6 +187,7 @@ export function ScrollAnimation({
     const resolvedEase = typeof ease === "string" && ease in easePresets
         ? easePresets[ease as keyof typeof easePresets]
         : ease
+
 
     useEffect(() => {
         if (disabled || !ref.current) return
@@ -248,4 +251,3 @@ export function ScrollAnimation({
         </div>
     )
 }
-

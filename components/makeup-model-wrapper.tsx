@@ -1,7 +1,6 @@
 "use client"
 
 import dynamic from "next/dynamic"
-
 const MakeupModel3D = dynamic(
   () => import("@/components/makeup-model"),
   {
@@ -11,5 +10,6 @@ const MakeupModel3D = dynamic(
 )
 
 export function MakeupModelWrapper() {
+
   return <MakeupModel3D />
 }

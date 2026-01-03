@@ -48,9 +48,7 @@ export function Categories() {
               Nos Catégories
             </h1>
             
-            <p className="mt-4 text-xs md:text-sm text-muted-foreground leading-relaxed">
-              Explorez notre <Link href="/shop" className="text-foreground hover:underline font-medium">boutique cosmétique en ligne</Link> et découvrez nos catégories de produits : <Link href="/shop?category=maquillage" className="text-foreground hover:underline">maquillage professionnel</Link>, <Link href="/shop?category=soins" className="text-foreground hover:underline">soins du visage et du corps</Link>, <Link href="/shop?category=parfum" className="text-foreground hover:underline">parfums originaux</Link>, et <Link href="/shop?category=outils" className="text-foreground hover:underline">accessoires beauté</Link>.
-            </p>
+
           </div>
           <span className="text-muted-foreground hidden md:block text-xs tracking-widest uppercase border-l border-border pl-4 ml-4">01 / DISCOVER</span>
         </div>

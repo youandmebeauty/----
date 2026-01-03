@@ -129,9 +129,6 @@ export function FeaturedProductsClient() {
               Produits Vedettes
             </h1>
             
-            <p className="mt-4 text-xs md:text-sm text-muted-foreground leading-relaxed">
-              Découvrez notre sélection de <Link href="/shop" className="text-foreground hover:underline font-medium">produits cosmétiques premium</Link>, incluant les meilleurs <Link href="/shop?category=maquillage" className="text-foreground hover:underline">articles de maquillage</Link>, <Link href="/shop?category=soins" className="text-foreground hover:underline">soins visage</Link> et <Link href="/shop?category=parfum" className="text-foreground hover:underline">parfums de marque</Link>.
-            </p>
           </div>
           <span className="text-muted-foreground hidden md:block text-xs tracking-widest uppercase border-l border-border pl-4 ml-4">02 / CURATED</span>
         </div>

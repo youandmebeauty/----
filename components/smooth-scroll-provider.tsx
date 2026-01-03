@@ -1,10 +1,8 @@
 "use client"
 
-import "lenis/dist/lenis.css"
-
-import { ReactLenis } from "lenis/react"
 import { PropsWithChildren, useEffect } from "react"
 import { usePathname } from "next/navigation"
+import { ReactLenis } from "lenis/react"
 
 export function SmoothScrollProvider({ children }: PropsWithChildren) {
   const pathname = usePathname()
@@ -20,7 +18,7 @@ export function SmoothScrollProvider({ children }: PropsWithChildren) {
         lerp: 0.1,
         overscroll: true,
         smoothWheel: true,
-        touchMultiplier: 1.2
+        touchMultiplier: 1.2,
       }}
     >
       {children}

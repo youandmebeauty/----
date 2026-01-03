@@ -4,6 +4,7 @@ import { Categories } from "@/components/categories"
 import { WhyChooseUs } from "@/components/why-choose-us"
 import { MakeupModelWrapper } from "@/components/makeup-model-wrapper"
 import { Metadata } from "next"
+
 import { ScrollAnimation } from "@/components/scroll-animation"
 export const metadata: Metadata = {
   title: "You & Me Beauty - Parapharmacie et Cosmétique Sfax | Maquillage & Parfums en Ligne Tunisie",
@@ -93,7 +94,7 @@ export default function Home() {
       <main>
         <section aria-label="Hero section">
           <ScrollAnimation
-            variant="flipUp"
+            variant="slideUp"
             duration={1}
             perspective={1600}
             start="top 85%"
@@ -103,15 +104,16 @@ export default function Home() {
           </ScrollAnimation>
         </section>
         
-        <div className="hidden lg:block absolute mt-5 top-0 right-0 h-[92vh] w-1/2 z-20" >
+        <ScrollAnimation
+            variant="blurRise"
+            duration={2.5} className="hidden lg:block absolute mt-5 top-0 right-0 h-[92vh] w-1/2 z-20" >
           <MakeupModelWrapper />
-        </div>
+        </ScrollAnimation>
         
         <section aria-label="Product categories">
           <ScrollAnimation
-            variant="slideUp"
+            variant="liquidRise"
             duration={1.2}
-            ease="power2.out"
             start="top 80%"
             end="bottom center"
           >
@@ -121,9 +123,9 @@ export default function Home() {
         
         <section aria-label="Featured products">
           <ScrollAnimation
-            variant="blurRise"
+            variant="slideUp"
             duration={0.9}
-            ease="power3.out"
+          
             delay={0.15}
           >
             <FeaturedProductsServer />
