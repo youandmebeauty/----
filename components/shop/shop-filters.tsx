@@ -41,8 +41,6 @@ export function ShopFilters({
     const activeCategory = SHOP_CATEGORIES.find(c => c.id === selectedCategory)
     const [expandedSubcats, setExpandedSubcats] = useState<string[]>([])
     const [expandedFiltersLocal, setExpandedFiltersLocal] = useState<string[]>([
-        "category",
-        "subcategory",
         "price"
       ])
     
@@ -79,97 +77,6 @@ export function ShopFilters({
 
     return (
         <div className="space-y-8">
-            {/* Category Filter */}
-            <div>
-                <button
-                    onClick={() => handleToggleFilterExpand('category')}
-                    className="flex items-center justify-between w-full mb-6 group"
-                >
-                    <div className="flex items-center gap-3">
-                        <span className="h-px w-8 bg-primary"></span>
-                        <span className="text-sm font-semibold uppercase tracking-widest text-foreground">
-                            Catégorie
-                        </span>
-                    </div>
-                    <div
-                        className={cn(
-                            "transition-transform duration-200",
-                            expandedFilters.includes("category") && "rotate-180"
-                        )}
-                    >
-                        <ChevronDown className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
-                    </div>
-                </button>
-                <Collapse isOpen={expandedFilters.includes("category")} className="space-y-3">
-                            <label className="flex items-center py-2 cursor-pointer group">
-                                <div className="relative flex items-center">
-                                    <input
-                                        type="radio"
-                                        name={`${isMobile ? 'mobile' : 'desktop'}-category`}
-                                        checked={selectedCategory === "all"}
-                                        onChange={() => handleCategoryChange("all")}
-                                        className="sr-only"
-                                    />
-                                    <div className={cn(
-                                        "w-4 h-4 rounded-full flex items-center justify-center border-2 transition-all",
-                                        selectedCategory === "all" 
-                                            ? "border-primary" 
-                                            : "border-border group-hover:border-foreground/30"
-                                    )}>
-                                        <div
-                                            className={cn(
-                                                "h-2 w-2 rounded-full bg-primary transition-transform duration-200",
-                                                selectedCategory === "all" ? "scale-100" : "scale-0"
-                                            )}
-                                        />
-                                    </div>
-                                </div>
-                                <span className={cn(
-                                    "ml-3 text-sm transition-colors",
-                                    selectedCategory === "all" 
-                                        ? "text-foreground font-semibold" 
-                                        : "text-muted-foreground group-hover:text-foreground"
-                                )}>
-                                    Tous les produits
-                                </span>
-                            </label>
-                            {SHOP_CATEGORIES.map((category) => (
-                                <label key={category.id} className="flex items-center py-2 cursor-pointer group">
-                                    <div className="relative flex items-center">
-                                        <input
-                                            type="radio"
-                                            name={`${isMobile ? 'mobile' : 'desktop'}-category`}
-                                            checked={selectedCategory === category.id}
-                                            onChange={() => handleCategoryChange(category.id)}
-                                            className="sr-only"
-                                        />
-                                        <div className={cn(
-                                            "w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all",
-                                            selectedCategory === category.id 
-                                                ? "border-primary" 
-                                                : "border-border group-hover:border-foreground/30"
-                                        )}>
-                                            <div
-                                                className={cn(
-                                                    "h-2 w-2 rounded-full bg-primary transition-transform duration-200",
-                                                    selectedCategory === category.id ? "scale-100" : "scale-0"
-                                                )}
-                                            />
-                                        </div>
-                                    </div>
-                                    <span className={cn(
-                                        "ml-3 text-sm transition-colors",
-                                        selectedCategory === category.id 
-                                            ? "text-foreground font-semibold" 
-                                            : "text-muted-foreground group-hover:text-foreground"
-                                    )}>
-                                        {category.label}
-                                    </span>
-                                </label>
-                            ))}
-                </Collapse>
-            </div>
-
             {/* Subcategories */}
             {activeCategory?.subcategories && activeCategory.subcategories.length > 0 && (
                 <div>
@@ -240,7 +147,7 @@ export function ShopFilters({
                                             )}
                                             {/* Nested Subcategories */}
                                             <Collapse
-                                                isOpen={hasChildren && isExpanded}
+                                                isOpen={!!(hasChildren && isExpanded)}
                                                 className="ml-6 space-y-2 border-l border-border pl-4"
                                             >
                                                 {sub.subcategories?.map((child) => {

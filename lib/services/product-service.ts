@@ -1,10 +1,31 @@
 import type { Product, SearchFilters } from "@/lib/models"
+import { SHOP_CATEGORIES } from "@/lib/category-data"
 
 // Simple in-memory cache for products (no expiration - only cleared on admin changes)
 const productCache = new Map<string, Product>()
 
 // Cache for product lists
 const featuredProductsCache = new Map<number, Product[]>()
+
+// Create a category order map for sorting
+const categoryOrderMap = new Map<string, number>()
+SHOP_CATEGORIES.forEach((cat, index) => {
+  categoryOrderMap.set(cat.id, index)
+})
+
+// Deterministic default sort to keep the catalog grouped by category/subcategory
+// Categories are sorted by their order in SHOP_CATEGORIES
+const defaultProductSort = (a: Product, b: Product) => {
+  const aOrder = categoryOrderMap.get(a.category || "") ?? 999
+  const bOrder = categoryOrderMap.get(b.category || "") ?? 999
+  
+  if (aOrder !== bOrder) return aOrder - bOrder
+
+  const subcategoryCompare = (a.subcategory || "").localeCompare(b.subcategory || "", undefined, { sensitivity: "base" })
+  if (subcategoryCompare !== 0) return subcategoryCompare
+
+  return (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" })
+}
 
 // Cache invalidation functions
 export function clearProductCache(productId?: string) {
@@ -551,6 +572,10 @@ export async function searchProducts(searchTerm: string, filters?: SearchFilters
         )
       }
 
+      if (!filters?.sortBy) {
+        products = [...products].sort(defaultProductSort)
+      }
+
       return products
     } catch (error) {
       console.error("Error searching products (server):", error)
@@ -649,6 +674,10 @@ export async function searchProducts(searchTerm: string, filters?: SearchFilters
           (product.perfumeNotes?.heart || []).some((note: string) => note.toLowerCase().includes(lowerSearchTerm)) ||
           (product.perfumeNotes?.base || []).some((note: string) => note.toLowerCase().includes(lowerSearchTerm)),
       )
+    }
+
+    if (!filters?.sortBy) {
+      products = [...products].sort(defaultProductSort)
     }
 
     return products

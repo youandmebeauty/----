@@ -191,6 +191,24 @@ function SearchContent() {
     ? `Résultats pour "${searchQuery}"`
     : (selectedCategory === "all" ? "Tous les produits" : activeCategory?.label || "Recherche")
 
+  // Group products by category for organized display
+  const productsByCategory = products.reduce((acc, product) => {
+    const categoryId = product.category
+    if (!acc[categoryId]) {
+      const categoryData = SHOP_CATEGORIES.find(c => c.id === categoryId)
+      acc[categoryId] = {
+        id: categoryId,
+        label: categoryData?.label || categoryId,
+        products: []
+      }
+    }
+    acc[categoryId].products.push(product)
+    return acc
+  }, {} as Record<string, { id: string; label: string; products: Product[] }>)
+
+  const categoryGroups = Object.values(productsByCategory)
+  const showCategoryDivision = selectedCategory === "all" && !searchQuery && categoryGroups.length > 1
+
   if (isNavigating) {
     return (
       <div className="fixed inset-0 z-50 bg-background flex items-center justify-center">
@@ -200,8 +218,8 @@ function SearchContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="container mx-auto px-4 lg:px-6 xl:px-8 py-8">
+    <div className="min-h-screen bg-background ">
+      <main className="container mx-auto  px-4 lg:px-6 xl:px-8 py-8">
         {/* Breadcrumb */}
         <ScrollAnimation variant="slideUp" className="mb-6">
           <Breadcrumb
@@ -214,6 +232,7 @@ function SearchContent() {
           <FeaturedSection />
         </ScrollAnimation>
 
+        
         {/* Header & Controls */}
         <ScrollAnimation
           variant="flipUp"
@@ -267,6 +286,38 @@ function SearchContent() {
                     </button>
                   </div>
                 </ScrollAnimation>
+              ) : showCategoryDivision ? (
+                <div className="space-y-20">
+                  {categoryGroups.map((categoryGroup, index) => (
+                    <ScrollAnimation key={categoryGroup.id} variant="blurRise" childSelector=".product-grid-item" stagger={0.08}>
+                      <div id={`category-${categoryGroup.id}`} className="space-y-8 scroll-mt-28">
+                        {/* Category Header */}
+                        <div className="flex items-center justify-between">
+                          <h2 className="text-2xl font-semibold tracking-tight">{categoryGroup.label}</h2>
+                          <span className="text-sm text-muted-foreground">
+                            {categoryGroup.products.length} {categoryGroup.products.length > 1 ? 'produits' : 'produit'}
+                          </span>
+                        </div>
+                        
+                        {/* Category Grid */}
+                        <ProductGrid
+                          products={categoryGroup.products}
+                          loading={false}
+                          clearAllFilters={clearAllFilters}
+                          onProductNavigate={() => setIsNavigating(true)}
+                          grouping="none"
+                        />
+                        
+                        {/* Divider between categories */}
+                        {index < categoryGroups.length - 1 && (
+                          <div className="pt-12">
+                            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+                          </div>
+                        )}
+                      </div>
+                    </ScrollAnimation>
+                  ))}
+                </div>
               ) : (
                 <ScrollAnimation variant="blurRise" childSelector=".product-grid-item" stagger={0.08}>
                   <ProductGrid
@@ -274,6 +325,7 @@ function SearchContent() {
                     loading={isInitialLoading}
                     clearAllFilters={clearAllFilters}
                     onProductNavigate={() => setIsNavigating(true)}
+                    grouping="none"
                   />
                 </ScrollAnimation>
               )}

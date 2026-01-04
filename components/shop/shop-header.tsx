@@ -12,6 +12,8 @@ import {
 } from "@/components/ui/select"
 import { ShopFilters } from "./shop-filters"
 import { SearchBar } from "@/components/search-bar"
+import { SHOP_CATEGORIES } from "@/lib/category-data"
+import { cn } from "@/lib/utils"
 
 interface ShopHeaderProps {
     title: string
@@ -37,29 +39,62 @@ export function ShopHeader({
     filterProps
 }: ShopHeaderProps) {
     return (
-        <div className="space-y-8">
-            {/* Title Section with Result Count */}
-            <div className="pb-6 border-b">
-            <div className="flex items-center gap-3">
-
-            <span className="h-px w-8 bg-primary"></span>
-
-            <span className="text-sm text-muted-foreground font-medium">
-                    {productCount} {productCount === 1 ? 'résultat' : 'résultats'}
-                </span>                    </div>
-
-                <h1 className="text-4xl lg:text-5xl font-bold tracking-tight mb-3">
+        <div className="space-y-4 sm:space-y-5 lg:space-y-6">
+            {/* Title and Result Count */}
+            <div className="flex items-baseline justify-between gap-3 sm:gap-4 flex-wrap">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight">
                     {title}
                 </h1>
-               
+                <span className="text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                    {productCount} {productCount === 1 ? 'produit' : 'produits'}
+                </span>
             </div>
 
             {/* Search Bar */}
-            <div>
-                <SearchBar className="w-full" />
+            <SearchBar className="w-full" />
+
+            {/* Elegant Category Filter */}
+            <div className="relative border-y border-border/30 -mx-4 px-4 lg:-mx-6 lg:px-6 xl:-mx-8 xl:px-8 py-6">
+                {/* Left scroll shadow */}
+                <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background to-transparent pointer-events-none z-10" />
+                {/* Right scroll shadow */}
+                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none z-10" />
+                
+                <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-0.5">
+                    <button
+                        onClick={() => filterProps.handleCategoryChange("all")}
+                        className={cn(
+                            "flex-shrink-0 px-8 py-2 text-[13px] font-light tracking-[0.08em] uppercase transition-all duration-200 border whitespace-nowrap",
+                            filterProps.selectedCategory === "all"
+                                ? "bg-primary text-primary-foreground border-primary rounded-md"
+                                : "bg-transparent text-muted-foreground border-border/50 rounded-md hover:border-primary hover:text-foreground"
+                        )}
+                    >
+                        Tous les produits
+                    </button>
+
+                    {filterProps.selectedCategory === "all" && (
+                        <div className="h-6 w-[1px] bg-border/40 flex-shrink-0 mx-1" />
+                    )}
+
+                    {SHOP_CATEGORIES.map((category: any) => (
+                        <button
+                            key={category.id}
+                            onClick={() => filterProps.handleCategoryChange(category.id)}
+                            className={cn(
+                                "flex-shrink-0 px-8 py-2 text-[13px] font-light tracking-[0.08em] uppercase whitespace-nowrap transition-all duration-200 border",
+                                filterProps.selectedCategory === category.id
+                                    ? "bg-primary text-primary-foreground border-primary rounded-md"
+                                    : "bg-transparent text-muted-foreground border-border/50 hover:border-primary hover:text-foreground rounded-md"
+                            )}
+                        >
+                            {category.label}
+                        </button>
+                    ))}
+                </div>
             </div>
 
-            {/* Controls Section */}
+            {/* Controls */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
 
                 {/* Mobile Filter Trigger */}
