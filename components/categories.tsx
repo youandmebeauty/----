@@ -45,22 +45,22 @@ export  function Categories() {
           delay={0.5}
          className="mb-10 text-center">
           <div className="inline-flex items-center gap-2 mb-4">
-            <span className="h-px w-10 bg-primary"></span>
+                            <div className="h-px w-12 bg-gradient-to-r from-transparent to-primary"></div>
             <span className="text-xs font-medium tracking-[0.3em] uppercase text-primary">Explorer</span>
-            <span className="h-px w-10 bg-primary"></span>
+            <div className="h-px w-12 bg-gradient-to-r from-primary to-transparent"></div>
           </div>
 
-          <h1 className="text-5xl md:text-6xl  tracking-tight leading-none ">
+          <h1 className="text-5xl md:text-6xl font-light tracking-tight leading-none ">
             Nos Catégories
           </h1>
         </ScrollAnimation>
 
         <ScrollAnimation
           variant="blurRise"
-          stagger={0.5}
+          stagger={0.2}
           childSelector=".category-card"
-          duration={1}
-          delay={0.3}
+          duration={0.7}
+          delay={0.2}
           ease="expo"
           className="grid grid-cols-1 -my-24 md:my-16 gap-8 md:grid-cols-2 lg:grid-cols-4 scale-90 md:scale-100  mx-auto"
         >

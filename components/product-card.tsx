@@ -171,10 +171,10 @@ const slung = generateSlung(product.name, {
             {/* Price & Category */}
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-baseline gap-1">
-                <span className="text-lg font-semibold text-foreground tabular-nums">
+                <span className="text-lg font-light text-foreground tabular-nums">
                   {product.price.toFixed(2)}
                 </span>
-                <span className="text-xs font-normal text-muted-foreground">DT</span>
+                <span className="text-xs font-light text-muted-foreground">DT</span>
               </div>
               <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60 bg-secondary/30 px-2 py-1 rounded-full">
                 {product.category}

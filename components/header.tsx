@@ -344,13 +344,13 @@ export function Header() {
                               {/* Mobile-only theme toggle in menu */}
                               <div
                                 ref={mobileThemeRef}
-                                className="md:hidden p-6 mt-auto border-t text-white/90 border-white/50 opacity-0"
+                                className="md:hidden p-6  m-auto border-t"
                               >
                                 <Button
                                   variant="outline"
                                   size="lg"
                                   onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-                                  className="w-full justify-start gap-3 bg-transparent hover:bg-white/10 border-white/50 text-white/90 hover:text-white transition-all active:scale-95"
+                                  className="w-full z-50 justify-start gap-3 bg-transparent active:scale-95"
                                 >
                                   <div className="relative w-5 h-5 flex items-center justify-center">
                                     <Sun className="h-5 w-5 absolute rotate-0 scale-100 transition-all duration-500 dark:-rotate-90 dark:scale-0" />

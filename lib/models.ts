@@ -23,7 +23,12 @@ export interface Product {
   description: string
   longDescription?: string
   howToUse?: string
-  ingredients?: string[]
+  ingredients: string[]
+  perfumeNotes: {
+    top?: string[] // Notes de tête
+    heart?: string[] // Notes de cœur
+    base?: string[] // Notes de fond
+  }
   quantity: number
   featured?: boolean
   hasColorVariants?: boolean

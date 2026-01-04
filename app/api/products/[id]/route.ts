@@ -6,6 +6,28 @@ import type { Product } from "@/lib/models"
 
 const PRODUCTS_COLLECTION = "products"
 
+function sanitizePerfumeNotes(notes: any) {
+  if (!notes) return null
+
+  const top = Array.isArray(notes.top)
+    ? notes.top.map((n: unknown) => (typeof n === "string" ? n.trim() : "")).filter(Boolean)
+    : []
+  const heart = Array.isArray(notes.heart)
+    ? notes.heart.map((n: unknown) => (typeof n === "string" ? n.trim() : "")).filter(Boolean)
+    : []
+  const base = Array.isArray(notes.base)
+    ? notes.base.map((n: unknown) => (typeof n === "string" ? n.trim() : "")).filter(Boolean)
+    : []
+
+  if (top.length === 0 && heart.length === 0 && base.length === 0) return null
+
+  return {
+    ...(top.length ? { top } : {}),
+    ...(heart.length ? { heart } : {}),
+    ...(base.length ? { base } : {}),
+  }
+}
+
 // PUT - Update a product (admin only)
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -35,6 +57,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       hairType,
       hasColorVariants,
       colorVariants,
+      perfumeNotes,
     } = body
 
     const docRef = adminDb.collection(PRODUCTS_COLLECTION).doc(id)
@@ -127,6 +150,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (ingredients !== undefined) updateData.ingredients = Array.isArray(ingredients) ? ingredients : []
     if (skinType !== undefined) updateData.skinType = Array.isArray(skinType) ? skinType : []
     if (hairType !== undefined) updateData.hairType = Array.isArray(hairType) ? hairType : []
+    if (perfumeNotes !== undefined) {
+      const cleaned = sanitizePerfumeNotes(perfumeNotes)
+      updateData.perfumeNotes = cleaned || FieldValue.delete()
+    }
     
     await docRef.update(updateData)
 

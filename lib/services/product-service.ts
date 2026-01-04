@@ -544,7 +544,10 @@ export async function searchProducts(searchTerm: string, filters?: SearchFilters
           (product.ingredients || []).some((ing: string) => ing.toLowerCase().includes(lowerSearchTerm)) ||
           (product.brand || "").toLowerCase().includes(lowerSearchTerm) ||
           (product.skinType || []).some((type: string) => type.toLowerCase().includes(lowerSearchTerm)) ||
-          (product.hairType || []).some((type: string) => type.toLowerCase().includes(lowerSearchTerm)),
+          (product.hairType || []).some((type: string) => type.toLowerCase().includes(lowerSearchTerm)) ||
+          (product.perfumeNotes?.top || []).some((note: string) => note.toLowerCase().includes(lowerSearchTerm)) ||
+          (product.perfumeNotes?.heart || []).some((note: string) => note.toLowerCase().includes(lowerSearchTerm)) ||
+          (product.perfumeNotes?.base || []).some((note: string) => note.toLowerCase().includes(lowerSearchTerm)),
         )
       }
 
@@ -641,7 +644,10 @@ export async function searchProducts(searchTerm: string, filters?: SearchFilters
           (product.ingredients || []).some((ing: string) => ing.toLowerCase().includes(lowerSearchTerm)) ||
           (product.brand || "").toLowerCase().includes(lowerSearchTerm) ||
           (product.skinType || []).some((type: string) => type.toLowerCase().includes(lowerSearchTerm)) ||
-          (product.hairType || []).some((type: string) => type.toLowerCase().includes(lowerSearchTerm)),
+          (product.hairType || []).some((type: string) => type.toLowerCase().includes(lowerSearchTerm)) ||
+          (product.perfumeNotes?.top || []).some((note: string) => note.toLowerCase().includes(lowerSearchTerm)) ||
+          (product.perfumeNotes?.heart || []).some((note: string) => note.toLowerCase().includes(lowerSearchTerm)) ||
+          (product.perfumeNotes?.base || []).some((note: string) => note.toLowerCase().includes(lowerSearchTerm)),
       )
     }
 

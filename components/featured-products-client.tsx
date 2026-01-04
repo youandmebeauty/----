@@ -117,7 +117,7 @@ export function FeaturedProductsClient() {
   }
 
   return (
-    <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4">
+    <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4 shadow-inner relative">
       <div className="container mx-auto px-4">
         <ScrollAnimation
           variant="slideUp"
@@ -126,12 +126,12 @@ export function FeaturedProductsClient() {
           className="mb-10 text-center"
         >
           <div className="inline-flex items-center gap-2 mb-4">
-            <span className="h-px w-10 bg-primary"></span>
+                            <div className="h-px w-12 bg-gradient-to-r from-transparent to-primary"></div>
             <span className="text-xs font-medium tracking-[0.3em] uppercase text-primary">Sélection Exclusive</span>
-            <span className="h-px w-10 bg-primary"></span>
+            <div className="h-px w-12 bg-gradient-to-r from-primary to-transparent"></div>
           </div>
 
-          <h1 className="text-5xl md:text-6xl tracking-tight leading-none">
+          <h1 className="text-5xl md:text-6xl tracking-tight font-light leading-none">
             Produits Vedettes
           </h1>
         </ScrollAnimation>

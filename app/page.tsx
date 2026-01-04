@@ -106,7 +106,7 @@ export default function Home() {
         
         <ScrollAnimation
             variant="blurRise"
-            duration={2.5} className="hidden lg:block absolute mt-5 top-0 right-0 h-[96vh] w-1/2 z-20" >
+            duration={2.5} className="hidden lg:block absolute mt-5 top-0 right-0 h-[97vh] w-1/2 z-20" >
           <MakeupModelWrapper />
         </ScrollAnimation>
         

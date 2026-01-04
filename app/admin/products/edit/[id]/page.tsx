@@ -43,6 +43,9 @@ function EditProductContent() {
     skinType: [] as string[],
     hairType: [] as string[],
     hasColorVariants: false,
+    perfumeNotesTop: [] as string[],
+    perfumeNotesHeart: [] as string[],
+    perfumeNotesBase: [] as string[],
   })
   const [colorVariants, setColorVariants] = useState<ColorVariant[]>([])
 
@@ -70,10 +73,13 @@ function EditProductContent() {
           images: productData.images || (productData.image ? [productData.image] : []),
           quantity: productData.quantity.toString(),
           featured: productData.featured || false,
-          ingredients: productData.ingredients?.join(", ") || "",
+          ingredients: productData.ingredients.join(", ") || "",
           skinType: productData.skinType || [],
           hairType: productData.hairType || [],
           hasColorVariants: productData.hasColorVariants || false,
+          perfumeNotesTop: productData.perfumeNotes?.top || [],
+          perfumeNotesHeart: productData.perfumeNotes?.heart || [],
+          perfumeNotesBase: productData.perfumeNotes?.base || [],
         })
         setColorVariants(productData.colorVariants || [])
       } else {
@@ -172,6 +178,21 @@ function EditProductContent() {
         skinType: formData.skinType || [],
         hairType: formData.hairType || [],
         hasColorVariants: formData.hasColorVariants,
+      }
+
+      // Add perfume notes if category is parfum
+      const hasPerfumeNotes = formData.perfumeNotesTop.length > 0
+        || formData.perfumeNotesHeart.length > 0
+        || formData.perfumeNotesBase.length > 0
+
+      if (formData.category === "parfum" && hasPerfumeNotes) {
+        productData.perfumeNotes = {
+          top: formData.perfumeNotesTop.length > 0 ? formData.perfumeNotesTop : undefined,
+          heart: formData.perfumeNotesHeart.length > 0 ? formData.perfumeNotesHeart : undefined,
+          base: formData.perfumeNotesBase.length > 0 ? formData.perfumeNotesBase : undefined,
+        }
+      } else {
+        productData.perfumeNotes = null
       }
 
       // Only include images if there are no color variants
@@ -612,6 +633,217 @@ function EditProductContent() {
                     className="bg-background/50"
                   />
                 </div>
+
+                {/* Perfume Notes - Show for Parfum category */}
+                {formData.category === "parfum" && (
+                  <div className="space-y-4 p-4 border border-border/50 rounded-lg bg-background/30">
+                    <h3 className="font-medium text-lg mb-2">Notes olfactives</h3>
+                    
+                    <div>
+                      <Label htmlFor="perfumeNotesTop">Notes de tête</Label>
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <Input
+                            id="perfumeNotesTop"
+                            placeholder="Cassis, bergamote, citron..."
+                            className="bg-background/50"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault()
+                                const input = e.currentTarget
+                                const value = input.value.trim()
+                                if (value && !formData.perfumeNotesTop.includes(value)) {
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    perfumeNotesTop: [...prev.perfumeNotesTop, value]
+                                  }))
+                                  input.value = ''
+                                }
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={(e) => {
+                              const input = document.getElementById('perfumeNotesTop') as HTMLInputElement
+                              const value = input?.value.trim()
+                              if (value && !formData.perfumeNotesTop.includes(value)) {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  perfumeNotesTop: [...prev.perfumeNotesTop, value]
+                                }))
+                                input.value = ''
+                              }
+                            }}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        {formData.perfumeNotesTop.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {formData.perfumeNotesTop.map((note, index) => (
+                              <span
+                                key={index}
+                                className="px-3 py-1 rounded-full bg-secondary/30 text-sm flex items-center gap-2"
+                              >
+                                {note}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      perfumeNotesTop: prev.perfumeNotesTop.filter((_, i) => i !== index)
+                                    }))
+                                  }}
+                                  className="hover:text-destructive"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="perfumeNotesHeart">Notes de cœur</Label>
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <Input
+                            id="perfumeNotesHeart"
+                            placeholder="Rose de mai, freesia, jasmin..."
+                            className="bg-background/50"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault()
+                                const input = e.currentTarget
+                                const value = input.value.trim()
+                                if (value && !formData.perfumeNotesHeart.includes(value)) {
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    perfumeNotesHeart: [...prev.perfumeNotesHeart, value]
+                                  }))
+                                  input.value = ''
+                                }
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={(e) => {
+                              const input = document.getElementById('perfumeNotesHeart') as HTMLInputElement
+                              const value = input?.value.trim()
+                              if (value && !formData.perfumeNotesHeart.includes(value)) {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  perfumeNotesHeart: [...prev.perfumeNotesHeart, value]
+                                }))
+                                input.value = ''
+                              }
+                            }}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        {formData.perfumeNotesHeart.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {formData.perfumeNotesHeart.map((note, index) => (
+                              <span
+                                key={index}
+                                className="px-3 py-1 rounded-full bg-secondary/30 text-sm flex items-center gap-2"
+                              >
+                                {note}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      perfumeNotesHeart: prev.perfumeNotesHeart.filter((_, i) => i !== index)
+                                    }))
+                                  }}
+                                  className="hover:text-destructive"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="perfumeNotesBase">Notes de fond</Label>
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <Input
+                            id="perfumeNotesBase"
+                            placeholder="Patchouli, vanille, bois ambré..."
+                            className="bg-background/50"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault()
+                                const input = e.currentTarget
+                                const value = input.value.trim()
+                                if (value && !formData.perfumeNotesBase.includes(value)) {
+                                  setFormData(prev => ({
+                                    ...prev,
+                                    perfumeNotesBase: [...prev.perfumeNotesBase, value]
+                                  }))
+                                  input.value = ''
+                                }
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={(e) => {
+                              const input = document.getElementById('perfumeNotesBase') as HTMLInputElement
+                              const value = input?.value.trim()
+                              if (value && !formData.perfumeNotesBase.includes(value)) {
+                                setFormData(prev => ({
+                                  ...prev,
+                                  perfumeNotesBase: [...prev.perfumeNotesBase, value]
+                                }))
+                                input.value = ''
+                              }
+                            }}
+                          >
+                            <Plus className="h-4 w-4" />
+                          </Button>
+                        </div>
+                        {formData.perfumeNotesBase.length > 0 && (
+                          <div className="flex flex-wrap gap-2">
+                            {formData.perfumeNotesBase.map((note, index) => (
+                              <span
+                                key={index}
+                                className="px-3 py-1 rounded-full bg-secondary/30 text-sm flex items-center gap-2"
+                              >
+                                {note}
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setFormData(prev => ({
+                                      ...prev,
+                                      perfumeNotesBase: prev.perfumeNotesBase.filter((_, i) => i !== index)
+                                    }))
+                                  }}
+                                  className="hover:text-destructive"
+                                >
+                                  <X className="h-3 w-3" />
+                                </button>
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex items-center space-x-2">
                   <Checkbox id="featured" checked={formData.featured} onCheckedChange={handleCheckboxChange} />

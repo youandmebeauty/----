@@ -39,8 +39,8 @@ export function Footer() {
   }
 
   return (
-    <footer className="bg-primary/10 dark:bg-primary/20 rounded-3xl m-4 border border-primary/20  ">
-      <div className="container mx-auto px-4 py-16">
+    <footer className="mt-12 border border-border bg-background rounded-3xl   m-4">
+      <div className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="md:col-span-1 flex flex-col items-center">
@@ -51,14 +51,14 @@ export function Footer() {
               <Image src={theme === "light" ? "/logo.webp" : "/logoB.webp"} alt="Logo" width={200} height={200} />
             </Link>
             {/* Social Media Links */}
-            <div className="flex space-x-4 mt-4">
+            <div className="flex space-x-3 mt-4">
 <a
   href="https://instagram.com/youme_beauty_sfax"
   target="_blank"
   rel="noopener noreferrer"
-  className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center ${
+  className={`w-10 h-10 rounded-full border border-border flex items-center justify-center ${
     theme === "light" ? "text-primary" : "text-muted-foreground"
-  } hover:bg-primary hover:text-white transition-all duration-300`}
+  } hover:border-primary hover:text-primary transition-colors duration-200`}
 >
   <Instagram className="h-5 w-5" />
   <span className="sr-only">Instagram</span>
@@ -68,9 +68,9 @@ export function Footer() {
   href="https://www.facebook.com/people/YOUME-Beauty/61578933269826/"
   target="_blank"
   rel="noopener noreferrer"
-  className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center ${
+  className={`w-10 h-10 rounded-full border border-border flex items-center justify-center ${
     theme === "light" ? "text-primary" : "text-muted-foreground"
-  } hover:bg-primary hover:text-white transition-all duration-300`}
+  } hover:border-primary hover:text-primary transition-colors duration-200`}
 >
   <Facebook className="h-5 w-5" />
   <span className="sr-only">Facebook</span>
@@ -80,9 +80,9 @@ export function Footer() {
   href="https://www.tiktok.com/@youmebeauty"
   target="_blank"
   rel="noopener noreferrer"
-  className={`w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center ${
+  className={`w-10 h-10 rounded-full border border-border flex items-center justify-center ${
     theme === "light" ? "text-primary" : "text-muted-foreground"
-  } hover:bg-primary hover:text-white transition-all duration-300`}
+  } hover:border-primary hover:text-primary transition-colors duration-200`}
 >
   <TikTokIcon />
   <span className="sr-only">TikTok</span>
@@ -152,7 +152,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-border mt-16 pt-8 text-center">
+        <div className="border-t border-border mt-12 pt-8 text-center">
           <p className="text-muted-foreground text-sm">
             © {new Date().getFullYear()} You & Me Beauty. Tous droits réservés.
           </p>

@@ -3,9 +3,30 @@ import { adminDb } from "@/lib/firebase-admin"
 import { verifyAdminToken } from "@/lib/auth-utils"
 import { Timestamp } from "firebase-admin/firestore"
 import type { Product } from "@/lib/models"
-import { Barcode } from "lucide-react"
 
 const PRODUCTS_COLLECTION = "products"
+
+function sanitizePerfumeNotes(notes: any) {
+  if (!notes) return null
+
+  const top = Array.isArray(notes.top)
+    ? notes.top.map((n: unknown) => (typeof n === "string" ? n.trim() : "")).filter(Boolean)
+    : []
+  const heart = Array.isArray(notes.heart)
+    ? notes.heart.map((n: unknown) => (typeof n === "string" ? n.trim() : "")).filter(Boolean)
+    : []
+  const base = Array.isArray(notes.base)
+    ? notes.base.map((n: unknown) => (typeof n === "string" ? n.trim() : "")).filter(Boolean)
+    : []
+
+  if (top.length === 0 && heart.length === 0 && base.length === 0) return null
+
+  return {
+    ...(top.length ? { top } : {}),
+    ...(heart.length ? { heart } : {}),
+    ...(base.length ? { base } : {}),
+  }
+}
 
 // POST - Create a new product (admin only)
 export async function POST(request: NextRequest) {
@@ -35,6 +56,7 @@ export async function POST(request: NextRequest) {
       hairType,
       hasColorVariants,
       colorVariants,
+      perfumeNotes,
     } = body
 
     // Validate required fields
@@ -65,6 +87,11 @@ export async function POST(request: NextRequest) {
       colorVariants: (hasColorVariants && Array.isArray(colorVariants)) ? colorVariants : [],
       createdAt: Timestamp.now(),
       updatedAt: Timestamp.now(),
+    }
+
+    const cleanedPerfumeNotes = sanitizePerfumeNotes(perfumeNotes)
+    if (cleanedPerfumeNotes) {
+      productData.perfumeNotes = cleanedPerfumeNotes
     }
 
     // Only include images and barcode if there are no color variants
