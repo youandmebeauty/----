@@ -2,6 +2,8 @@
 
 import { ProductCard } from "@/components/product-card"
 import type { Product } from "@/lib/models"
+import { useState } from "react"
+import { LoadingAnimation } from "@/components/ui/loading-animation"
 
 interface RelatedProductsProps {
     products: Product[]
@@ -9,6 +11,8 @@ interface RelatedProductsProps {
 }
 
 export function RelatedProducts({ products, currentProduct }: RelatedProductsProps) {
+    const [isNavigating, setIsNavigating] = useState(false)
+
     if (products.length === 0) {
         return null
     }
@@ -31,8 +35,15 @@ export function RelatedProducts({ products, currentProduct }: RelatedProductsPro
 
     const fallbackProducts = !isSameBrand && !isSameCategory ? products : []
 
+    const navigationOverlay = isNavigating ? (
+        <div className="fixed inset-0 z-50 bg-background flex items-center justify-center">
+            <LoadingAnimation size={140} className="text-primary" />
+        </div>
+    ) : null
+
     return (
         <section className="container mx-auto px-4 lg:px-8 py-20 ">
+            {navigationOverlay}
             <div className="space-y-20">
                 {hasPerfumeNotes && (
                     <div className="space-y-6 text-center max-w-3xl mx-auto">
@@ -74,7 +85,7 @@ export function RelatedProducts({ products, currentProduct }: RelatedProductsPro
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
                             {sameBrandProducts.map((product) => (
-                                <ProductCard key={product.id} product={product} />
+                                <ProductCard key={product.id} product={product} onNavigateStart={() => setIsNavigating(true)} />
                             ))}
                         </div>
                     </div>
@@ -101,7 +112,7 @@ export function RelatedProducts({ products, currentProduct }: RelatedProductsPro
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
                             {sameCategoryProducts.map((product) => (
-                                <ProductCard key={product.id} product={product} />
+                                <ProductCard key={product.id} product={product} onNavigateStart={() => setIsNavigating(true)} />
                             ))}
                         </div>
                     </div>
@@ -124,7 +135,7 @@ export function RelatedProducts({ products, currentProduct }: RelatedProductsPro
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
                             {fallbackProducts.map((product) => (
-                                <ProductCard key={product.id} product={product} />
+                                <ProductCard key={product.id} product={product} onNavigateStart={() => setIsNavigating(true)} />
                             ))}
                         </div>
                     </div>

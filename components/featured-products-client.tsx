@@ -7,6 +7,7 @@ import { getFeaturedProducts } from "@/lib/services/product-service"
 import type { Product } from "@/lib/models"
 import { ScrollAnimation } from "./scroll-animation"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { LoadingAnimation } from "@/components/ui/loading-animation"
 
 export function FeaturedProductsClient() {
   const [products, setProducts] = useState<Product[]>([])
@@ -14,6 +15,7 @@ export function FeaturedProductsClient() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [itemsPerView, setItemsPerView] = useState(5)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [isNavigating, setIsNavigating] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
 
@@ -95,6 +97,12 @@ export function FeaturedProductsClient() {
 
   const maxDots = products.length - itemsPerView + 1
 
+  const navigationOverlay = isNavigating ? (
+    <div className="fixed inset-0 z-50 bg-background flex items-center justify-center">
+      <LoadingAnimation size={140} className="text-primary" />
+    </div>
+  ) : null
+
   if (loading) {
     return (
       <div className="py-16 mt-24 bg-background rounded-3xl m-4">
@@ -118,6 +126,7 @@ export function FeaturedProductsClient() {
 
   return (
     <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4 shadow-inner relative">
+      {navigationOverlay}
       <div className="container mx-auto px-4">
         <ScrollAnimation
           variant="blurRise"
@@ -151,7 +160,7 @@ export function FeaturedProductsClient() {
               >
                 {getVisibleProducts().map((product, index) => (
                   <div key={`${product.id}-${currentIndex}-${index}`} className="product-item">
-                    <ProductCard product={product} />
+                    <ProductCard product={product} onNavigateStart={() => setIsNavigating(true)} />
                   </div>
                 ))}
               </ScrollAnimation>
@@ -200,7 +209,7 @@ export function FeaturedProductsClient() {
           >
             {products.map((product) => (
               <div key={product.id} className="product-item">
-                <ProductCard product={product} />
+                <ProductCard product={product} onNavigateStart={() => setIsNavigating(true)} />
               </div>
             ))}
           </ScrollAnimation>
