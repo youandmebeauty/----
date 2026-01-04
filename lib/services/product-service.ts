@@ -184,7 +184,7 @@ export async function getProductById(id: string): Promise<Product | null> {
   }
 }
 
-export async function getFeaturedProducts(limitCount = 6): Promise<Product[]> {
+export async function getFeaturedProducts(limitCount = 12): Promise<Product[]> {
   // Check cache first (no time expiration)
   const cached = featuredProductsCache.get(limitCount)
   if (cached) {
