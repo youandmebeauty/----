@@ -9,9 +9,10 @@ interface ProductGridProps {
     products: Product[]
     loading: boolean
     clearAllFilters: () => void
+    onProductNavigate?: () => void
 }
 
-export function ProductGrid({ products, loading, clearAllFilters }: ProductGridProps) {
+export function ProductGrid({ products, loading, clearAllFilters, onProductNavigate }: ProductGridProps) {
     const INITIAL_VISIBLE_COUNT = 12
     const LOAD_MORE_STEP = 12
 
@@ -102,7 +103,7 @@ export function ProductGrid({ products, loading, clearAllFilters }: ProductGridP
             >
                 {visibleProducts.map((product) => (
                     <div key={product.id} data-product-id={product.id} className="product-grid-item">
-                        <ProductCard product={product} />
+                        <ProductCard product={product} onNavigateStart={onProductNavigate} />
                     </div>
                 ))}
 

@@ -148,7 +148,7 @@ export function FeaturedSection() {
 
     return (
         <section className="relative w-full h-[400px] lg:h-[500px] mb-16 overflow-hidden rounded-2xl">
-            <div className="absolute inset-0 bg-black">
+            <div className="absolute inset-0">
                 <video
                     key={videoSrc}
                     ref={videoRef}

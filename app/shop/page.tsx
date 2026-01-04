@@ -1,6 +1,8 @@
 import { Metadata } from "next"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 import ShopPage from "./page-client"
+import React from "react"
+import { BreadcrumbJsonLd } from "@/components/breadcrumb"
 // Génère une liste de mots-clés à partir des catégories et sous-catégories
 const categoryKeywords: string[] = Array.from(
     new Set(
@@ -15,7 +17,7 @@ const categoryKeywords: string[] = Array.from(
 )
 
 export const metadata: Metadata = {
-    title: "Boutique - You & Me Beauty",
+    title: "Boutique | You & Me Beauty",
     description: "Explorez notre boutique complète de produits de beauté. Filtrez par catégorie, type de peau et prix pour trouver votre routine idéale.",
     alternates: {
         canonical: "https://youandme.tn/shop",
@@ -94,5 +96,39 @@ export const metadata: Metadata = {
     },
 }
 export default function Page() {
-  return <ShopPage />
+    const shopJsonLd = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: "Boutique | You & Me Beauty",
+        url: "https://youandme.tn/shop",
+        inLanguage: "fr",
+        description: "Explorez notre boutique complète de produits de beauté. Filtrez par catégorie, type de peau et prix pour trouver votre routine idéale.",
+        isPartOf: {
+            "@type": "WebSite",
+            name: "You & Me Beauty",
+            url: "https://youandme.tn",
+        },
+        mainEntity: {
+            "@type": "ItemList",
+            numberOfItems: 0,
+            itemListOrder: "https://schema.org/ItemListOrderAscending",
+            itemListElement: [],
+        },
+        potentialAction: {
+            "@type": "SearchAction",
+            target: "https://youandme.tn/shop?q={search_term_string}",
+            "query-input": "required name=search_term_string",
+        },
+    }
+
+    return (
+        <>
+            <BreadcrumbJsonLd items={[{ name: "Boutique", url: "https://youandme.tn/shop" }]} />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(shopJsonLd) }}
+            />
+            <ShopPage />
+        </>
+    )
 }

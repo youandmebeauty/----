@@ -11,7 +11,7 @@ import { Sparkles, User, Wind, Pill } from "lucide-react"
 import { ShopHeader } from "@/components/shop/shop-header"
 import { ShopFilters } from "@/components/shop/shop-filters"
 import { ProductGrid } from "@/components/shop/product-grid"
-import { Breadcrumb, BreadcrumbJsonLd } from "@/components/breadcrumb"
+import { Breadcrumb } from "@/components/breadcrumb"
 import { cn } from "@/lib/utils"
 import { ScrollAnimation } from "@/components/scroll-animation"
 import {
@@ -21,6 +21,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog"
 import { FeaturedSection } from "@/components/shop/featured-section"
+import { LoadingAnimation } from "@/components/ui/loading-animation"
 
 function SearchContent() {
   const searchParams = useSearchParams()
@@ -40,7 +41,7 @@ function SearchContent() {
   const [priceRange, setPriceRange] = useState([0, 1000])
   const [sortBy, setSortBy] = useState("featured")
   const [searchQuery, setSearchQuery] = useState("")
-
+  const [isNavigating, setIsNavigating] = useState(false)
   useEffect(() => {
     // In search page, we prioritize 'q' for the query
     const category = searchParams.get("category") || "all"
@@ -190,9 +191,16 @@ function SearchContent() {
     ? `Résultats pour "${searchQuery}"`
     : (selectedCategory === "all" ? "Tous les produits" : activeCategory?.label || "Recherche")
 
+  if (isNavigating) {
+    return (
+      <div className="fixed inset-0 z-50 bg-background flex items-center justify-center">
+        <LoadingAnimation size={140} className="text-primary" />
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-background">
-      <BreadcrumbJsonLd items={[{ name: "Boutique", url: "https://youandme.tn/shop" }]} />
       <main className="container mx-auto px-4 lg:px-6 xl:px-8 py-8">
         {/* Breadcrumb */}
         <ScrollAnimation variant="slideUp" className="mb-6">
@@ -265,6 +273,7 @@ function SearchContent() {
                     products={products}
                     loading={isInitialLoading}
                     clearAllFilters={clearAllFilters}
+                    onProductNavigate={() => setIsNavigating(true)}
                   />
                 </ScrollAnimation>
               )}

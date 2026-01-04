@@ -3,6 +3,9 @@ import { ProductClient } from "@/components/product/product-client"
 import { RelatedProducts } from "@/components/product/related-products"
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
+import { generateSlung } from "@/lib/product-url"
+import { SHOP_CATEGORIES } from "@/lib/category-data"
+import React from "react"
 
 interface ProductPageProps {
   params: { slung: string }
@@ -116,8 +119,85 @@ export default async function ProductPage({ searchParams }: ProductPageProps) {
       4
     )
 
+    const slug = generateSlung(product.name, { includeBrand: product.brand })
+    const canonicalUrl = `https://youandme.tn/product/${slug}?id=${product.id}`
+    const categoryLabel = (() => {
+      const category = SHOP_CATEGORIES.find(cat => cat.id === product.category)
+      if (!category) return product.category
+      return category.label
+    })()
+
+    const breadcrumbJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Accueil",
+          item: "https://youandme.tn",
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Boutique",
+          item: "https://youandme.tn/shop",
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: categoryLabel,
+          item: `https://youandme.tn/shop?category=${product.category}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: product.name,
+          item: canonicalUrl,
+        },
+      ],
+    }
+
+    const productJsonLd = {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      name: product.name,
+      image: product.images && product.images.length > 0 ? product.images : (product.image ? [product.image] : []),
+      description: product.longDescription || product.description,
+      brand: product.brand,
+      sku: product.id,
+      category: product.category,
+      url: canonicalUrl,
+      offers: {
+        "@type": "Offer",
+        priceCurrency: "TND",
+        price: product.price,
+        availability: product.quantity > 0 ? "http://schema.org/InStock" : "http://schema.org/OutOfStock",
+        url: canonicalUrl,
+      },
+      additionalProperty: (() => {
+        const top = product.perfumeNotes?.top ?? []
+        const heart = product.perfumeNotes?.heart ?? []
+        const base = product.perfumeNotes?.base ?? []
+        const entries = [
+          top.length > 0 && { "@type": "PropertyValue", name: "Notes de tête", value: top.join(", ") },
+          heart.length > 0 && { "@type": "PropertyValue", name: "Notes de cœur", value: heart.join(", ") },
+          base.length > 0 && { "@type": "PropertyValue", name: "Notes de fond", value: base.join(", ") },
+        ].filter(Boolean)
+        return entries.length > 0 ? entries : undefined
+      })(),
+    }
+
     return (
       <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+        />
         <ProductClient product={product} />
         <RelatedProducts products={relatedProducts} currentProduct={product} />
       </>

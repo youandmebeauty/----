@@ -5,7 +5,6 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
 import { CartProvider } from "@/components/cart-provider"
 import { FirebaseProvider } from "@/components/firebase-provider"
-import { LoadingProvider } from "@/components/loading-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { Footer } from "@/components/footer"
 import { Header } from "@/components/header"
@@ -54,12 +53,10 @@ export default function RootLayout({
           <SmoothScrollProvider>
             <FirebaseProvider>
               <CartProvider>
-                <LoadingProvider>
-                  <Header />
+                    <Header />
                   {children}
                   <Footer />
                   <Toaster />
-                </LoadingProvider>
               </CartProvider>
             </FirebaseProvider>
           </SmoothScrollProvider>

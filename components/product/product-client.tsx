@@ -17,7 +17,7 @@ import {
 import { generateSlung } from "@/lib/product-url"
 import { cn } from "@/lib/utils"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
-import { Breadcrumb, BreadcrumbJsonLd } from "@/components/breadcrumb"
+import { Breadcrumb } from "@/components/breadcrumb"
 
 interface ProductClientProps {
     product: Product
@@ -193,56 +193,8 @@ export function ProductClient({ product }: ProductClientProps) {
         { name: product.name, href: "#", current: true }
     ]
 
-    const jsonLdItems = [
-        { name: "Boutique", url: "https://youandme.tn/shop" },
-        { name: categoryLabel, url: `https://youandme.tn/shop?category=${product.category}` },
-        { name: product.name, url: `https://youandme.tn/product/${slung}?id=${product.id}` }
-    ]
-
-    const productJsonLd = {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        name: product.name,
-        image: displayImages,
-        description: product.longDescription || product.description,
-        brand: product.brand,
-        sku: product.id,
-        category: product.category,
-        offers: {
-            "@type": "Offer",
-            priceCurrency: "TND",
-            price: product.price,
-            availability: inStock ? "http://schema.org/InStock" : "http://schema.org/OutOfStock",
-            url: `https://youandme.tn/product/${slung}?id=${product.id}`,
-        },
-        additionalProperty: hasPerfumeNotes
-            ? [
-                perfumeNotesTop.length > 0 && {
-                    "@type": "PropertyValue",
-                    name: "Notes de tête",
-                    value: perfumeNotesTop.join(", "),
-                },
-                perfumeNotesHeart.length > 0 && {
-                    "@type": "PropertyValue",
-                    name: "Notes de cœur",
-                    value: perfumeNotesHeart.join(", "),
-                },
-                perfumeNotesBase.length > 0 && {
-                    "@type": "PropertyValue",
-                    name: "Notes de fond",
-                    value: perfumeNotesBase.join(", "),
-                },
-            ].filter(Boolean)
-            : undefined,
-    }
-
     return (
         <div className="min-h-screen">
-            <BreadcrumbJsonLd items={jsonLdItems} />
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
-            />
             <main className="container mx-auto px-4 lg:px-8 py-8 lg:py-16">
                 <Breadcrumb items={breadcrumbItems} className="mb-8" />
                 
@@ -438,7 +390,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                                 className={cn(
                                                     "relative w-12 h-12 rounded-full border-2 transition-all duration-300",
                                                     selectedColorIndex === index
-                                                        ? "border-zinc-900 scale-110"
+                                                        ? "border-primary scale-110"
                                                         : "border-zinc-200 hover:border-zinc-400 hover:scale-105"
                                                 )}
                                                 style={{ backgroundColor: variant.color || "#000000" }}

@@ -4,7 +4,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useCart } from "./cart-provider"
-import { useLoading } from "./loading-provider"
 import { toast } from "@/components/ui/use-toast"
 import { cn } from "@/lib/utils"
 import { ShoppingBag } from "lucide-react"
@@ -33,11 +32,11 @@ interface Product {
 interface ProductCardProps {
   product: Product
   className?: string
+  onNavigateStart?: () => void
 }
 
-export function ProductCard({ product, className }: ProductCardProps) {
+export function ProductCard({ product, className, onNavigateStart }: ProductCardProps) {
   const { items, addItem, updateQuantity } = useCart()
-  const { setIsLoading: setGlobalLoading } = useLoading()
   const [imageLoaded, setImageLoaded] = useState(false)
 
   // Calculate the number of items of this product already in the cart
@@ -79,8 +78,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
     })
   }
 
-  const handleNavigationClick = (e: React.MouseEvent) => {
-    setGlobalLoading(true)
+  const handleNavigationClick = () => {
+    onNavigateStart?.()
   }
 
   const isOutOfStock = product.quantity <= cartQuantity

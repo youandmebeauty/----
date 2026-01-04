@@ -6,7 +6,6 @@ import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import { useCart } from "./cart-provider"
-import { useLoading } from "./loading-provider"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -18,7 +17,6 @@ import { gsap } from "@/lib/gsap"
 export function Header() {
   const { theme, setTheme } = useTheme()
   const { itemCount, isLoading } = useCart()
-  const { setIsLoading: setGlobalLoading } = useLoading()
   const [isOpen, setIsOpen] = useState(false)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
@@ -144,7 +142,6 @@ export function Header() {
     if (e.key === 'Enter') {
       e.preventDefault()
       if (searchQuery.trim()) {
-        setGlobalLoading(true)
         router.push(`/shop?q=${encodeURIComponent(searchQuery.trim())}`)
         setSearchQuery("")
         setIsSearchOpen(false)
@@ -152,12 +149,7 @@ export function Header() {
     }
   }
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    // Only show loading if navigating to a different page
-    if (pathname !== href) {
-      setGlobalLoading(true)
-    }
-  }
+
 
   return (
     <header className="sticky top-4 z-50 w-full flex justify-center px-4">
@@ -214,7 +206,6 @@ export function Header() {
                     <Link 
                       href="/" 
                       className="flex items-center space-x-3 flex-shrink-0"
-                      onClick={(e) => handleNavClick(e, "/")}
                     >
                       <img
                         src={theme == "light" ? "/logo-light.webp" : "/logo-white.webp"}
@@ -231,7 +222,6 @@ export function Header() {
                             <Link
                               href={item.href}
                               className="text-sm font-medium uppercase text-foreground hover:text-primary transition-colors whitespace-nowrap"
-                              onClick={(e) => handleNavClick(e, item.href)}
                             >
                               {item.name}
                             </Link>
@@ -269,7 +259,6 @@ export function Header() {
                       <Link 
                         href="/cart" 
                         className="flex-shrink-0"
-                        onClick={(e) => handleNavClick(e, "/cart")}
                       >
                         <Button variant="ghost" size="icon" className="relative hover:bg-transparent hover:text-primary h-9 w-9 sm:h-10 sm:w-10">
                           <ShoppingBag className="h-4 w-4 sm:h-5 sm:w-5" />
@@ -329,10 +318,7 @@ export function Header() {
                                       <Link
                                         href={item.href}
                                         className="text-2xl font-semibold uppercase tracking-tight text-white/90 hover:text-primary active:scale-95 transition-all block"
-                                        onClick={(e) => {
-                                          handleNavClick(e, item.href)
-                                          setIsOpen(false)
-                                        }}
+                    
                                       >
                                         {item.name}
                                       </Link>
