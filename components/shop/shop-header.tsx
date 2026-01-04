@@ -64,7 +64,7 @@ export function ShopHeader({
                     <button
                         onClick={() => filterProps.handleCategoryChange("all")}
                         className={cn(
-                            "flex-shrink-0 px-8 py-2 text-[13px] font-light tracking-[0.08em] uppercase transition-all duration-200 border whitespace-nowrap",
+                            "flex-shrink-0 px-8 py-2 text-[13px]  uppercase transition-all duration-200 border whitespace-nowrap",
                             filterProps.selectedCategory === "all"
                                 ? "bg-primary text-primary-foreground border-primary rounded-md"
                                 : "bg-transparent text-muted-foreground border-border/50 rounded-md hover:border-primary hover:text-foreground"
@@ -82,7 +82,7 @@ export function ShopHeader({
                             key={category.id}
                             onClick={() => filterProps.handleCategoryChange(category.id)}
                             className={cn(
-                                "flex-shrink-0 px-8 py-2 text-[13px] font-light tracking-[0.08em] uppercase whitespace-nowrap transition-all duration-200 border",
+                                "flex-shrink-0 px-8 py-2 text-[13px]  uppercase whitespace-nowrap transition-all duration-200 border",
                                 filterProps.selectedCategory === category.id
                                     ? "bg-primary text-primary-foreground border-primary rounded-md"
                                     : "bg-transparent text-muted-foreground border-border/50 hover:border-primary hover:text-foreground rounded-md"
