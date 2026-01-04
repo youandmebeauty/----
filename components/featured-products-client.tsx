@@ -100,7 +100,7 @@ export function FeaturedProductsClient() {
       <div className="py-16 mt-24 bg-background rounded-3xl m-4">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-medium tracking-tight text-foreground">Produits Vedettes</h2>
+            <h2 className="text-2xl md:text-3xl font-medium tracking-tight text-foreground">Produits Vedettes</h2>
           </div>
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[...Array(4)].map((_, i) => (
@@ -120,9 +120,10 @@ export function FeaturedProductsClient() {
     <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4 shadow-inner relative">
       <div className="container mx-auto px-4">
         <ScrollAnimation
-          variant="slideUp"
-          duration={0.5}
-          ease="expo"
+          variant="blurRise"
+          duration={0.7}
+          stagger={0.2}
+          delay={0.2}
           className="mb-10 text-center"
         >
           <div className="inline-flex items-center gap-2 mb-4">
@@ -131,7 +132,7 @@ export function FeaturedProductsClient() {
             <div className="h-px w-12 bg-gradient-to-r from-primary to-transparent"></div>
           </div>
 
-          <h1 className="text-5xl md:text-6xl tracking-tight font-light leading-none">
+          <h1 className="text-4xl md:text-6xl tracking-tight font-light leading-none">
             Produits Vedettes
           </h1>
         </ScrollAnimation>

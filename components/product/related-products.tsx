@@ -60,7 +60,7 @@ export function RelatedProducts({ products, currentProduct }: RelatedProductsPro
                 {isSameBrand && (
                     <div className="space-y-12">
                         <div className="text-center space-y-4">
-                            <h2 className="font-light text-primary text-3xl md:text-4xl lg:text-5xl tracking-tight">
+                            <h2 className="font-light text-primary text-3xl md:text-4xl lg:text-4xl tracking-tight">
                                 Produits Similaires
                             </h2>
                             <div className="flex items-center justify-center gap-4">

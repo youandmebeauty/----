@@ -74,13 +74,6 @@ export function ProductClient({ product }: ProductClientProps) {
     const hasPerfumeNotes =
         perfumeNotesTop.length > 0 || perfumeNotesHeart.length > 0 || perfumeNotesBase.length > 0
 
-    const perfumeNotesSentence = hasPerfumeNotes
-        ? `Pyramide olfactive : ${[
-            perfumeNotesTop.length ? `tête ${perfumeNotesTop.join(", ")}` : "",
-            perfumeNotesHeart.length ? `cœur ${perfumeNotesHeart.join(", ")}` : "",
-            perfumeNotesBase.length ? `fond ${perfumeNotesBase.join(", ")}` : "",
-        ].filter(Boolean).join("; ")}.`
-        : ""
 
     useEffect(() => {
         setImageLoaded(false)
@@ -92,33 +85,35 @@ export function ProductClient({ product }: ProductClientProps) {
     }, [selectedColorIndex])
 
     const THUMBNAILS_VISIBLE = 3
-    const canScrollLeft = thumbnailStartIndex > 0
-    const canScrollRight = thumbnailStartIndex + THUMBNAILS_VISIBLE < displayImages.length
+    const maxThumbnailStart = Math.max(0, displayImages.length - THUMBNAILS_VISIBLE)
+    const canScrollLeft = selectedImageIndex > 0
+    const canScrollRight = selectedImageIndex < displayImages.length - 1
+
+    const syncSelectionWithThumbnails = (nextIndex: number) => {
+        const middlePosition = Math.floor(THUMBNAILS_VISIBLE / 2)
+        const clampedIndex = Math.min(Math.max(0, nextIndex), displayImages.length - 1)
+
+        let newStartIndex = clampedIndex - middlePosition
+        newStartIndex = Math.max(0, Math.min(newStartIndex, maxThumbnailStart))
+
+        setSelectedImageIndex(clampedIndex)
+        setThumbnailStartIndex(newStartIndex)
+    }
 
     const scrollThumbnailsLeft = () => {
         if (canScrollLeft) {
-            setThumbnailStartIndex(prev => Math.max(0, prev - 1))
+            syncSelectionWithThumbnails(selectedImageIndex - 1)
         }
     }
 
     const scrollThumbnailsRight = () => {
         if (canScrollRight) {
-            setThumbnailStartIndex(prev => Math.min(displayImages.length - THUMBNAILS_VISIBLE, prev + 1))
+            syncSelectionWithThumbnails(selectedImageIndex + 1)
         }
     }
 
     const handleThumbnailClick = (index: number) => {
-        setSelectedImageIndex(index)
-        const middlePosition = Math.floor(THUMBNAILS_VISIBLE / 2)
-        let newStartIndex = index - middlePosition
-        
-        if (newStartIndex < 0) {
-            newStartIndex = 0
-        } else if (newStartIndex + THUMBNAILS_VISIBLE > displayImages.length) {
-            newStartIndex = Math.max(0, displayImages.length - THUMBNAILS_VISIBLE)
-        }
-        
-        setThumbnailStartIndex(newStartIndex)
+        syncSelectionWithThumbnails(index)
     }
 
     const variantId = currentVariant 
@@ -399,7 +394,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                 </p>
                             )}
 
-                            <h1 className="font-light text-4xl md:text-5xl text-primary lg:text-6xl leading-[1.1] tracking-tight">
+                            <h1 className="font-light text-4xl md:text-4xl text-primary lg:text-6xl leading-[1.1] tracking-tight">
                                 {product.name}
                             </h1>
 

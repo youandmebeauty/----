@@ -40,9 +40,9 @@ export  function Categories() {
       <div className="container mx-auto px-4 relative z-10">
         <ScrollAnimation
           variant="blurRise"
-          duration={1.2}
-          stagger={0.5}
-          delay={0.5}
+          duration={0.7}
+          stagger={0.2}
+          delay={0.2}
          className="mb-10 text-center">
           <div className="inline-flex items-center gap-2 mb-4">
                             <div className="h-px w-12 bg-gradient-to-r from-transparent to-primary"></div>
@@ -50,7 +50,7 @@ export  function Categories() {
             <div className="h-px w-12 bg-gradient-to-r from-primary to-transparent"></div>
           </div>
 
-          <h1 className="text-5xl md:text-6xl font-light tracking-tight leading-none ">
+          <h1 className="text-4xl md:text-6xl font-light tracking-tight leading-none ">
             Nos Catégories
           </h1>
         </ScrollAnimation>

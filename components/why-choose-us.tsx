@@ -76,9 +76,9 @@ export function WhyChooseUs() {
                 {/* Header */}
                 <ScrollAnimation
                     variant="blurRise"
-                    duration={1.2}
-                    stagger={0.5}
-                    delay={0.5}
+          duration={0.7}
+          stagger={0.2}
+          delay={0.2}
                     className="text-center mb-20"
                 >
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full mb-6">
@@ -160,8 +160,8 @@ export function WhyChooseUs() {
                 {/* Enhanced CTA Section */}
                 <ScrollAnimation
                     variant="scaleUp"
-                    duration={0.8}
-                    delay={0.5}
+                    duration={0.5}
+                    delay={0.2}
                     
                     className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-primary/5 to-background border border-primary/20 shadow-2xl"
                 >

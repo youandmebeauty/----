@@ -1,6 +1,6 @@
 @font-face {
-  font-family: 'Sage';
-  src: url('/fonts/sage.woff') format('woff');
+  font-family: 'Prata';
+  src: url('/fonts/Prata.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
   font-display: swap;
@@ -116,7 +116,7 @@
   h4,
   h5,
   h6 {
-    font-family: 'Sage', sans-serif;
+    font-family: 'Prata',serif;
   }
 }
 

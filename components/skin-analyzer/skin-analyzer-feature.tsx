@@ -551,7 +551,7 @@ export default function SkinAnalyzerFeature() {
                             delay={0.1}
                             className="mb-8"
                         >
-                            <h1 className="font-serif text-5xl font-medium tracking-tight text-transparent md:text-6xl lg:text-7xl bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text">
+                            <h1 className="font-serif text-4xl font-medium tracking-tight text-transparent md:text-6xl lg:text-7xl bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text">
                                 Analyse de Peau
                             </h1>
                         </ScrollAnimation>
