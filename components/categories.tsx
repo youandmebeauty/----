@@ -39,7 +39,7 @@ export  function Categories() {
      
       <div className="container mx-auto px-4 relative z-10">
         <ScrollAnimation
-          variant="blurRise"
+          variant="slideUp"
           duration={0.7}
           stagger={0.2}
           delay={0.2}
@@ -56,7 +56,7 @@ export  function Categories() {
         </ScrollAnimation>
 
         <ScrollAnimation
-          variant="blurRise"
+          variant="slideUp"
           stagger={0.2}
           childSelector=".category-card"
           duration={0.7}

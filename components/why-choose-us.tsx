@@ -75,7 +75,7 @@ export function WhyChooseUs() {
             <div className="container mx-auto px-4 relative z-10">
                 {/* Header */}
                 <ScrollAnimation
-                    variant="blurRise"
+                    variant="slideUp"
           duration={0.7}
           stagger={0.2}
           delay={0.2}
@@ -99,10 +99,10 @@ export function WhyChooseUs() {
 
                 {/* Cards Grid */}
                 <ScrollAnimation
-                    variant="blurRise"
-                    delay={0.3}
-            duration={1}
-            stagger={0.15}
+                    variant="slideUp"
+                    delay={0.2}
+            duration={0.5}
+            stagger={0.1}
                     className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-20"
                 >
                     {values.map((value) => {
@@ -230,7 +230,8 @@ export function WhyChooseUs() {
                     </div>
                 </ScrollAnimation>
             </div>
-        </div><div className=" md:hidden block py-20 relative overflow-hidden">
+        </div>
+        <div className=" md:hidden block py-20 relative overflow-hidden">
                 {/* Background Elements */}
                 <div className="absolute inset-0 bg-gradient-to-b from-secondary/50 via-background to-background/50 rounded-3xl m-4"></div>
                 <div className="absolute top-20 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl"></div>

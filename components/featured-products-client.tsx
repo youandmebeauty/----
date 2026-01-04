@@ -129,7 +129,7 @@ export function FeaturedProductsClient() {
       {navigationOverlay}
       <div className="container mx-auto px-4">
         <ScrollAnimation
-          variant="blurRise"
+          variant="slideUp"
           duration={0.7}
           stagger={0.2}
           delay={0.2}
@@ -150,7 +150,7 @@ export function FeaturedProductsClient() {
           <div className="relative px-8 sm:px-12 lg:px-0">
             <div className="flex flex-col justify-around" ref={scrollRef}>
               <ScrollAnimation
-                variant="blurRise"
+                variant="slideUp"
                 delay={0.3}
                 duration={1}
                 stagger={0.15}
@@ -199,7 +199,7 @@ export function FeaturedProductsClient() {
           </div>
         ) : (
           <ScrollAnimation
-            variant="blurRise"
+            variant="slideUp"
             delay={0.3}
             duration={1}
             stagger={0.15}
