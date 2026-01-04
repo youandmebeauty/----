@@ -57,7 +57,7 @@ export function FeaturedProductsClient() {
 
   const fetchFeaturedProducts = async () => {
     try {
-      const featuredProducts = await getFeaturedProducts(7)
+      const featuredProducts = await getFeaturedProducts(12)
       setProducts(featuredProducts)
     } catch (error) {
       console.error("Error fetching featured products:", error)
