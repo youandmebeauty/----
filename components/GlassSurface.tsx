@@ -58,6 +58,22 @@ const useDarkMode = () => {
   return isDark;
 };
 
+// Détection iOS/Safari pour les fallbacks
+const useIsIOS = () => {
+  const [isIOS, setIsIOS] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIOSDevice = /iphone|ipad|ipod/.test(userAgent) || 
+                       (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    setIsIOS(isIOSDevice);
+  }, []);
+
+  return isIOS;
+};
+
 const GlassSurface: React.FC<GlassSurfaceProps> = ({
   children,
   width = 200,
@@ -99,6 +115,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
   const [isReady, setIsReady] = useState(false);
 
   const isDarkMode = useDarkMode();
+  const isIOS = useIsIOS();
 
   // Marquer comme prêt après le montage initial
   useEffect(() => {
@@ -266,7 +283,30 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
       return baseStyles;
     }
 
-    // Force l'utilisation du filtre SVG avec distortion
+    // Sur iOS/Safari, utiliser un effet simplifié sans filtres SVG complexes
+    if (isIOS) {
+      return {
+        ...baseStyles,
+        background: isDarkMode 
+          ? `hsl(0 0% 0% / ${backgroundOpacity})` 
+          : `hsl(0 0% 100% / ${backgroundOpacity})`,
+        backdropFilter: `blur(${blur}px) saturate(${saturation})`,
+        WebkitBackdropFilter: `blur(${blur}px) saturate(${saturation})`,
+        boxShadow: isDarkMode
+          ? `0 0 2px 1px color-mix(in oklch, white, transparent 65%) inset,
+             0 0 10px 4px color-mix(in oklch, white, transparent 85%) inset,
+             0px 4px 16px rgba(17, 17, 26, 0.1),
+             0px 8px 24px rgba(17, 17, 26, 0.1),
+             0px 16px 56px rgba(17, 17, 26, 0.1)`
+          : `0 0 2px 1px color-mix(in oklch, black, transparent 85%) inset,
+             0 0 10px 4px color-mix(in oklch, black, transparent 90%) inset,
+             0px 4px 16px rgba(17, 17, 26, 0.1),
+             0px 8px 24px rgba(17, 17, 26, 0.1),
+             0px 16px 56px rgba(17, 17, 26, 0.1)`
+      };
+    }
+
+    // Force l'utilisation du filtre SVG avec distortion pour les autres plateformes
     return {
       ...baseStyles,
       background: isDarkMode ? `hsl(0 0% 0% / ${backgroundOpacity})` : `hsl(0 0% 100% / ${backgroundOpacity})`,
@@ -300,7 +340,9 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
     filterId,
     isDarkMode,
     isReady,
-    className
+    className,
+    isIOS,
+    blur
   ]);
 
   const glassSurfaceClasses =
@@ -370,7 +412,7 @@ const GlassSurface: React.FC<GlassSurfaceProps> = ({
         </defs>
       </svg>
 
-      <div className="w-full h-full flex items-center justify-center p-2 rounded-[inherit] relative z-10">
+      <div className="w-full h-full flex items-center bg-background/40 justify-center p-2 rounded-[inherit] relative z-10">
         {children}
       </div>
     </div>
