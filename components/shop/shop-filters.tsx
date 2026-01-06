@@ -10,7 +10,6 @@ import { cn } from "@/lib/utils"
 interface ShopFiltersProps {
     isMobile?: boolean
     selectedCategory: string
-    handleCategoryChange: (id: string) => void
     selectedSubcategory: string | null
     handleSubcategoryChange: (id: string) => void
     selectedSkinTypes: string[]
@@ -26,7 +25,6 @@ interface ShopFiltersProps {
 export function ShopFilters({
     isMobile = false,
     selectedCategory,
-    handleCategoryChange,
     selectedSubcategory,
     handleSubcategoryChange,
     selectedSkinTypes,

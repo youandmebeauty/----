@@ -16,7 +16,7 @@ export function Hero() {
                     {/* Left side - Text content */}
                     <div className="max-w-2xl">
                         {/* Elegant Heading */}
-                        <ScrollAnimation variant="blurRise" duration={0.8} delay={0.2}>
+                        <ScrollAnimation variant="blurRise" duration={0.5} delay={0.1}>
                             <h1 className="mb-5 sm:mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
                                 <div className="inline"><span className="inline-block text-foreground">Beauté</span>
                                 <span className="inline-block ml-5 text-primary">Naturelle</span></div>
@@ -25,14 +25,14 @@ export function Hero() {
                         </ScrollAnimation>
 
                         {/* Refined Description */}
-                        <ScrollAnimation variant="blurRise" duration={0.7} delay={0.4}>
+                        <ScrollAnimation variant="blurRise" duration={0.4} delay={0.2}>
                             <p className="mb-8 sm:mb-10 text-base sm:text-lg lg:text-xl text-muted-foreground leading-relaxed max-w-lg">
                                 Une sélection exclusive de cosmétiques authentiques, alliant prestige et expertise pour révéler votre beauté unique.
                             </p>
                         </ScrollAnimation>
 
                         {/* Clean CTAs */}
-                        <ScrollAnimation variant="glitchReveal" duration={1} delay={0.5} stagger={0.2} childSelector="a">
+                        <ScrollAnimation variant="glitchReveal" duration={0.7} delay={0.3} stagger={0.1} childSelector="a">
                             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                 <Link href="/shop" className="w-full sm:w-auto">
                                     <Button 
@@ -57,7 +57,7 @@ export function Hero() {
                         </ScrollAnimation>
 
                         {/* Trust Indicators */}
-                        <ScrollAnimation variant="blurRise" duration={0.7} delay={0.2} stagger={0.2}
+                        <ScrollAnimation variant="blurRise" duration={0.4} delay={0.2} stagger={0.2}
                              className="mt-8 sm:mt-10 flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-muted-foreground">
                                 <div className="flex items-center gap-2">
                                     <div className="h-1.5 w-1.5 rounded-full bg-primary" />

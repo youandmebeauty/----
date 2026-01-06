@@ -47,10 +47,12 @@ function SearchContent() {
     const category = searchParams.get("category") || "all"
     const subcategory = searchParams.get("subcategory")
     const search = searchParams.get("q") || searchParams.get("shop") || ""
+    const sort = searchParams.get("sort") || "featured"
 
     setSelectedCategory(category)
     setSelectedSubcategory(subcategory || null)
     setSearchQuery(search)
+    setSortBy(sort)
   }, [searchParams])
 
   useEffect(() => {
@@ -110,9 +112,14 @@ function SearchContent() {
     }
     paramsCurrent.delete("subcategory")
 
+    // Preserve sortBy in URL
+    if (sortBy && sortBy !== "featured") {
+      paramsCurrent.set("sort", sortBy)
+    }
+
     // Ensure q is preserved (it should be since we extended searchParams)
 
-    router.push(`/shop?${paramsCurrent.toString()}`)
+    router.replace(`/shop?${paramsCurrent.toString()}`, { scroll: false })
   }
 
   const handleSubcategoryChange = (subcategoryId: string) => {
@@ -124,7 +131,18 @@ function SearchContent() {
       setSelectedSubcategory(subcategoryId)
       params.set("subcategory", subcategoryId)
     }
-    router.push(`/shop?${params.toString()}`)
+    router.replace(`/shop?${params.toString()}`, { scroll: false })
+  }
+
+  const handleSortChange = (newSortBy: string) => {
+    setSortBy(newSortBy)
+    const params = new URLSearchParams(searchParams.toString())
+    if (newSortBy && newSortBy !== "featured") {
+      params.set("sort", newSortBy)
+    } else {
+      params.delete("sort")
+    }
+    router.replace(`/shop?${params.toString()}`, { scroll: false })
   }
 
   const toggleSkinType = (type: string) => {
@@ -145,9 +163,10 @@ function SearchContent() {
     setSelectedSkinTypes([])
     setSelectedHairTypes([])
     setPriceRange([0, 1000])
+    setSortBy("featured")
 
-    // We should probably keep the search query though?
-    // ShopPage implementation clears everything state-wise.
+    // Clear all URL parameters
+    router.replace('/shop', { scroll: false })
   }
 
   const activeFiltersCount =
@@ -245,7 +264,7 @@ function SearchContent() {
               title={pageTitle}
               productCount={products.length}
               sortBy={sortBy}
-              setSortBy={setSortBy}
+              setSortBy={handleSortChange}
               activeFiltersCount={activeFiltersCount}
               clearAllFilters={clearAllFilters}
               isFilterOpen={isFilterOpen}
