@@ -17,13 +17,13 @@ const categoryKeywords: string[] = Array.from(
 )
 
 export const metadata: Metadata = {
-    title: "Boutique | You & Me Beauty",
+    title: "Boutique - You & Me Beauty",
     description: "Explorez notre boutique complète de produits de beauté. Filtrez par catégorie, type de peau et prix pour trouver votre routine idéale.",
     alternates: {
         canonical: "https://youandme.tn/shop",
     },
     openGraph: {
-        title: "Boutique | You & Me Beauty",
+        title: "Boutique - You & Me Beauty",
         description: "Explorez notre boutique complète de produits de beauté.",
         url: "https://youandme.tn/shop",
         siteName: "You & Me Beauty",
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Boutique | You & Me Beauty",
+        title: "Boutique - You & Me Beauty",
         description: "Explorez notre boutique complète de produits de beauté.",
         images: ["https://youandme.tn/og-image.png"],
     },
@@ -99,7 +99,7 @@ export default function Page() {
     const shopJsonLd = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
-        name: "Boutique | You & Me Beauty",
+        name: "Boutique - You & Me Beauty",
         url: "https://youandme.tn/shop",
         inLanguage: "fr",
         description: "Explorez notre boutique complète de produits de beauté. Filtrez par catégorie, type de peau et prix pour trouver votre routine idéale.",

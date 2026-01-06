@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Confirmation de commande | You & Me Beauty",
+    title: "Confirmation de commande - You & Me Beauty",
     description: "Commande validée. Merci pour votre achat !",
     url: "https://youandme.tn/order-confirmation",
   },
