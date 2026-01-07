@@ -110,6 +110,7 @@ function AddProductContent() {
         price: Number.parseFloat(formData.price),
         category: formData.category,
         subcategory: formData.subcategory,
+        barcode:formData.barcode,
         description: formData.description,
         longDescription: formData.longDescription || formData.description,
         howToUse: formData.howToUse,
