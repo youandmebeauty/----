@@ -1,7 +1,6 @@
 import { Metadata } from "next"
 import ContactPage from "./page-client"
-import React from "react"
-
+import { BreadcrumbJsonLd } from "@/components/breadcrumb"
 export const metadata: Metadata = {
     title: "Contactez-Nous - You & Me Beauty",
     description: "Contactez notre équipe pour toute question ou assistance concernant nos produits de beauté premium. Nous sommes là pour vous aider à trouver les meilleurs soins adaptés à vos besoins.",
@@ -110,6 +109,8 @@ export default function Page() {
 
     return (
         <>
+                    <BreadcrumbJsonLd items={[{ name: "Contact", url: "https://youandme.tn/contact" }]} />
+        
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

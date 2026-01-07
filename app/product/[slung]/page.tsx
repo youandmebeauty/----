@@ -5,7 +5,6 @@ import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { generateSlung } from "@/lib/product-url"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
-import React from "react"
 
 interface ProductPageProps {
   params: { slung: string }

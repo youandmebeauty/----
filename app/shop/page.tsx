@@ -1,7 +1,6 @@
 import { Metadata } from "next"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 import ShopPage from "./page-client"
-import React from "react"
 import { BreadcrumbJsonLd } from "@/components/breadcrumb"
 // Génère une liste de mots-clés à partir des catégories et sous-catégories
 const categoryKeywords: string[] = Array.from(

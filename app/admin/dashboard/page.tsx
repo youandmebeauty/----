@@ -72,7 +72,14 @@ function DashboardContent() {
         getAnalytics(),
       ])
 
-      setProducts(productsData)
+      // Sort products by newest first
+      const sortedProducts = [...productsData].sort((a, b) => {
+        const dateA = (a as any).createdAt?.toDate?.() ?? new Date((a as any).createdAt ?? 0)
+        const dateB = (b as any).createdAt?.toDate?.() ?? new Date((b as any).createdAt ?? 0)
+        return dateB.getTime() - dateA.getTime()
+      })
+
+      setProducts(sortedProducts)
       setOrders(ordersData)
       setPromoCodes(promoCodesData)
       setAnalytics(analyticsData)

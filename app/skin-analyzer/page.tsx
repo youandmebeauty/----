@@ -1,5 +1,6 @@
 ﻿import { Metadata } from "next";
 import { SkinAnalyzerClientWrapper } from "@/components/skin-analyzer/skin-analyzer-client-wrapper";
+import { BreadcrumbJsonLd } from "@/components/breadcrumb";
 
 export async function generateMetadata({ 
 }: {}): Promise<Metadata> {
@@ -96,6 +97,8 @@ export default function SkinAnalyzerPage() {
 
   return (
     <>
+                <BreadcrumbJsonLd items={[{ name: "Analyseur de Peau", url: "https://youandme.tn/skin-analyzer" }]} />
+    
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
