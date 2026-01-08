@@ -39,7 +39,7 @@ function SearchContent() {
   const [selectedSkinTypes, setSelectedSkinTypes] = useState<string[]>([])
   const [selectedHairTypes, setSelectedHairTypes] = useState<string[]>([])
   const [priceRange, setPriceRange] = useState([0, 1000])
-  const [sortBy, setSortBy] = useState("featured")
+  const [sortBy, setSortBy] = useState("newest")
   const [searchQuery, setSearchQuery] = useState("")
   const [isNavigating, setIsNavigating] = useState(false)
   useEffect(() => {
@@ -47,7 +47,7 @@ function SearchContent() {
     const category = searchParams.get("category") || "all"
     const subcategory = searchParams.get("subcategory")
     const search = searchParams.get("q") || searchParams.get("shop") || ""
-    const sort = searchParams.get("sort") || "featured"
+    const sort = searchParams.get("sort") || "newest"
 
     setSelectedCategory(category)
     setSelectedSubcategory(subcategory || null)
