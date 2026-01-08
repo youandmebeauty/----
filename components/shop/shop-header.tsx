@@ -159,10 +159,10 @@ export function ShopHeader({
                             <SelectValue placeholder="Trier par" />
                         </SelectTrigger>
                         <SelectContent>
+                            <SelectItem value="newest">Nouveautés</SelectItem>
                             <SelectItem value="featured">En vedette</SelectItem>
                             <SelectItem value="price-asc">Prix croissant</SelectItem>
                             <SelectItem value="price-desc">Prix décroissant</SelectItem>
-                            <SelectItem value="newest">Nouveautés</SelectItem>
                         </SelectContent>
                     </Select>
                 </div>
