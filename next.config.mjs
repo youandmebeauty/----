@@ -16,7 +16,7 @@ const nextConfig = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
-      }
+      },
     ],
     unoptimized: false,
   },
@@ -26,10 +26,10 @@ const nextConfig = {
       allowedOrigins: ["localhost:3000"],
     },
   },
-  
-  // Empty turbopack config to silence warning (most apps work fine without custom config)
+
+  // Empty turbopack config to silence warning
   turbopack: {},
-  
+
   async headers() {
     return [
       {
@@ -49,6 +49,34 @@ const nextConfig = {
             value: "application/wasm",
           },
         ],
+      },
+    ];
+  },
+
+  async redirects() {
+    return [
+      // Redirection HTTP & www vers HTTPS sans www
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "www.youandme.tn",
+          },
+        ],
+        destination: "https://youandme.tn/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "youandme.tn",
+          },
+        ],
+        destination: "https://youandme.tn/:path*",
+        permanent: true,
       },
     ];
   },
