@@ -53,33 +53,7 @@ const nextConfig = {
     ];
   },
 
-  async redirects() {
-    return [
-      // Redirection HTTP & www vers HTTPS sans www
-      {
-        source: "/:path*",
-        has: [
-          {
-            type: "host",
-            value: "www.youandme.tn",
-          },
-        ],
-        destination: "https://youandme.tn/:path*",
-        permanent: true,
-      },
-      {
-        source: "/:path*",
-        has: [
-          {
-            type: "host",
-            value: "youandme.tn",
-          },
-        ],
-        destination: "https://youandme.tn/:path*",
-        permanent: true,
-      },
-    ];
-  },
+
 };
 
 export default nextConfig;
