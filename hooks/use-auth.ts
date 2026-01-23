@@ -20,66 +20,92 @@ export function useAuth() {
     onAuthStateChanged: any
   } | null>(null)
 
-  useEffect(() => {
-    let unsubscribe: (() => void) | null = null
-    let mounted = true
+useEffect(() => {
+  let unsubscribe: (() => void) | null = null
+  let mounted = true
+  let refreshInterval: NodeJS.Timeout | null = null
 
-    const initAuth = async () => {
-      try {
-        if (typeof window === "undefined") return
+  const initAuth = async () => {
+    try {
+      if (typeof window === "undefined") return
 
+      const [{ auth }, { signInWithEmailAndPassword, signOut, onAuthStateChanged }] = await Promise.all([
+        import("@/lib/firebase") as Promise<{ auth: Auth }>,
+        import("firebase/auth"),
+      ])
 
-const [{ auth }, { signInWithEmailAndPassword, signOut, onAuthStateChanged }] = await Promise.all([
-  import("@/lib/firebase") as Promise<{ auth: Auth }>,
-  import("firebase/auth"),
-])
+      if (!mounted) return
 
+      setAuthServices({ auth, signInWithEmailAndPassword, signOut, onAuthStateChanged })
 
+      unsubscribe = onAuthStateChanged(auth, async (user: User | null) => {
         if (!mounted) return
 
-        setAuthServices({ auth, signInWithEmailAndPassword, signOut, onAuthStateChanged })
+        if (user) {
+          const token = await user.getIdToken()
+          document.cookie = `admin-token=${token}; path=/; max-age=3600; secure; samesite=strict`
 
-        unsubscribe = onAuthStateChanged(auth, async (user: User | null) => {
-          if (!mounted) return
+          const idTokenResult = await user.getIdTokenResult()
+          const isAdmin = idTokenResult.claims.admin === true
 
-          if (user) {
-            const token = await user.getIdToken()
-            document.cookie = `admin-token=${token}; path=/; max-age=3600; secure; samesite=strict`
-
-            const idTokenResult = await user.getIdTokenResult()
-            const isAdmin = idTokenResult.claims.admin === true
-
-            if (isAdmin) {
-              setUser(user)
-            } else {
-              await signOut(auth)
-              setUser(null)
-              toast({
-                title: "Access Denied",
-                description: "You don't have admin privileges.",
-                variant: "destructive",
-              })
-            }
+          if (isAdmin) {
+            setUser(user)
+            
+            // Clear any existing interval
+            if (refreshInterval) clearInterval(refreshInterval)
+            
+            // Auto-refresh token every 50 minutes (before 1-hour expiry)
+            refreshInterval = setInterval(async () => {
+              try {
+                const newToken = await user.getIdToken(true) // Force refresh
+                document.cookie = `admin-token=${newToken}; path=/; max-age=3600; secure; samesite=strict`
+                console.log('Token refreshed successfully')
+              } catch (error) {
+                console.error('Token refresh failed:', error)
+                clearInterval(refreshInterval!)
+                // Optionally sign out user if refresh fails
+                toast({
+                  title: "Session Error",
+                  description: "Failed to refresh session. Please log in again.",
+                  variant: "destructive",
+                })
+              }
+            }, 50 * 60 * 1000) // 50 minutes
           } else {
-            document.cookie = "admin-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+            await signOut(auth)
             setUser(null)
+            toast({
+              title: "Access Denied",
+              description: "You don't have admin privileges.",
+              variant: "destructive",
+            })
           }
+        } else {
+          // Clear refresh interval on sign out
+          if (refreshInterval) {
+            clearInterval(refreshInterval)
+            refreshInterval = null
+          }
+          document.cookie = "admin-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT"
+          setUser(null)
+        }
 
-          setLoading(false)
-        })
-      } catch (err) {
-        console.error("Auth initialization failed:", err)
         setLoading(false)
-      }
+      })
+    } catch (err) {
+      console.error("Auth initialization failed:", err)
+      setLoading(false)
     }
+  }
 
-    initAuth()
+  initAuth()
 
-    return () => {
-      mounted = false
-      if (unsubscribe) unsubscribe()
-    }
-  }, [toast])
+  return () => {
+    mounted = false
+    if (unsubscribe) unsubscribe()
+    if (refreshInterval) clearInterval(refreshInterval)
+  }
+}, [toast])
 
   const signIn = useCallback(async (email: string, password: string) => {
     if (!authServices) {

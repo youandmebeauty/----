@@ -221,18 +221,18 @@ export const SHOP_CATEGORIES: Category[] = [
             { id: "sets", label: "Coffrets" },
         ],
     },
-    {
-        id: "outils",
-        label: "Accessoires",
-        subcategories: [
-            { id: "makeup-brush", label: "Pinceaux" },
-            { id: "sponge", label: "Éponges Teint" },
-            { id: "curler", label: "Recourbe-cils" },
-            { id: "makeup-bag", label: "Trousses" },
-            { id: "gua-sha", label: "Massage Visage" },
-            { id: "face-brush", label: "Brosses Nettoyantes" },
-            { id: "hair-brush", label: "Brosses & Peignes" },
-            { id: "hair-device", label: "Appareils Coiffure" },
-        ],
-    },
+    // {
+    //     id: "outils",
+    //     label: "Accessoires",
+    //     subcategories: [
+    //         { id: "makeup-brush", label: "Pinceaux" },
+    //         { id: "sponge", label: "Éponges Teint" },
+    //         { id: "curler", label: "Recourbe-cils" },
+    //         { id: "makeup-bag", label: "Trousses" },
+    //         { id: "gua-sha", label: "Massage Visage" },
+    //         { id: "face-brush", label: "Brosses Nettoyantes" },
+    //         { id: "hair-brush", label: "Brosses & Peignes" },
+    //         { id: "hair-device", label: "Appareils Coiffure" },
+    //     ],
+    // },
 ]

@@ -6,7 +6,7 @@ import { ScrollAnimation } from "@/components/scroll-animation"
 export function Hero() {
 
     return (
-        <div className="relative overflow-hidden min-h-[500px] sm:min-h-[600px] lg:min-h-[650px] rounded-2xl sm:rounded-3xl  m-4  border border-border/40">
+        <div className="relative overflow-hidden min-h-[500px] sm:min-h-[600px] lg:min-h-[650px] rounded-3xl sm:rounded-3xl  m-4  border border-border/40">
             {/* Subtle Background */}
             <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-background to-background rounded-3xl" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-accent/10 via-transparent to-transparent rounded-3xl" />
