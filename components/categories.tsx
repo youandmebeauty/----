@@ -35,7 +35,7 @@ const categories = [
 
 export  function Categories() {
   return (
-    <div className="relative overflow-hidden  bg-background">
+    <div className="relative  bg-background">
      
       <div className="container mx-auto px-4 relative z-10">
         <ScrollAnimation
@@ -68,7 +68,7 @@ export  function Categories() {
             <a
               key={category.id}
               href={category.href}
-              className="category-card group relative block "
+              className="category-card group relative block z-50 "
               style={{
                 transform: `rotate(${category.rotation}deg)`,
                 transition: 'transform 0.3s ease',
