@@ -100,7 +100,8 @@ const slung = generateSlung(product.name, {
             {!imageLoaded && (
               <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 via-secondary/10 to-secondary/5 animate-pulse" />
             )}
-            
+                                            <div className="w-full h-full flex items-center justify-center  bg-white">
+
             <Image
               src={
                 product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
@@ -108,7 +109,8 @@ const slung = generateSlung(product.name, {
                   : (product.images && product.images.length > 0 ? product.images[0] : product.image) || "/placeholder.svg"
               }
               alt={product.name}
-              fill
+              width={1350}
+              height={1080}
               className={cn(
                 "object-cover transition-all duration-700 ease-out",
                 "group-hover:scale-[1.08]",
@@ -117,7 +119,7 @@ const slung = generateSlung(product.name, {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               onLoad={() => setImageLoaded(true)}
             />
-
+            </div>
             {/* Multi-layer Gradient Overlay on Hover */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />

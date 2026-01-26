@@ -207,13 +207,14 @@ export function ProductClient({ product }: ProductClientProps) {
                                 {!imageLoaded && (
                                     <div className="absolute inset-0 bg-gradient-to-br from-zinc-100 via-zinc-50 to-white animate-pulse" />
                                 )}
-                                
+                                <div className="w-full h-full flex items-center justify-center bg-white">
                                 <Image
                                     src={displayImage || "/placeholder.svg"}
                                     alt={product.name}
-                                    fill
+                                    width={1080}
+                                    height={1350}
                                     className={cn(
-                                        "object-cover transition-opacity duration-1000",
+                                        "transition-opacity duration-1000",
                                         imageLoaded ? "opacity-100" : "opacity-0"
                                     )}
                                     priority
@@ -221,7 +222,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                     onError={() => setImageLoaded(true)}
                                     key={displayImage}
                                 />
-                                
+                                </div>
                                 {displayImages.length > 1 && (
                                     <div className="absolute bottom-6 right-6 backdrop-blur-sm text-zinc-900 text-xs px-3 py-1.5 rounded-full font-light tracking-wider">
                                         {selectedImageIndex + 1} / {displayImages.length}
@@ -237,7 +238,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                         onClick={scrollThumbnailsLeft}
                                         disabled={!canScrollLeft}
                                         className={cn(
-                                            "flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-sm border transition-all",
+                                            "flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-sm border  transition-all",
                                             canScrollLeft
                                                 ? "border-zinc-200 hover:border-zinc-400 text-zinc-700"
                                                 : "border-zinc-100 text-zinc-300 cursor-not-allowed"
@@ -261,7 +262,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                                             className={cn(
                                                                 "relative aspect-square cursor-pointer overflow-hidden rounded-sm border transition-all duration-300",
                                                                 selectedImageIndex === actualIndex
-                                                                    ? "border-zinc-900 ring-1 ring-zinc-900"
+                                                                    ? "border-primary ring-1 ring-primary"
                                                                     : "border-zinc-200 hover:border-zinc-400"
                                                             )}
                                                         >
