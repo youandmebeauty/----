@@ -21,8 +21,8 @@ export function UploadView({ onStartCamera, onFileUpload, onError }: UploadViewP
     };
 
     return (
-        <div className="max-w-3xl mx-auto gap-8">
-            <div className="grid md:grid-cols-2 gap-6 mb-4">
+        <div className="max-w-3xl mx-auto flex flex-col gap-4">
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
                 <button
                     onClick={onStartCamera}
                     className="group flex flex-col items-center justify-center gap-4 p-12 border border-border hover:border-primary/50 bg-card hover:bg-secondary/20 transition-all duration-500 rounded-sm"
