@@ -64,6 +64,12 @@ export function UploadView({ onStartCamera, onFileUpload, onError }: UploadViewP
                     Pour de meilleurs résultats, assurez-vous d'être dans un endroit bien éclairé et sans maquillage.
                     Gardez votre visage centré et détendu.
                 </p>
+                <b/>
+                                <Info className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                    NB: Tout le traitement des images est effectué localement sur votre appareil pour garantir votre confidentialité.
+                </p>
             </div>
         </div>
     );
