@@ -65,11 +65,16 @@ export function UploadView({ onStartCamera, onFileUpload, onError }: UploadViewP
                     Gardez votre visage centré et détendu.
                 </p>
                 <b/>
-                                <Info className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
 
+                
+            </div>
+            <div className="flex gap-4 p-6 bg-secondary/10 rounded-sm border border-border/50">
+                <Info className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-muted-foreground leading-relaxed">
                     NB: Tout le traitement des images est effectué localement sur votre appareil pour garantir votre confidentialité.
                 </p>
+                <b/>
+                
             </div>
         </div>
     );
