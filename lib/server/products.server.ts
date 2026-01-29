@@ -27,8 +27,3 @@ const cachedFunction = unstable_cache(
 // Named export (preferred)
 export const getProductsCached = cachedFunction
 
-// Alias for backwards compatibility
-export const getAllProductsCached = cachedFunction
-
-// Default export
-export default cachedFunction

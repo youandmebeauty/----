@@ -4,7 +4,7 @@ import { adminDb } from "@/lib/firebase-admin"
 import { verifyAdminToken } from "@/lib/auth-utils"
 import { Timestamp } from "firebase-admin/firestore"
 import type { Product } from "@/lib/models"
-import { getProductsCached } from "@/lib/server/products.server"
+import { getProducts } from "@/lib/services/product-service"
 import { revalidateProducts } from "@/lib/revalidate"
 
 const PRODUCTS_COLLECTION = "products"
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Use server-only cached fetch
-    const products = await getProductsCached()
+    const products = await getProducts()
 
     return NextResponse.json(products)
   } catch (error) {

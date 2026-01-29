@@ -84,7 +84,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (name !== undefined) updateData.name = name
     if (brand !== undefined) updateData.brand = brand
     if (price !== undefined) updateData.price = Number(price)
-    if (promoPrice !== undefined) updateData.promoPrice = promoPrice ? Number(promoPrice) : undefined
+    if (promoPrice !== undefined) updateData.promoPrice =  Number(promoPrice)
     if (category !== undefined) updateData.category = category?.trim() || null
     if (subcategory !== undefined) {
       updateData.subcategory = subcategory || FieldValue.delete()
@@ -150,6 +150,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     }
     
     if (quantity !== undefined) updateData.quantity = Number(quantity)
+    
     if (featured !== undefined) updateData.featured = featured
     if (ingredients !== undefined) updateData.ingredients = Array.isArray(ingredients) ? ingredients : []
     if (skinType !== undefined) updateData.skinType = Array.isArray(skinType) ? skinType : []
