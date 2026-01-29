@@ -84,7 +84,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (name !== undefined) updateData.name = name
     if (brand !== undefined) updateData.brand = brand
     if (price !== undefined) updateData.price = Number(price)
-    if (promoPrice !== undefined) updateData.promoPrice = promoPrice ? Number(promoPrice) : undefined
+    if (promoPrice !== undefined) {
+  updateData.promoPrice = promoPrice === null ? null : promoPrice
+}
+
     if (category !== undefined) updateData.category = category?.trim() || null
     if (subcategory !== undefined) {
       updateData.subcategory = subcategory || FieldValue.delete()

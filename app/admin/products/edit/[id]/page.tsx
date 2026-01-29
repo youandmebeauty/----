@@ -168,7 +168,11 @@ function EditProductContent() {
         brand: formData.brand.trim(),
         barcode: formData.barcode.trim(),
         price: Number.parseFloat(formData.price) || 0,
-        promoPrice: formData.promoPrice ? Number.parseFloat(formData.promoPrice) : undefined,
+        promoPrice:
+  formData.promoPrice === ''
+    ? null
+    : Number.parseFloat(formData.promoPrice),
+
         category: formData.category,
         subcategory: formData.subcategory?.trim() || undefined,
         description: formData.description.trim(),

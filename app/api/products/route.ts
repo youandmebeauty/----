@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
       name: name.trim(),
       brand: brand?.trim() || null,
       price: Number(price),
-      promoPrice: promoPrice ? Number(promoPrice) : undefined,
+      promoPrice:  Number(promoPrice) || null,
       category: category?.trim() || null,
       subcategory: subcategory?.trim() || null,
       description: description.trim(),

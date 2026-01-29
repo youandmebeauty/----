@@ -111,7 +111,10 @@ function AddProductContent() {
         price: Number.parseFloat(formData.price),
         category: formData.category,
         subcategory: formData.subcategory,
-        promoPrice: formData.promoPrice ? Number.parseFloat(formData.promoPrice) : undefined,
+                promoPrice:
+  formData.promoPrice === ''
+    ? null
+    : Number.parseFloat(formData.promoPrice),
         barcode:formData.barcode,
         description: formData.description,
         longDescription: formData.longDescription || formData.description,
