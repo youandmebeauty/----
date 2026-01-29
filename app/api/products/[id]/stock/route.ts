@@ -1,6 +1,6 @@
 // Example API route: app/api/products/[id]/stock/route.ts
 import { NextRequest, NextResponse } from "next/server"
-import { revalidateTag } from "next/cache"
+import { revalidateProducts } from "@/lib/revalidate"
 import { adminDb } from "@/lib/firebase-admin"
 
 const PRODUCTS_COLLECTION = "products"
@@ -33,8 +33,8 @@ export async function PATCH(
     // Update the stock
     await productRef.update({ quantity })
 
-    // ✅ STEP 5: Invalidate cache after mutation
-    await revalidateTag("products", "default")
+    // Revalidate products cache and record an audit log
+    await revalidateProducts("stock-update", { id })
 
     return NextResponse.json({ success: true, quantity })
   } catch (error) {

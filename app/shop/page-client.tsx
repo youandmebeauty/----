@@ -228,7 +228,7 @@ function SearchContent() {
       </div>
     )
   }
-
+console.log("Rendering ShopPage with products:", products[0])
   return (
     <div className="min-h-screen bg-background ">
       <main className="container mx-auto  px-4 lg:px-6 xl:px-8 py-8">

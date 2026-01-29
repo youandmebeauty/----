@@ -1,3 +1,4 @@
+import { FeaturedProductsServer } from '@/components/featured-products-server';
 import type { Product, SearchFilters } from "@/lib/models"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 
@@ -8,32 +9,36 @@ SHOP_CATEGORIES.forEach((cat, index) => {
 })
 
 
-const defaultProductSort = (a: Product, b: Product) => {
-  const aOrder = categoryOrderMap.get(a.category || "") ?? 999
-  const bOrder = categoryOrderMap.get(b.category || "") ?? 999
-  
-  if (aOrder !== bOrder) return aOrder - bOrder
-
-  const subcategoryCompare = (a.subcategory || "").localeCompare(b.subcategory || "", undefined, { sensitivity: "base" })
-  if (subcategoryCompare !== 0) return subcategoryCompare
-
-  return (a.name || "").localeCompare(b.name || "", undefined, { sensitivity: "base" })
-}
 // =============================================================================
 // STEP 1: ✅ All in-memory caches DELETED
 // =============================================================================
 
 // Helper function to safely convert createdAt to string for comparison
 function getCreatedAtString(product: Product): string {
-  if (!product.createdAt) return ""
-  if (typeof product.createdAt === "string") return product.createdAt
-  if (product.createdAt instanceof Date) return product.createdAt.toISOString()
-  // Handle Firestore Timestamp objects
-  if (typeof product.createdAt === "object" && "toDate" in product.createdAt) {
-    return (product.createdAt as any).toDate().toISOString()
+  const { createdAt } = product
+  if (!createdAt) return ""
+
+  if (typeof createdAt === "string") return createdAt
+  if (createdAt instanceof Date) return createdAt.toISOString()
+
+  // Firestore Timestamp instance
+  if (typeof createdAt === "object" && "toDate" in createdAt) {
+    return (createdAt as any).toDate().toISOString()
   }
-  return String(product.createdAt)
+
+  // Firestore timestamp plain object
+  if (
+    typeof createdAt === "object" &&
+    "_seconds" in createdAt
+  ) {
+    return new Date(
+      (createdAt as any)._seconds * 1000
+    ).toISOString()
+  }
+
+  return ""
 }
+
 const getCreatedAtMillis = (product: Product): number => {
   const ts: any = product.createdAt
   if (!ts) return 0
@@ -72,13 +77,17 @@ export async function getProductById(id: string): Promise<Product | null> {
   return products.find((p) => p.id === id) ?? null
 }
 
-export async function getFeaturedProducts(limitCount = 12): Promise<Product[]> {
+export async function getFeaturedProducts(limitCount = 1): Promise<Product[]> {
   const products = await getProducts()
   return products
-    .filter((p) => p.featured)
-    .sort((a, b) => getCreatedAtString(b).localeCompare(getCreatedAtString(a)))
-    .slice(0, limitCount)
+  .filter(p => p.featured)
+  .map(p => ({ ...p, _createdAt: getCreatedAtString(p) }))
+  .sort((a, b) => b._createdAt.localeCompare(a._createdAt))
+  .slice(0, limitCount)
+  .map(({ _createdAt, ...p }) => p)
+
 }
+
 
 export async function getRelatedProducts(
   productId: string,
@@ -211,9 +220,18 @@ export async function searchProducts(searchTerm: string, filters?: SearchFilters
     // Apply sorting
     if (filters?.sortBy) {
       switch (filters.sortBy) {
-        case "featured":
-          products = products.sort(defaultProductSort)
-          break
+case "featured": {
+  const sorted = products
+    .filter(p => p.featured)
+    .map(p => ({ ...p, _createdAt: getCreatedAtString(p) }))
+    .sort((a, b) => b._createdAt.localeCompare(a._createdAt))
+    .map(({ _createdAt, ...p }) => p)
+
+  products = sorted
+  break
+}
+
+
         case "price-asc":
           products = [...products].sort((a, b) => a.price - b.price)
           break

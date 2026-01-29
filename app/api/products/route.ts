@@ -5,7 +5,7 @@ import { verifyAdminToken } from "@/lib/auth-utils"
 import { Timestamp } from "firebase-admin/firestore"
 import type { Product } from "@/lib/models"
 import { getProductsCached } from "@/lib/products.server"
-import { revalidateTag } from "next/cache"
+import { revalidateProducts } from "@/lib/revalidate"
 
 const PRODUCTS_COLLECTION = "products"
 
@@ -121,12 +121,8 @@ export async function POST(request: NextRequest) {
       updatedAt: productData.updatedAt.toDate().toISOString(),
     } as Product
 
-    // Invalidate Next.js tag cache so all server cached reads refresh
-    try {
-      await revalidateTag("products", "default")
-    } catch (e) {
-      console.warn("Failed to revalidate products tag:", e)
-    }
+    // Revalidate products cache and record an audit log
+    await revalidateProducts("create", { id: docRef.id, name: productData.name })
 
     return NextResponse.json(newProduct, { status: 201 })
   } catch (error) {

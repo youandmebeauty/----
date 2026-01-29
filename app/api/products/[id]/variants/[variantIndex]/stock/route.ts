@@ -1,6 +1,6 @@
 // Example API route: app/api/products/[id]/variants/[variantIndex]/stock/route.ts
 import { NextRequest, NextResponse } from "next/server"
-import { revalidateTag } from "next/cache"
+import { revalidateProducts } from "@/lib/revalidate"
 import { adminDb } from "@/lib/firebase-admin"
 import type { Product } from "@/lib/models"
 
@@ -65,8 +65,8 @@ export async function PATCH(
       quantity: totalQuantity,
     })
 
-    // ✅ STEP 5: Invalidate cache after mutation
-    await revalidateTag("products", "default")
+    // Revalidate products cache and record an audit log
+    await revalidateProducts("variant-stock-update", { id, variantIndex: variantIdx })
 
     return NextResponse.json({ 
       success: true, 
