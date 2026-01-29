@@ -6,11 +6,6 @@ import { notFound } from "next/navigation"
 import { generateSlug } from "@/lib/product-url"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 
-/* ---------------------------------------------
-   Enable ISR (optional but recommended)
----------------------------------------------- */
-export const revalidate = 3600 // 1 hour
-
 interface ProductPageProps {
   params: { slug: string }
 }
