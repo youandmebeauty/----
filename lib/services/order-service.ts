@@ -1,4 +1,4 @@
-import type { Order} from "@/lib/models"
+import type { Order} from "@/lib/models/models"
 import { sendOrderConfirmationEmail } from "@/lib/services/email-service"
 import { getItemStock } from "@/lib/services/product-service"
 
@@ -8,7 +8,7 @@ let db: any = null
 
 const initFirestore = async () => {
   if (typeof window !== "undefined" && !firestoreModule) {
-    const { db: database } = await import("@/lib/firebase")
+    const { db: database } = await import("@/lib/utils/firebase-util")
     const { collection, getDocs, getDoc, doc, query, orderBy, addDoc, updateDoc, serverTimestamp } = await import(
       "firebase/firestore"
     )
@@ -34,7 +34,7 @@ export async function getOrders(): Promise<Order[]> {
   // Server-side: Use Firebase Admin SDK (matches API route behavior)
   if (typeof window === "undefined") {
     try {
-      const { adminDb } = await import("@/lib/firebase-admin")
+      const { adminDb } = await import("@/lib/utils/firebase-admin-util")
       const snapshot = await adminDb
         .collection(ORDERS_COLLECTION)
         .orderBy("createdAt", "desc")
@@ -81,7 +81,7 @@ export async function getOrderById(id: string): Promise<Order | null> {
   // Server-side: Use Firebase Admin SDK
   if (typeof window === "undefined") {
     try {
-      const { adminDb } = await import("@/lib/firebase-admin")
+      const { adminDb } = await import("@/lib/utils/firebase-admin-util")
       const orderDoc = await adminDb.collection(ORDERS_COLLECTION).doc(id).get()
 
       if (!orderDoc.exists) {

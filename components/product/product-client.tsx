@@ -4,9 +4,9 @@ import { useState, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import { useCart } from "@/components/cart-provider"
+import { useCart } from "@/components/providers/cart-provider"
 import { useToast } from "@/hooks/use-toast"
-import type { Product } from "@/lib/models"
+import type { Product } from "@/lib/models/models"
 import { Minus, Plus, ShoppingBag, Package, Truck, ShieldCheck, ChevronLeft, ChevronRight, Share2 } from "lucide-react"
 import {
     Accordion,
@@ -14,10 +14,10 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { generateSlug } from "@/lib/product-url"
-import { cn } from "@/lib/utils"
+import { generateSlug } from "@/lib/urls/product-url"
+import { cn } from "@/lib/utils/utils"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { Breadcrumb } from "@/components/navigation/breadcrumb"
 
 interface ProductClientProps {
     product: Product

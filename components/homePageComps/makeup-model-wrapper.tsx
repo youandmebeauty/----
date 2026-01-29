@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic"
 const MakeupModel3D = dynamic(
-  () => import("@/components/makeup-model"),
+  () => import("@/components/homePageComps/makeup-model"),
   {
     ssr: false,
     loading: () => <div className="w-full h-full" />

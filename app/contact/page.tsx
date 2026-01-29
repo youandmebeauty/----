@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 import ContactPage from "./page-client"
-import { BreadcrumbJsonLd } from "@/components/breadcrumb"
+import { BreadcrumbJsonLd } from "@/components/navigation/breadcrumb"
 export const metadata: Metadata = {
     title: "Contactez-Nous - You & Me Beauty",
     description: "Contactez notre équipe pour toute question ou assistance concernant nos produits de beauté premium. Nous sommes là pour vous aider à trouver les meilleurs soins adaptés à vos besoins.",

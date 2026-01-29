@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Slider } from "@/components/ui/slider"
 import { Collapse } from "@/components/ui/collapse"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/utils"
 interface ShopFiltersProps {
     isMobile?: boolean
     selectedCategory: string

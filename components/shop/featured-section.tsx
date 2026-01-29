@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { useSearchParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { gsap } from "@/lib/gsap"
+import { gsap } from "@/lib/utils/gsap-util"
 
 const CATEGORY_VIDEOS: Record<string, string> = {
     maquillage: "/boutique/maquillage.mp4",

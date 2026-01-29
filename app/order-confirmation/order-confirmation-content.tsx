@@ -7,7 +7,7 @@ import { CheckCircle, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
-import { generateInvoicePDF, type InvoiceDetails } from "@/lib/generate-invoice-pdf"
+import { generateInvoicePDF, type InvoiceDetails } from "@/lib/services/generate-invoice-service"
 
 const STORAGE_KEY = "lastOrderInvoice"
 

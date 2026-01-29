@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { searchProducts } from "@/lib/services/product-service"
-import type { Product, SearchFilters } from "@/lib/models"
+import type { Product, SearchFilters } from "@/lib/models/models"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 import { Sparkles, User, Wind, Pill } from "lucide-react"
 
@@ -11,9 +11,9 @@ import { Sparkles, User, Wind, Pill } from "lucide-react"
 import { ShopHeader } from "@/components/shop/shop-header"
 import { ShopFilters } from "@/components/shop/shop-filters"
 import { ProductGrid } from "@/components/shop/product-grid"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { cn } from "@/lib/utils"
-import { ScrollAnimation } from "@/components/scroll-animation"
+import { Breadcrumb } from "@/components/navigation/breadcrumb"
+import { cn } from "@/lib/utils/utils"
+import { ScrollAnimation } from "@/components/navigation/scroll-animation"
 import {
   Dialog,
   DialogContent,

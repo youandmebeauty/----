@@ -1,4 +1,4 @@
-import type { PromoCode } from "@/lib/models"
+import type { PromoCode } from "@/lib/models/models"
 
 const API_BASE = "/api/promo-codes"
 

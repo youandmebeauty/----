@@ -13,8 +13,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { Breadcrumb } from "@/components/breadcrumb"
-import { ScrollAnimation } from "@/components/scroll-animation"
+import { Breadcrumb } from "@/components/navigation/breadcrumb"
+import { ScrollAnimation } from "@/components/navigation/scroll-animation"
 
 export default function ContactPage() {
   const { toast } = useToast()

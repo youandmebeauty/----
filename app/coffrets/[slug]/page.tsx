@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { getCoffrets, getCoffretById } from "@/lib/services/coffret-service"
-import { generateSlug } from "@/lib/product-url"
+import { generateSlug } from "@/lib/urls/product-url"
 import { getProducts } from "@/lib/services/product-service"
 import { CoffretDetailClient } from "@/components/coffret/coffret-detail-client"
 import { getRelatedCoffrets } from "@/lib/services/coffret-service"

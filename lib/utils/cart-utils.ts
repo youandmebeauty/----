@@ -1,4 +1,4 @@
-import type { CartItem } from "@/components/cart-provider"
+import type { CartItem } from "@/components/providers/cart-provider"
 
 export function validateCartItem(item: any): item is CartItem {
   return (

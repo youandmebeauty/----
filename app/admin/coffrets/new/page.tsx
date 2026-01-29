@@ -5,7 +5,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { AdminRouteGuard } from "@/components/admin-route-guard"
+import { AdminRouteGuard } from "@/components/admin/admin-route-guard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
 import { createCoffret } from "@/lib/services/coffret-service"
 import { getProducts } from "@/lib/services/product-service"
-import type { Product } from "@/lib/models"
+import type { Product } from "@/lib/models/models"
 import { ArrowLeft, Image as ImageIcon, X, Plus } from "lucide-react"
 import { CldUploadWidget } from 'next-cloudinary'
 

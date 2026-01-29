@@ -1,4 +1,4 @@
-import type { Product, SearchFilters } from "@/lib/models"
+import type { Product, SearchFilters } from "@/lib/models/models"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 
 // Create a category order map for sorting

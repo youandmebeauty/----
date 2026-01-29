@@ -1,13 +1,13 @@
 import type React from "react"
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { SmoothScrollProvider } from "@/components/smooth-scroll-provider"
-import { CartProvider } from "@/components/cart-provider"
-import { FirebaseProvider } from "@/components/firebase-provider"
+import { ThemeProvider } from "@/components/providers/theme-provider"
+import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider"
+import { CartProvider } from "@/components/providers/cart-provider"
+import { FirebaseProvider } from "@/components/providers/firebase-provider"
 import { Toaster } from "@/components/ui/toaster"
-import { Footer } from "@/components/footer"
-import { Header } from "@/components/header"
+import { Footer } from "@/components/navigation/footer"
+import { Header } from "@/components/navigation/header"
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import {Analytics } from "@vercel/analytics/next";
 

@@ -1,6 +1,6 @@
 import type React from "react"
 import { Metadata } from "next"
-
+import Sidebar from "@/components/admin/sidebar"
 export const metadata: Metadata = {
   title: "Admin",
   description: "Zone d'administration You & Me Beauty.",
@@ -15,5 +15,5 @@ export const metadata: Metadata = {
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>
+  return( <div className="flex  gap-5 w-full "><Sidebar />{children}</div>)
 }

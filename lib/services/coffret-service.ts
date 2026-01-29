@@ -1,4 +1,4 @@
-import type { Coffret } from "@/lib/models"
+import type { Coffret } from "@/lib/models/models"
 import { getRelatedProducts, getProductById } from "./product-service"
 
 const COFFRETS_COLLECTION = "coffrets"

@@ -1,4 +1,4 @@
-import type { Product, Order } from "@/lib/models"
+import type { Product, Order } from "@/lib/models/models"
 
 export interface OrderAnalytics {
     totalRevenue: number
@@ -32,7 +32,7 @@ let db: any = null
 
 const initFirestore = async () => {
     if (typeof window !== "undefined" && !firestoreModule) {
-        const { db: database } = await import("@/lib/firebase")
+        const { db: database } = await import("@/lib/utils/firebase-util")
         const {
             collection,
             getDocs,
@@ -81,7 +81,7 @@ export async function getAnalytics(): Promise<AnalyticsPeriod> {
     // route handlers, server components, or cron jobs.
     if (typeof window === "undefined") {
         try {
-            const { adminDb } = await import("@/lib/firebase-admin")
+            const { adminDb } = await import("@/lib/utils/firebase-admin-util")
             const snapshot = await adminDb.collection(ORDERS_COLLECTION).get()
 
             const allOrders = snapshot.docs.map((doc: any) => {

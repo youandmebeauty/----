@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
-import { AdminRouteGuard } from "@/components/admin-route-guard"
+import { AdminRouteGuard } from "@/components/admin/admin-route-guard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
 import { getProductById, updateProduct, deleteProduct } from "@/lib/services/product-service"
-import type { Product, ColorVariant } from "@/lib/models"
+import type { Product, ColorVariant } from "@/lib/models/models"
 import { ArrowLeft, Trash2, Image as ImageIcon, X, Plus } from "lucide-react"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
 import { CldUploadWidget } from 'next-cloudinary';
@@ -273,12 +273,8 @@ function EditProductContent() {
 
   if (!product) {
     return (
-      <div className="min-h-screen bg-background">
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center py-12">
-            <LoadingAnimation size={140} className="text-primary" />
-          </div>
-        </main>
+      <div className=" h-screen bg-background z-40 flex items-center justify-center">
+        <LoadingAnimation size={140} className="text-primary" />
       </div>
     )
   }

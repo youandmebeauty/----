@@ -1,12 +1,12 @@
 "use server"
 import { unstable_cache } from "next/cache"
-import type { Coffret } from "@/lib/models"
+import type { Coffret } from "@/lib/models/models"
 
 const COFFRETS_COLLECTION = "coffrets"
 
 const cachedFunction = unstable_cache(
   async () => {
-    const { adminDb } = await import("@/lib/firebase-admin")
+    const { adminDb } = await import("@/lib/utils/firebase-admin-util")
     const snapshot = await adminDb.collection(COFFRETS_COLLECTION).get()
 
     return snapshot.docs.map((doc) =>

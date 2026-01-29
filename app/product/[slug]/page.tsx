@@ -3,7 +3,7 @@ import { ProductClient } from "@/components/product/product-client"
 import { RelatedProducts } from "@/components/product/related-products"
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
-import { generateSlug } from "@/lib/product-url"
+import { generateSlug } from "@/lib/urls/product-url"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 
 interface ProductPageProps {

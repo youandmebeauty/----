@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { revalidateTag } from "next/cache"
-import type { Coffret } from "@/lib/models"
+import type { Coffret } from "@/lib/models/models"
 
 const COFFRETS_COLLECTION = "coffrets"
 
@@ -33,7 +33,7 @@ export async function PUT(
             )
         }
 
-        const { adminDb } = await import("@/lib/firebase-admin")
+        const { adminDb } = await import("@/lib/utils/firebase-admin-util")
 
         // Remove undefined values
         const cleanUpdates = Object.fromEntries(
@@ -101,7 +101,7 @@ export async function DELETE(
             )
         }
 
-        const { adminDb } = await import("@/lib/firebase-admin")
+        const { adminDb } = await import("@/lib/utils/firebase-admin-util")
 
         await adminDb.collection(COFFRETS_COLLECTION).doc(id).delete()
 

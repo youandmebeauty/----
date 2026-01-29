@@ -1,11 +1,11 @@
 "use server"
 import { unstable_cache } from "next/cache"
-import type { Product } from "@/lib/models"
+import type { Product } from "@/lib/models/models"
 
 const PRODUCTS_COLLECTION = "products"
 const cachedFunction = unstable_cache(
   async () => {
-    const { adminDb } = await import("@/lib/firebase-admin")
+    const { adminDb } = await import("@/lib/utils/firebase-admin-util")
     const snapshot = await adminDb.collection(PRODUCTS_COLLECTION).get()
 
     return snapshot.docs.map((doc) =>

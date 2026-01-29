@@ -3,15 +3,15 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { Coffret, Product } from "@/lib/models"
+import { Coffret, Product } from "@/lib/models/models"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
 import { Label } from "@/components/ui/label"
-import { useCart } from "@/components/cart-provider"
+import { useCart } from "@/components/providers/cart-provider"
 import { useToast } from "@/hooks/use-toast"
-import { Breadcrumb } from "@/components/breadcrumb"
+import { Breadcrumb } from "@/components/navigation/breadcrumb"
 import {
   Accordion,
   AccordionContent,
@@ -32,8 +32,8 @@ import {
   
 } from "lucide-react"
 import { CoffretCard } from "./coffret-card"
-import { cn } from "@/lib/utils"
-import { generateSlug } from "@/lib/product-url"
+import { cn } from "@/lib/utils/utils"
+import { generateSlug } from "@/lib/urls/product-url"
 import "../../app/coffrets/coffret-hearts.css"
 import { useSaintValentin } from "./saint-valentin-provider"
 interface CoffretDetailClientProps {

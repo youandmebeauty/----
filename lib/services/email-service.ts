@@ -1,4 +1,4 @@
-import type { Order } from "@/lib/models"
+import type { Order } from "@/lib/models/models"
 
 interface EmailPayload {
   to: string

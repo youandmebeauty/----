@@ -18,7 +18,7 @@ export function FirebaseProvider({ children }: FirebaseProviderProps) {
       try {
         if (typeof window !== "undefined") {
           // Import Firebase modules
-          await import("@/lib/firebase")
+          await import("@/lib/utils/firebase-util")
           setIsInitialized(true)
         }
       } catch (error) {

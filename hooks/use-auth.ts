@@ -30,7 +30,7 @@ useEffect(() => {
       if (typeof window === "undefined") return
 
       const [{ auth }, { signInWithEmailAndPassword, signOut, onAuthStateChanged }] = await Promise.all([
-        import("@/lib/firebase") as Promise<{ auth: Auth }>,
+        import("@/lib/utils/firebase-util") as Promise<{ auth: Auth }>,
         import("firebase/auth"),
       ])
 

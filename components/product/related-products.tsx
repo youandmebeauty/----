@@ -1,7 +1,7 @@
 "use client"
 
 import { ProductCard } from "@/components/product/product-card"
-import type { Product } from "@/lib/models"
+import type { Product } from "@/lib/models/models"
 import { useState } from "react"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
 

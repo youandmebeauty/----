@@ -1,15 +1,15 @@
 "use client"
-import { Coffret } from "@/lib/models"
-import { cn } from "@/lib/utils"
+import { Coffret } from "@/lib/models/models"
+import { cn } from "@/lib/utils/utils"
 import Image from "next/image"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ShoppingBag, ArrowRight, Package } from "lucide-react"
-import {  getCoffretUrl } from "@/lib/coffret-url"
+import {  getCoffretUrl } from "@/lib/urls/coffret-url"
 
 import { toast } from "../ui/use-toast"
-import { useCart } from "../cart-provider"
+import { useCart } from "../providers/cart-provider"
 
 
 interface CoffretCardProps {

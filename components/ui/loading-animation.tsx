@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useRef } from "react"
-import { gsap } from "@/lib/gsap"
-import { cn } from "@/lib/utils"
+import { gsap } from "@/lib/utils/gsap-util"
+import { cn } from "@/lib/utils/utils"
 
 interface LoadingAnimationProps {
     className?: string

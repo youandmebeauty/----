@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
-import { ScrollAnimation } from "@/components/scroll-animation"
+import { ScrollAnimation } from "@/components/navigation/scroll-animation"
 
 export function Hero() {
 

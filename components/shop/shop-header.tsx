@@ -11,9 +11,9 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { ShopFilters } from "./shop-filters"
-import { SearchBar } from "@/components/search-bar"
+import { SearchBar } from "@/components/navigation/search-bar"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/utils"
 
 interface ShopHeaderProps {
     title: string

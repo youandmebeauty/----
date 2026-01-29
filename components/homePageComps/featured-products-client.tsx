@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { ProductCard } from "./product/product-card"
 import { getFeaturedProducts } from "@/lib/services/product-service"
-import type { Product } from "@/lib/models"
+import type { Product } from "@/lib/models/models"
 import { ScrollAnimation } from "./scroll-animation"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { LoadingAnimation } from "@/components/ui/loading-animation"

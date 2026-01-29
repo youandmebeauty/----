@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { adminDb } from "@/lib/firebase-admin"
+import { adminDb } from "@/lib/utils/firebase-admin-util"
 import { verifyAdminToken } from "@/lib/auth-utils"
 import { Timestamp } from "firebase-admin/firestore"
-import type { PromoCode } from "@/lib/models"
+import type { PromoCode } from "@/lib/models/models"
 
 const PROMO_CODES_COLLECTION = "promoCodes"
 

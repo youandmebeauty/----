@@ -1,4 +1,4 @@
-import type { Product } from "@/lib/models"
+import type { Product } from "@/lib/models/models"
 import { getProducts } from "./product-service"
 
 /**

@@ -3,7 +3,7 @@
 import type React from "react"
 import { createContext, useContext, useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
-import { loadCartFromStorage, saveCartToStorage, clearCartStorage } from "@/lib/cart-utils"
+import { loadCartFromStorage, saveCartToStorage, clearCartStorage } from "@/lib/utils/cart-utils"
 
 export interface CartItem {
   id: string

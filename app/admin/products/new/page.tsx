@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { AdminRouteGuard } from "@/components/admin-route-guard"
+import { AdminRouteGuard } from "@/components/admin/admin-route-guard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast"
 import { createProduct } from "@/lib/services/product-service"
 import { ArrowLeft, Image as ImageIcon, X, Plus, Trash2 } from "lucide-react"
 import { CldUploadWidget } from 'next-cloudinary';
-import type { ColorVariant } from "@/lib/models"
+import type { ColorVariant } from "@/lib/models/models"
 
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 

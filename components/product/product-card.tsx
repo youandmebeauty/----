@@ -3,13 +3,13 @@
 import Image from "next/image"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { useCart } from "../cart-provider"
+import { useCart } from "../providers/cart-provider"
 import { toast } from "@/components/ui/use-toast"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/utils"
 import { ShoppingBag } from "lucide-react"
 import { useState } from "react"
-import { generateSlug } from "@/lib/product-url"
-import { Product } from "@/lib/models"
+import { generateSlug } from "@/lib/urls/product-url"
+import { Product } from "@/lib/models/models"
 
 interface ProductCardProps {
   product: Product

@@ -1,11 +1,11 @@
-import { Hero } from "@/components/hero"
-import { FeaturedProductsServer } from "@/components/featured-products-server"
+import { Hero } from "@/components/homePageComps/hero"
+import { FeaturedProductsServer } from "@/components/homePageComps/featured-products-server"
 import { Categories } from "@/components/categories"
 import { WhyChooseUs } from "@/components/why-choose-us"
-import { MakeupModelWrapper } from "@/components/makeup-model-wrapper"
+import { MakeupModelWrapper } from "@/components/homePageComps/makeup-model-wrapper"
 import { Metadata } from "next"
 import { CoffretSection } from "@/components/coffret/coffret-section"
-import { ScrollAnimation } from "@/components/scroll-animation"
+import { ScrollAnimation } from "@/components/navigation/scroll-animation"
 export const metadata: Metadata = {
   title: "You & Me Beauty - Parapharmacie et Cosmétique Sfax | Maquillage & Parfums en Ligne Tunisie",
   alternates: {

@@ -1,6 +1,6 @@
 import { MetadataRoute } from "next"
 import { getProducts } from "@/lib/services/product-service"
-import { generateSlug } from "@/lib/product-url"
+import { generateSlug } from "@/lib/urls/product-url"
 
 // Ensure this runs at request time so missing env vars or admin SDK
 // issues during build don't break the entire build.

@@ -7,14 +7,14 @@ import {
     AlertCircle,
     X,
 } from "lucide-react";
-import { Breadcrumb } from "@/components/breadcrumb";
+import { Breadcrumb } from "@/components/navigation/breadcrumb";
 import { CameraView } from "@/components/skin-analyzer/camera-view";
 import { UploadView } from "@/components/skin-analyzer/upload-view";
 import { AnalysisResults } from "@/components/skin-analyzer/analysis-results";
 import { LoadingAnimation } from "@/components/ui/loading-animation";
-import { ScrollAnimation } from "@/components/scroll-animation";
+import { ScrollAnimation } from "@/components/navigation/scroll-animation";
 import { getProductsForSkinConcern } from "@/lib/services/skin-product-matcher";
-import type { DetectionRaw, MappedDetection, GroupedDetection, Product } from "@/lib/skin-analyzer";
+import type { DetectionRaw, MappedDetection, GroupedDetection, Product } from "@/lib/models/skin-analyzer";
 
 // ----------------- Config -----------------
 const INPUT_SIZE = 640;

@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
-import { AdminRouteGuard } from "@/components/admin-route-guard"
+import { AdminRouteGuard } from "@/components/admin/admin-route-guard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
 import { getOrderById, updateOrderStatus } from "@/lib/services/order-service"
-import type { Order } from "@/lib/models"
+import type { Order } from "@/lib/models/models"
 import { ArrowLeft, Package, User, MapPin, Phone, Mail, AlertTriangle } from "lucide-react"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
 
@@ -102,12 +102,8 @@ function OrderDetailsContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <main className="container mx-auto px-4 py-8">
-          <div className="flex items-center justify-center py-12">
-            <LoadingAnimation size={140} className="text-primary" />
-          </div>
-        </main>
+      <div className=" h-screen bg-background z-40 flex items-center justify-center">
+        <LoadingAnimation size={140} className="text-primary" />
       </div>
     )
   }

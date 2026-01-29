@@ -1,10 +1,10 @@
 import "server-only"
 import { type NextRequest, NextResponse } from "next/server"
-import { adminDb } from "@/lib/firebase-admin"
+import { adminDb } from "@/lib/utils/firebase-admin-util"
 import { verifyAdminToken } from "@/lib/auth-utils"
 import { Timestamp, FieldValue } from "firebase-admin/firestore"
-import type { Product } from "@/lib/models"
-import { revalidateProducts } from "@/lib/revalidate"
+import type { Product } from "@/lib/models/models"
+import { revalidateProducts } from "@/lib/utils/revalidate-util"
 
 const PRODUCTS_COLLECTION = "products"
 

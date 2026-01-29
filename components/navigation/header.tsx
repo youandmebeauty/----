@@ -5,15 +5,15 @@ import { useState, useRef, useEffect, useMemo } from "react"
 import Link from "next/link"
 import { useRouter, usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
-import { useCart } from "./cart-provider"
+import { useCart } from "../providers/cart-provider"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
 import { Moon, Sun, ShoppingBag, Menu, Search, X } from "lucide-react"
-import GlassSurface from "./GlassSurface"
-import { gsap } from "@/lib/gsap"
-import { AnnounceOffre } from "./announceOffre"
+import GlassSurface from "../GlassSurface"
+import { gsap } from "@/lib/utils/gsap-util"
+import { AnnounceOffre } from "../announceOffre"
 import { useSaintValentin } from "@/components/coffret/saint-valentin-provider"
 
 export function Header() {
@@ -138,7 +138,8 @@ const { saintValentin } = useSaintValentin();
     return () => ctx.revert()
   }, [isOpen])
 
-
+  if (pathname?.startsWith("/admin")) return null
+  
 
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {

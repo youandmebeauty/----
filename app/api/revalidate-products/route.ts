@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { revalidateProducts } from "@/lib/revalidate"
+import { revalidateProducts } from "@/lib/utils/revalidate-util"
 
 // Protected on-demand revalidation endpoint.
 // Expects header `x-revalidate-secret` to match `process.env.REVALIDATE_SECRET`.

@@ -1,6 +1,6 @@
 ﻿import { Metadata } from "next";
 import { SkinAnalyzerClientWrapper } from "@/components/skin-analyzer/skin-analyzer-client-wrapper";
-import { BreadcrumbJsonLd } from "@/components/breadcrumb";
+import { BreadcrumbJsonLd } from "@/components/navigation/breadcrumb";
 
 export async function generateMetadata({ 
 }: {}): Promise<Metadata> {

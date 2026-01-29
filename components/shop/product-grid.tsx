@@ -1,9 +1,9 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
-import { gsap } from "@/lib/gsap"
+import { gsap } from "@/lib/utils/gsap-util"
 import { ProductCard } from "@/components/product/product-card"
-import type { Product } from "@/lib/models"
+import type { Product } from "@/lib/models/models"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 
 interface ProductGridProps {

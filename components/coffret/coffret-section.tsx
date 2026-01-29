@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Coffret, Product } from "@/lib/models"
+import { Coffret, Product } from "@/lib/models/models"
 import { getCoffrets } from "@/lib/services/coffret-service"
 import { getProducts } from "@/lib/services/product-service"
 import { CoffretCard } from "./coffret-card"
@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
 import { AlertCircle, ArrowRight, Dice1, RefreshCw } from "lucide-react"
 import { useSaintValentin } from "./saint-valentin-provider"
-import { ScrollAnimation } from "../scroll-animation"
+import { ScrollAnimation } from "../navigation/scroll-animation"
 interface CoffretSectionProps {
     limit?: number
     title?: string

@@ -2,7 +2,7 @@
 
 import type { HTMLAttributes, ReactNode } from "react"
 import { useEffect, useRef } from "react"
-import { gsap } from "@/lib/gsap"
+import { gsap } from "@/lib/utils/gsap-util"
 
 
 

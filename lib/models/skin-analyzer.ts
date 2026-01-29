@@ -1,5 +1,5 @@
 // types/skin-analyzer.ts
-import type { Product as ImportedProduct } from "@/lib/models";
+import type { Product as ImportedProduct } from "@/lib/models/models";
 
 // Use the imported Product type directly
 export type Product = ImportedProduct;

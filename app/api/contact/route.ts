@@ -2,7 +2,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import nodemailer from "nodemailer"
 import { z } from "zod"
-import { adminDb } from "@/lib/firebase-admin"
+import { adminDb } from "@/lib/utils/firebase-admin-util"
 import { Timestamp } from "firebase-admin/firestore"
 
 // Schema de validation Zod

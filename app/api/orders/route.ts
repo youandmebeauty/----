@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { adminDb } from "@/lib/firebase-admin"
-import type { Order } from "@/lib/models"
+import { adminDb } from "@/lib/utils/firebase-admin-util"
+import type { Order } from "@/lib/models/models"
 
 const PRODUCTS_COLLECTION = "products"
 const ORDERS_COLLECTION = "orders"

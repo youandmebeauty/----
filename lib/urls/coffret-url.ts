@@ -1,5 +1,5 @@
-import { generateSlug } from "@/lib/product-url"
-import type { Coffret } from "@/lib/models"
+import { generateSlug } from "@/lib/urls/product-url"
+import type { Coffret } from "@/lib/models/models"
 
 /**
  * Generate a full coffret URL with Slug and ID

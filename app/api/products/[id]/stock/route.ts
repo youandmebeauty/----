@@ -1,7 +1,7 @@
 // Example API route: app/api/products/[id]/stock/route.ts
 import { NextRequest, NextResponse } from "next/server"
-import { revalidateProducts } from "@/lib/revalidate"
-import { adminDb } from "@/lib/firebase-admin"
+import { revalidateProducts } from "@/lib/utils/revalidate-util"
+import { adminDb } from "@/lib/utils/firebase-admin-util"
 
 const PRODUCTS_COLLECTION = "products"
 
