@@ -126,13 +126,7 @@ function AddProductContent() {
         ingredients: formData.ingredients ? formData.ingredients.split(",").map((i) => i.trim()) : [],
         hasColorVariants: formData.hasColorVariants,
       }
-
-      // Include promoPrice only if it's a valid number and lower than price
-      const parsedPrice = Number.parseFloat(formData.price)
-      const parsedPromo = formData.promoPrice ? Number.parseFloat(formData.promoPrice) : NaN
-      if (!isNaN(parsedPromo) && parsedPromo < parsedPrice) {
-        productData.promoPrice = parsedPromo
-      }
+ 
 
       // Only include images if there are no color variants
       if (!formData.hasColorVariants) {
