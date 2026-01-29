@@ -28,7 +28,23 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Tag, Plus, Edit, Trash2 } from "lucide-react"
+const getCreatedAtMillis = (product: Product): number => {
+  const ts: any = product.createdAt
+  if (!ts) return 0
 
+  // Firebase Admin SDK serialized Timestamp
+  if (typeof ts._seconds === "number") {
+    return ts._seconds * 1000
+  }
+
+  // Firestore client Timestamp (just in case)
+  if (typeof ts.toMillis === "function") {
+    return ts.toMillis()
+  }
+
+  // Date or string fallback
+  return new Date(ts).getTime() || 0
+}
 function DashboardContent() {
   const router = useRouter()
   const { toast } = useToast()
@@ -76,11 +92,9 @@ function DashboardContent() {
       ])
 
       // Sort products by newest first
-      const sortedProducts = [...productsData].sort((a, b) => {
-        const dateA = (a as any).createdAt?.toDate?.() ?? new Date((a as any).createdAt ?? 0)
-        const dateB = (b as any).createdAt?.toDate?.() ?? new Date((b as any).createdAt ?? 0)
-        return dateB.getTime() - dateA.getTime()
-      })
+      const sortedProducts = [...productsData].sort(
+            (a, b) => getCreatedAtMillis(b) - getCreatedAtMillis(a)
+          )
 
       setProducts(sortedProducts)
       setCoffrets(coffretsData)
