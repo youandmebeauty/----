@@ -15,38 +15,41 @@ import { ScrollAnimation } from "@/components/scroll-animation"
 import { Breadcrumb } from "@/components/breadcrumb"
 import NotFound from "../not-found"
 
-// Generate random but well-distributed positions for coffrets
-function generateRandomPositions(count: number) {
-  const positions: Array<{ top: string; left: string; rotation: number; scale: number }> = []
-  
-  // Create a grid of zones for better distribution
-  const zonesPerRow = 4
-  const zonesPerColumn = Math.ceil(count / zonesPerRow) + 1
-  const zoneWidth = 100 / zonesPerRow
-  const zoneHeight = 100 / zonesPerColumn
+// Creative scattered layout - like photos pinned on a mood board
+function generateCreativeLayout(count: number) {
+  const layouts: Array<{ 
+    size: 'sm' | 'md' | 'lg';
+    rotation: number;
+    offsetY: number;
+    aspectRatio: 'portrait' | 'square';
+  }> = []
   
   for (let i = 0; i < count; i++) {
-    const row = Math.floor(i / zonesPerRow)
-    const col = i % zonesPerRow
+    // Create organic size distribution
+    let size: 'sm' | 'md' | 'lg'
+    const rand = Math.random()
     
-    // Add randomness within each zone
-    const baseLeft = col * zoneWidth + 5
-    const baseTop = row * zoneHeight + 10
-    const randomLeft = baseLeft + Math.random() * (zoneWidth - 10)
-    const randomTop = baseTop + Math.random() * (zoneHeight - 15)
+    if (i % 5 === 0) {
+      size = 'lg' // Every 5th is large (hero)
+    } else if (rand > 0.7) {
+      size = 'md'
+    } else {
+      size = 'sm'
+    }
     
-    const rotation = -8 + Math.random() * 16 // -8 to 8 degrees
-    const scale = 0.9 + Math.random() * 0.2 // 0.9 to 1.1
+    // Dramatic rotations for visual interest
+    const rotation = -8 + Math.random() * 16
     
-    positions.push({
-      left: `${Math.min(randomLeft, 85)}%`, // Keep within bounds
-      top: `${randomTop}%`,
-      rotation,
-      scale
-    })
+    // Vertical offset for staggered effect
+    const offsetY = Math.random() * 40 - 20
+    
+    // Mix aspect ratios
+    const aspectRatio = Math.random() > 0.3 ? 'portrait' : 'square'
+    
+    layouts.push({ size, rotation, offsetY, aspectRatio })
   }
   
-  return positions
+  return layouts
 }
 
 export default function CoffretPage() {
@@ -56,6 +59,7 @@ export default function CoffretPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  
   useEffect(() => {
     async function fetchData() {
       try {
@@ -80,6 +84,7 @@ export default function CoffretPage() {
     }
     fetchData();
   }, []);
+  
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -87,10 +92,13 @@ export default function CoffretPage() {
       </div>
     )
   }
+  
   const productMap = new Map(products.map((p) => [p.id, p]));
-  const positions = generateRandomPositions(coffrets.length);
-          if(!error && coffrets.length === 0 )
-return            NotFound()
+  const creativeLayout = generateCreativeLayout(coffrets.length);
+  
+  if(!error && coffrets.length === 0) {
+    return NotFound()
+  }
           
   return (
     <>
@@ -124,7 +132,7 @@ return            NotFound()
         })}
       </div>)
  }
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-20">
       {/* Header */}
       <div className="relative border border-border/50 bg-gradient-to-br from-secondary/30 via-secondary/20 to-background rounded-3xl m-4 overflow-hidden">
         {/* Animated background elements */}
@@ -156,25 +164,26 @@ return            NotFound()
           {saintValentin ? (
           <div className="max-w-7xl mx-auto ">
             <div className="space-y-8 flex flex-col items-center justify-center">
-                          <ScrollAnimation
-              variant="scaleUp"
-              delay={0.08}
-              className="inline-flex items-center justify-center gap-2 mb-8 bg-primary/10 hover:bg-primary/15 px-5 py-2 rounded-full border border-primary/20 backdrop-blur-sm transition-all duration-300 cursor-default group"
-            >                             <Gift className="w-4 h-4 text-primary transition-transform duration-300 group-hover:rotate-12" />
-
-              <span className="text-sm font-semibold uppercase tracking-widest text-primary">
+              <ScrollAnimation
+                variant="scaleUp"
+                delay={0.08}
+                className="inline-flex items-center justify-center gap-2 mb-8 bg-primary/10 hover:bg-primary/15 px-5 py-2 rounded-full border border-primary/20 backdrop-blur-sm transition-all duration-300 cursor-default group"
+              >
+                <Gift className="w-4 h-4 text-primary transition-transform duration-300 group-hover:rotate-12" />
+                <span className="text-sm font-semibold uppercase tracking-widest text-primary">
                   Saint-Valentin 2026
-              </span></ScrollAnimation>
+                </span>
+              </ScrollAnimation>
               
-                          <ScrollAnimation
-                            variant="blurRise"
-                            delay={0.1}
-                            className="mb-8"
-                          >
-                            <h1 className="font-serif text-4xl font-medium tracking-tight text-transparent md:text-6xl lg:text-7xl bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text">
-                              Nos Coffrets Cadeaux
-                            </h1>
-                          </ScrollAnimation>
+              <ScrollAnimation
+                variant="blurRise"
+                delay={0.1}
+                className="mb-8"
+              >
+                <h1 className="font-serif text-4xl font-medium tracking-tight text-transparent md:text-6xl lg:text-7xl bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text">
+                  Nos Coffrets Cadeaux
+                </h1>
+              </ScrollAnimation>
               <p className="text-lg md:text-xl font-medium leading-relaxed w-full">
                 Des ensembles soigneusement sélectionnés pour offrir ou se faire plaisir.
               </p>
@@ -182,80 +191,138 @@ return            NotFound()
           </div> ): (
           <div className="max-w-7xl mx-auto ">
             <div className="space-y-4 flex flex-col items-center justify-center">
-                                        <ScrollAnimation
-              variant="scaleUp"
-              delay={0.08}
-              className="inline-flex items-center justify-center gap-2 mb-8 bg-primary/10 hover:bg-primary/15 px-5 py-2 rounded-full border border-primary/20 backdrop-blur-sm transition-all duration-300 cursor-default group"
-            >                             <Gift className="w-4 h-4 text-primary transition-transform duration-300 group-hover:rotate-12" />
-
-              <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-  Offre Spéciale
-              </span></ScrollAnimation><ScrollAnimation
-                            variant="blurRise"
-                            delay={0.1}
-                            className="mb-8"
-                          >
-                            <h1 className="font-serif text-4xl font-medium tracking-tight text-transparent md:text-6xl lg:text-7xl bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text">
-                    Nos Packs Exclusifs
-                </h1> </ScrollAnimation>
-                <p className="text-lg md:text-xl font-medium leading-relaxed w-full">
-                    Découvrez notre collection de packs spéciaux soigneusement sélectionnés.
-                </p>
+              <ScrollAnimation
+                variant="scaleUp"
+                delay={0.08}
+                className="inline-flex items-center justify-center gap-2 mb-8 bg-primary/10 hover:bg-primary/15 px-5 py-2 rounded-full border border-primary/20 backdrop-blur-sm transition-all duration-300 cursor-default group"
+              >
+                <Gift className="w-4 h-4 text-primary transition-transform duration-300 group-hover:rotate-12" />
+                <span className="text-sm font-semibold uppercase tracking-widest text-primary">
+                  Offre Spéciale
+                </span>
+              </ScrollAnimation>
+              <ScrollAnimation
+                variant="blurRise"
+                delay={0.1}
+                className="mb-8"
+              >
+                <h1 className="font-serif text-4xl font-medium tracking-tight text-transparent md:text-6xl lg:text-7xl bg-gradient-to-br from-foreground via-foreground to-foreground/70 bg-clip-text">
+                  Nos Packs Exclusifs
+                </h1>
+              </ScrollAnimation>
+              <p className="text-lg md:text-xl font-medium leading-relaxed w-full">
+                Découvrez notre collection de packs spéciaux soigneusement sélectionnés.
+              </p>
             </div>
           </div>)
-} </div>
+          } 
+          </div>
         </ScrollAnimation>
       </div>
-          {/* Error State */}
-          {error && (
-            <div className="max-w-7xl mx-auto">
-              <Alert variant="destructive" className="max-w-2xl mx-auto border-2 border-black e">
-                <AlertCircle className="h-5 w-5" />
-                <AlertTitle className="font-bold uppercase tracking-wide">Erreur</AlertTitle>
-                <AlertDescription className="font-medium">
-                  {error}. Veuillez réessayer plus tard.
-                </AlertDescription>
-              </Alert>
-            </div>
-          )}
+      
+      {/* Error State */}
+      {error && (
+        <div className="max-w-xl mx-auto px-4 mb-8">
+          <Alert variant="destructive">
+            <AlertCircle className="h-5 w-5" />
+            <AlertTitle>Erreur</AlertTitle>
+            <AlertDescription className="font-medium">
+              {error}. Veuillez réessayer plus tard.
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
 
-          {/* Empty State */}
+      {/* Coffrets - Creative Scattered Polaroid Layout */}
+      {!error && coffrets.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Staggered grid with varying sizes - like a creative mood board */}
+          <div className="grid grid-cols-12 gap-4 md:gap-6  ">
+            {coffrets.map((coffret: Coffret, index) => {
+              const productNames = coffret.productIds
+                ?.map(id => productMap.get(id)?.name)
+                .filter((name): name is string => !!name) || []
 
+              const layout = creativeLayout[index]
+              
+              // Map sizes to grid spans and row spans
+              const sizeMap = {
+                sm: { 
+                  colSpan: 'col-span-12 sm:col-span-6 lg:col-span-4',
+                  rowSpan: 'row-span-3'
+                },
+                md: { 
+                  colSpan: 'col-span-12 sm:col-span-6 lg:col-span-4',
+                  rowSpan: 'row-span-4'
+                },
+                lg: { 
+                  colSpan: 'col-span-12 sm:col-span-12 lg:col-span-8',
+                  rowSpan: 'row-span-5'
+                }
+              }
 
-          {/* Coffrets - Random Collage Layout */}
-          {!error && coffrets.length > 0 && (
-            <div className="max-w-7xl mx-auto min-h-screen ">
-              <div className="relative w-full" style={{ minHeight: `${Math.ceil(coffrets.length / 4) * 600}px` }}>
-                {coffrets.map((coffret: Coffret, index) => {
-                  const productNames = coffret.productIds
-                    ?.map(id => productMap.get(id)?.name)
-                    .filter((name): name is string => !!name) || []
+              const gridClass = sizeMap[layout.size]
 
-                  const position = positions[index]
+              return (
+                <div 
+                  key={coffret.id}
+                  className={`
+                    group/item
+                    ${gridClass.colSpan}
+                    ${gridClass.rowSpan}
+                    transition-all 
+                    duration-700
+                    ease-out
+                    hover:scale-105
+                    hover:z-20
+                   `}
+                  style={{
+                    transform: `rotate(${layout.rotation}deg) translateY(${layout.offsetY}px)`,
+                    transformOrigin: 'center center',
+                  }}
+                >
+                  {/* Polaroid-style wrapper */}
+                  <div 
+                    className="
+                      scale-90
 
-                  return (
-                    <div 
-                      key={coffret.id}
-                      className="absolute transition-all lg:w-80 w-64 duration-500 hover:z-30 hover:scale-105 cursor-pointer overflow-x-hidden"
-                      style={{
-                        left: position.left,
-                        top: position.top,
-                        transform: `rotate(${position.rotation}deg) scale(${position.scale})`,
-                      }}
-                    >
-                        <CoffretCard
-                          coffret={coffret}
-                          productNames={productNames}
-                          aspectRatio="portrait"
-                          priority={index < 4}
-                        />
+                      rounded-sm
+                    "
+                  >
+                    {/* Inner content */}
+                    <div className="h-full w-full relative">
+                      <CoffretCard
+                        coffret={coffret}
+                        productNames={productNames}
+                         priority={index < 4}
+                      />
                     </div>
-                  )
-                })}
-              </div>
+                    
+                    {/* Tape effect on hover */}
+                    <div 
+                      className="
+                        absolute 
+                        top-0
 
-            </div>
-          )}
+                        left-1/2
+                        -translate-x-1/2
+                        -translate-y-1/2
+                        w-20 
+                        h-6 
+                        bg-yellow-100/50
+                        dark:bg-yellow-900/20
+                          transition-opacity
+                        duration-300
+                      "
+ 
+                    />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
     </>
   )

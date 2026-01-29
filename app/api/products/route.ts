@@ -4,7 +4,7 @@ import { adminDb } from "@/lib/firebase-admin"
 import { verifyAdminToken } from "@/lib/auth-utils"
 import { Timestamp } from "firebase-admin/firestore"
 import type { Product } from "@/lib/models"
-import { getProductsCached } from "@/lib/products.server"
+import { getProductsCached } from "@/lib/server/products.server"
 import { revalidateProducts } from "@/lib/revalidate"
 
 const PRODUCTS_COLLECTION = "products"

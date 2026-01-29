@@ -182,7 +182,7 @@ export function CoffretCard({
             {/* Content */}
             <div className="space-y-2 flex-1 flex flex-col">
                 <div className="flex items-start justify-between gap-2">
-                    <h3 className=" uppercase text-2xl leading-tight group-hover:text-primary transition-colors flex-1">
+                    <h3 className=" uppercase text-2xl text-primary leading-tight group-hover:text-primary transition-colors flex-1">
 
                             {coffret.name}
                     </h3>

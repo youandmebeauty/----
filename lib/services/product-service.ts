@@ -1,4 +1,3 @@
-import { FeaturedProductsServer } from '@/components/featured-products-server';
 import type { Product, SearchFilters } from "@/lib/models"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 
@@ -14,7 +13,7 @@ SHOP_CATEGORIES.forEach((cat, index) => {
 // =============================================================================
 
 // Helper function to safely convert createdAt to string for comparison
-function getCreatedAtString(product: Product): string {
+export function getCreatedAtString(product: Product): string {
   const { createdAt } = product
   if (!createdAt) return ""
 
@@ -64,7 +63,7 @@ const getCreatedAtMillis = (product: Product): number => {
 
 export async function getProducts(): Promise<Product[]> {
   try {
-    const { getProductsCached } = await import("@/lib/products.server")
+    const { getProductsCached } = await import("@/lib/server/products.server")
     return await getProductsCached()
   } catch (error) {
     console.error("Error fetching products via server cache:", error)

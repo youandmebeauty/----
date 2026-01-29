@@ -574,15 +574,12 @@ export function CoffretDetailClient({
         {/* Related Coffrets */}
         {relatedCoffrets.length > 0 && (
           <section className="mt-24">
-            <div className="flex items-center justify-between mb-10">
-              <h2 className="text-2xl lg:text-3xl font-serif font-medium">
-                Coffrets similaires
+                                    <div className="text-center space-y-4">
+
+<h2 className="font-light text-primary text-3xl md:text-4xl lg:text-4xl tracking-tight">
+                                             Coffrets similaires
               </h2>
-              <Button variant="ghost" asChild className="hidden sm:inline-flex">
-                <Link href="/coffrets">
-                  Voir tout
-                </Link>
-              </Button>
+
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">

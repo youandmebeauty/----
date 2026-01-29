@@ -1,12 +1,20 @@
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { getCoffrets, getCoffretById } from "@/lib/services/coffret-service"
-import { getProducts } from "@/lib/services/product-service"
 import { generateSlug } from "@/lib/product-url"
+import { getProducts } from "@/lib/services/product-service"
 import { CoffretDetailClient } from "@/components/coffret/coffret-detail-client"
+import { getRelatedCoffrets } from "@/lib/services/coffret-service"
 
 interface CoffretPageProps {
   params: Promise<{ slug: string }>
+}
+export async function generateStaticParams() {
+  const coffrets = await getCoffrets()
+
+  return coffrets.map(coffret => ({
+    slug: `${coffret.id}-${generateSlug(coffret.name )}`,
+  }))
 }
 
 
@@ -120,11 +128,8 @@ export default async function CoffretPage({
       notFound()
     }
 
-    // Fetch all products and coffrets in parallel
-    const [allProducts, allCoffrets] = await Promise.all([
-      getProducts(),
-      getCoffrets()
-    ])
+const allProducts = await getProducts()
+
 
     // Filter products that are in this coffret
     const coffretProducts = allProducts.filter(p => 
@@ -132,19 +137,7 @@ export default async function CoffretPage({
     )
 
     // Get related coffrets (similar price range or same category)
-    const relatedCoffrets = allCoffrets
-      .filter(c => c.id !== coffret.id)
-      .filter(c => {
-        // Same category if available
-        if (coffret.category && c.category === coffret.category) {
-          return true
-        }
-        
-        // Or similar price range (within 25%)
-        const priceDiff = Math.abs(c.price - coffret.price) / coffret.price
-        return priceDiff <= 0.25
-      })
-      .slice(0, 4)
+const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
 
     // Build URLs
     const Slug = generateSlug(coffret.name)
