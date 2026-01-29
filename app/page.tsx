@@ -4,7 +4,7 @@ import { Categories } from "@/components/categories"
 import { WhyChooseUs } from "@/components/why-choose-us"
 import { MakeupModelWrapper } from "@/components/makeup-model-wrapper"
 import { Metadata } from "next"
-
+import { CoffretSection } from "@/components/coffret/coffret-section"
 import { ScrollAnimation } from "@/components/scroll-animation"
 export const metadata: Metadata = {
   title: "You & Me Beauty - Parapharmacie et Cosmétique Sfax | Maquillage & Parfums en Ligne Tunisie",
@@ -103,13 +103,21 @@ export default function Home() {
             <Hero />
           </ScrollAnimation>
         </section>
-        
         <ScrollAnimation
             variant="blurRise"
             duration={2.5} className="hidden md:block absolute mt-10 md:h-[65%] top-0 right-0 lg:h-[90%] w-1/2 z-20" >
           <MakeupModelWrapper />
         </ScrollAnimation>
-        
+             <section aria-label="Coffret section">
+          <ScrollAnimation
+            variant="slideUp"
+            duration={0.9}
+          
+            delay={0.15}
+          >
+            <CoffretSection />
+          </ScrollAnimation>
+        </section>
         <section aria-label="Product categories">
             <Categories />
         </section>

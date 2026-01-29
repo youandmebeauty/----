@@ -33,8 +33,10 @@ export interface Product {
   featured?: boolean
   hasColorVariants?: boolean
   colorVariants?: ColorVariant[]
-  createdAt: Date | string
-  updatedAt: Date | string
+  createdAt: Date | string| number
+
+  updatedAt: Date | string| number
+
 }
 
 export interface Order {
@@ -87,5 +89,53 @@ export interface SearchFilters {
   maxPrice?: number
   brand?: string[]
   ingredients?: string[]
-  sortBy?: "price-asc" | "price-desc" | "name-asc" | "name-desc" | "newest"
+  sortBy?: "price-asc" | "price-desc" | "featured" |   "newest"
+}
+
+// Extended Coffret model with all possible fields
+export interface Coffret {
+  id: string
+  name: string
+  description?: string
+  price: number
+  originalPrice?: number // For showing discounts
+  images: string[]
+  productIds: string[]
+  stock?: number
+  featured?: boolean
+  createdAt: string | Date
+  updatedAt: string | Date
+  category?: string
+  tags?: string[]
+  metadata?: Record<string, any>
+}
+
+
+
+// Service response types
+export interface ServiceResponse<T> {
+  data: T | null
+  error: string | null
+  loading: boolean
+}
+
+// Cache entry interface
+export interface CacheEntry<T> {
+  data: T
+  timestamp: number
+}
+
+// Firestore module interface
+export interface FirestoreModule {
+  collection: any
+  getDocs: any
+  getDoc: any
+  addDoc: any
+  updateDoc: any
+  deleteDoc: any
+  doc: any
+  query: any
+  orderBy: any
+  serverTimestamp: any
+  Timestamp?: any
 }

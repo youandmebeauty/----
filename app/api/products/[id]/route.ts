@@ -1,8 +1,10 @@
+import "server-only"
 import { type NextRequest, NextResponse } from "next/server"
 import { adminDb } from "@/lib/firebase-admin"
 import { verifyAdminToken } from "@/lib/auth-utils"
 import { Timestamp, FieldValue } from "firebase-admin/firestore"
 import type { Product } from "@/lib/models"
+import { revalidateTag } from "next/cache"
 
 const PRODUCTS_COLLECTION = "products"
 
@@ -167,6 +169,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate().toISOString() : data.updatedAt,
     } as Product
 
+    // Invalidate Next.js tag cache so server-side cached reads refresh
+    try {
+      await revalidateTag("products", "default")
+    } catch (e) {
+      console.warn("Failed to revalidate products tag:", e)
+    }
+
     return NextResponse.json(updatedProduct)
   } catch (error) {
     console.error("Error updating product:", error)
@@ -191,6 +200,13 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     }
 
     await docRef.delete()
+
+    // Invalidate Next.js tag cache so server-side cached reads refresh
+    try {
+      await revalidateTag("products", "default")
+    } catch (e) {
+      console.warn("Failed to revalidate products tag:", e)
+    }
 
     return NextResponse.json({ success: true })
   } catch (error) {

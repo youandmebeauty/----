@@ -1,0 +1,75 @@
+/* Coffret Page - Swiss Design Heart Animations */
+
+@keyframes coffret-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-30px) rotate(5deg);
+  }
+  66% {
+    transform: translateY(-15px) rotate(-5deg);
+  }
+}
+
+@keyframes coffret-float-reverse {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-25px) rotate(-5deg);
+  }
+  66% {
+    transform: translateY(-12px) rotate(5deg);
+  }
+}
+
+.coffret-heart {
+  position: absolute;
+  opacity: 0.15;
+  transition: all 0.3s ease;
+}
+
+.coffret-heart:hover {
+  opacity: 0.4;
+  transform: scale(1.1);
+}
+
+.coffret-heart-1 {
+  animation: coffret-float 8s ease-in-out infinite;
+}
+
+.coffret-heart-2 {
+  animation: coffret-float-reverse 10s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.coffret-heart-3 {
+  animation: coffret-float 9s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.coffret-heart-4 {
+  animation: coffret-float-reverse 11s ease-in-out infinite;
+  animation-delay: 0.5s;
+}
+
+.coffret-heart-5 {
+  animation: coffret-float 7s ease-in-out infinite;
+  animation-delay: 3s;
+}
+
+.coffret-heart-6 {
+  animation: coffret-float-reverse 8.5s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+.coffret-heart-7 {
+  animation: coffret-float 10.5s ease-in-out infinite;
+  animation-delay: 2.5s;
+}
+
+.coffret-heart-8 {
+  animation: coffret-float-reverse 9.5s ease-in-out infinite;
+  animation-delay: 0.8s;
+}

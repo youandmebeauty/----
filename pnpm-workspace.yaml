@@ -7,3 +7,7 @@ onlyBuiltDependencies:
   - core-js
   - onnxruntime-node
   - sharp
+
+packages:
+  - "apps/*"
+  - "packages/*"

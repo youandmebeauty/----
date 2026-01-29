@@ -12,10 +12,11 @@ import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/hooks/use-auth"
 import { Package, ShoppingCart, Users, DollarSign, LogOut, TrendingUp, BarChart3 } from "lucide-react"
 import { getProducts } from "@/lib/services/product-service"
+import { getCoffrets } from "@/lib/services/coffret-service"
 import { getOrders, updateOrderStatus } from "@/lib/services/order-service"
 import { getAnalytics } from "@/lib/services/analytics-service"
 import { getPromoCodes, createPromoCode, updatePromoCode, deletePromoCode } from "@/lib/services/promo-code-service"
-import type { Product, Order, PromoCode } from "@/lib/models"
+import type { Product, Order, PromoCode, Coffret } from "@/lib/models"
 import type { AnalyticsPeriod } from "@/lib/services/analytics-service"
 import { MetricsCard } from "@/components/admin/metrics-card"
 import { AnalyticsChart } from "@/components/admin/analytics-chart"
@@ -33,6 +34,7 @@ function DashboardContent() {
   const { toast } = useToast()
   const { signOut } = useAuth()
   const [products, setProducts] = useState<Product[]>([])
+  const [coffrets, setCoffrets] = useState<Coffret[]>([])
   const [orders, setOrders] = useState<Order[]>([])
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([])
   const [analytics, setAnalytics] = useState<AnalyticsPeriod | null>(null)
@@ -65,8 +67,9 @@ function DashboardContent() {
       setLoading(true)
 
       // Fetch products, orders, promo codes, and analytics from Firebase
-      const [productsData, ordersData, promoCodesData, analyticsData] = await Promise.all([
+      const [productsData, coffretsData, ordersData, promoCodesData, analyticsData] = await Promise.all([
         getProducts(),
+        getCoffrets(),
         getOrders(),
         getPromoCodes(),
         getAnalytics(),
@@ -80,6 +83,7 @@ function DashboardContent() {
       })
 
       setProducts(sortedProducts)
+      setCoffrets(coffretsData)
       setOrders(ordersData)
       setPromoCodes(promoCodesData)
       setAnalytics(analyticsData)
@@ -116,7 +120,7 @@ function DashboardContent() {
 
       // Recalculate stats after status update
       const updatedOrders = orders.map((order) => (order.id === orderId ? { ...order, status: newStatus } : order))
-      
+
       const fulfilledOrders = updatedOrders.filter(
         (order) => order.status === "shipped" || order.status === "delivered"
       )
@@ -223,8 +227,8 @@ function DashboardContent() {
       minPurchase: promo.minPurchase?.toString() || "",
       expiryDate: promo.expiryDate
         ? (typeof promo.expiryDate === "string"
-            ? promo.expiryDate.split("T")[0]
-            : new Date(promo.expiryDate).toISOString().split("T")[0])
+          ? promo.expiryDate.split("T")[0]
+          : new Date(promo.expiryDate).toISOString().split("T")[0])
         : "",
       description: promo.description || "",
       active: promo.active !== undefined ? promo.active : true,
@@ -388,6 +392,7 @@ function DashboardContent() {
             <TabsList className="bg-background/50 backdrop-blur-sm border border-border/50 p-1 rounded-full">
               <TabsTrigger value="orders" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Commandes</TabsTrigger>
               <TabsTrigger value="products" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Produits</TabsTrigger>
+              <TabsTrigger value="coffrets" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Coffrets</TabsTrigger>
               <TabsTrigger value="promos" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Codes Promo</TabsTrigger>
             </TabsList>
 
@@ -723,18 +728,17 @@ function DashboardContent() {
                               <TableCell>
                                 {promo.expiryDate
                                   ? new Date(
-                                      typeof promo.expiryDate === "string" ? promo.expiryDate : promo.expiryDate
-                                    ).toLocaleDateString()
+                                    typeof promo.expiryDate === "string" ? promo.expiryDate : promo.expiryDate
+                                  ).toLocaleDateString()
                                   : "-"}
                               </TableCell>
                               <TableCell>
                                 <Badge
                                   variant="outline"
-                                  className={`rounded-full px-3 py-1 ${
-                                    isActive
+                                  className={`rounded-full px-3 py-1 ${isActive
                                       ? "border-green-500 text-green-500 bg-green-500/5"
                                       : "border-gray-500 text-gray-500 bg-gray-500/5"
-                                  }`}
+                                    }`}
                                 >
                                   {isActive ? "Actif" : "Inactif"}
                                 </Badge>
@@ -764,6 +768,54 @@ function DashboardContent() {
                         <TableRow>
                           <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                             Aucun code promo trouvé
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="coffrets">
+              <Card className="bg-background/50 backdrop-blur-sm border-border/50 shadow-sm overflow-hidden">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="font-serif text-xl">Inventaire des Coffrets</CardTitle>
+                  <Button onClick={() => router.push("/admin/coffrets/new")} className="rounded-full">Ajouter un Coffret</Button>
+                </CardHeader>
+                <CardContent>
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent border-border/50">
+                        <TableHead>ID</TableHead>
+                        <TableHead>Nom</TableHead>
+                        <TableHead>Prix</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {coffrets.length > 0 ? (
+                        coffrets.map((coffret) => (
+                          <TableRow key={coffret.id} className="hover:bg-primary/5 border-border/50 transition-colors">
+                            <TableCell className="font-medium">#{coffret.id.slice(0, 6)}</TableCell>
+                            <TableCell>{coffret.name}</TableCell>
+                            <TableCell>{coffret.price.toFixed(2)} DT</TableCell>
+                            <TableCell>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => router.push(`/admin/coffrets/edit/${coffret.id}`)}
+                                className="hover:bg-primary/10 hover:text-primary"
+                              >
+                                Modifier
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                            Aucun coffret trouvé
                           </TableCell>
                         </TableRow>
                       )}

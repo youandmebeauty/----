@@ -7,14 +7,14 @@ import { Label } from "@/components/ui/label"
 import { useCart } from "@/components/cart-provider"
 import { useToast } from "@/hooks/use-toast"
 import type { Product } from "@/lib/models"
-import { Minus, Plus, ShoppingBag, Package, Truck, ShieldCheck, ChevronLeft, ChevronRight } from "lucide-react"
+import { Minus, Plus, ShoppingBag, Package, Truck, ShieldCheck, ChevronLeft, ChevronRight, Share2 } from "lucide-react"
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion"
-import { generateSlung } from "@/lib/product-url"
+import { generateSlug } from "@/lib/product-url"
 import { cn } from "@/lib/utils"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 import { Breadcrumb } from "@/components/breadcrumb"
@@ -55,7 +55,24 @@ export function ProductClient({ product }: ProductClientProps) {
     const [selectedColorIndex, setSelectedColorIndex] = useState<number | null>(
         product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0 ? 0 : null
     )
-
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: product.name,
+          text: product.description,
+          url: window.location.href,
+        })
+      } catch (err) {
+        console.log("Share cancelled")
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href)
+      toast({
+        description: "Lien copié dans le presse-papiers!",
+      })
+    }
+  }
     const currentVariant = selectedColorIndex !== null && product.colorVariants 
         ? product.colorVariants[selectedColorIndex] 
         : null
@@ -182,7 +199,7 @@ export function ProductClient({ product }: ProductClientProps) {
 
     const inStock = displayQuantity > cartQuantity
     const remainingStock = displayQuantity - cartQuantity
-    const slung = generateSlung(product.name, { 
+    const Slug = generateSlug(product.name, { 
         includeBrand: product.brand 
     })
   
@@ -350,7 +367,7 @@ export function ProductClient({ product }: ProductClientProps) {
                             <h1 className="font-light text-4xl md:text-4xl text-primary lg:text-6xl leading-[1.1] tracking-tight">
                                 {product.name}
                             </h1>
-
+                
                             <div className="flex items-baseline gap-3 pt-2">
                                 <p className="text-3xl md:text-4xl font-light tabular-nums">
                                     {product.price.toFixed(2)}
@@ -422,7 +439,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                                className="h-12 w-12 hover:bg-foreground rounded-l-sm rounded-r-none transition-colors"
+                                                className="h-12 w-12 hover:bg-primary rounded-l-sm rounded-r-none transition-colors"
                                             >
                                                 <Minus className="h-3 w-3" />
                                             </Button>
@@ -431,7 +448,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                                 variant="ghost"
                                                 size="icon"
                                                 onClick={() => setQuantity(Math.min(remainingStock, quantity + 1))}
-                                                className="h-12 w-12 hover:bg-foreground rounded-r-sm rounded-l-none transition-colors"
+                                                className="h-12 w-12 hover:bg-primary rounded-r-sm rounded-l-none transition-colors"
                                                 disabled={quantity >= remainingStock}
                                             >
                                                 <Plus className="h-3 w-3" />
@@ -445,11 +462,12 @@ export function ProductClient({ product }: ProductClientProps) {
                                     </div>
                                 </div>
                             )}
+                            <div className="flex flex-row gap-2 w-full">
 
                             <Button
                                 onClick={handleAddToCart}
                                 className={cn(
-                                    "w-full h-14 text-[11px] uppercase tracking-[0.2em] rounded-sm transition-all duration-300 font-light",
+                                    "w-11/12 h-14 text-[11px] uppercase tracking-[0.2em] rounded-sm transition-all duration-300 font-light",
                                     "bg-primary text-white hover:bg-primary/90",
                                     "disabled:opacity-40 disabled:cursor-not-allowed",
                                     isAdding && "scale-[0.98]"
@@ -469,6 +487,16 @@ export function ProductClient({ product }: ProductClientProps) {
                                     </span>
                                 )}
                             </Button>
+
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={handleShare}
+                    className="w-1/12 rounded-sm h-14 text-[11px] uppercase tracking-[0.2em] font-light transition-all duration-300"
+                  >
+                    <Share2 className="h-5 w-5" />
+                  </Button>
+                </div>
                         </div>
 
                         {/* Accordions */}

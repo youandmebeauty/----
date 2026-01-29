@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { CheckCircle, AlertCircle, RefreshCw, Info, Sparkles, TrendingUp } from "lucide-react";
 import type { MappedDetection, GroupedDetection } from "@/lib/skin-analyzer";
-import { ProductCard } from "@/components/product-card";
+import { ProductCard } from "@/components/product/product-card";
 import { Button } from "@/components/ui/button";
 import { getSkinConcernSeverity, areConcernsCompatible } from "@/lib/services/skin-product-matcher";
 

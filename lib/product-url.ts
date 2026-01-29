@@ -1,8 +1,8 @@
-export function generateSlung(name: string, options?: {
+export function generateSlug(name: string, options?: {
   includeCategory?: string
   includeBrand?: string
 }): string {
-  let slung = name
+  let Slug = name
     .toLowerCase()
     .trim()
     .normalize('NFD') // Handle accented characters
@@ -14,22 +14,22 @@ export function generateSlung(name: string, options?: {
   
   // Optionally include brand for better SEO
   if (options?.includeBrand) {
-    const brandSlung = options.includeBrand
+    const brandSlug = options.includeBrand
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]/g, '')
-    slung = `${brandSlung}-${slung}`
+    Slug = `${brandSlug}-${Slug}`
   }
   
   if (options?.includeCategory) {
-    const categorySlung = options.includeCategory
+    const categorySlug = options.includeCategory
       .toLowerCase()
       .normalize('NFD')
       .replace(/[\u0300-\u036f]/g, '')
       .replace(/[^a-z0-9]/g, '')
-    slung = `${categorySlung}-${slung}`
+    Slug = `${categorySlug}-${Slug}`
   }
   
-  return slung 
+  return Slug 
 }

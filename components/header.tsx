@@ -13,6 +13,8 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from 
 import { Moon, Sun, ShoppingBag, Menu, Search, X } from "lucide-react"
 import GlassSurface from "./GlassSurface"
 import { gsap } from "@/lib/gsap"
+import { AnnounceOffre } from "./announceOffre"
+import { useSaintValentin } from "@/components/coffret/saint-valentin-provider"
 
 export function Header() {
   const { theme, setTheme } = useTheme()
@@ -28,7 +30,7 @@ export function Header() {
   const badgeRef = useRef<HTMLDivElement | null>(null)
   const mobileNavRef = useRef<HTMLUListElement | null>(null)
   const mobileThemeRef = useRef<HTMLDivElement | null>(null)
-
+const { saintValentin } = useSaintValentin();
   const navigation = [
     { name: "Accueil", href: "/" },
     { name: "Boutique", href: "/shop" },
@@ -152,7 +154,9 @@ export function Header() {
 
 
   return (
-    <header className="sticky top-4 z-50 w-full flex justify-center px-4">
+    
+    <header className="sticky top-4 z-50  flex flex-col items-center justify-center ">
+      {saintValentin && <AnnounceOffre />}
       <div style={containerStyle}>
         <GlassSurface
           displace={1}

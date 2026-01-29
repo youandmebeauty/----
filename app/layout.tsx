@@ -9,9 +9,8 @@ import { Toaster } from "@/components/ui/toaster"
 import { Footer } from "@/components/footer"
 import { Header } from "@/components/header"
 const inter = Inter({ subsets: ["latin"] })
+import { SaintValentinProvider } from "@/components/coffret/saint-valentin-provider"
 
-import { SpeedInsights } from "@vercel/speed-insights/next"
-import { Analytics } from "@vercel/analytics/next"
 export default function RootLayout({
   children,
 }: {
@@ -41,7 +40,7 @@ export default function RootLayout({
       "addressCountry": "TN"
     }
   }
-
+  // Announcement content with countdown timer or expired message
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={inter.className}>
@@ -49,16 +48,15 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <SpeedInsights/>
-        <Analytics/>
         <ThemeProvider attribute="class" defaultTheme="light">
           <SmoothScrollProvider>
             <FirebaseProvider>
               <CartProvider>
+                <SaintValentinProvider saintValentin={false}>
                     <Header />
                   {children}
                   <Footer />
-                  <Toaster />
+                  <Toaster /></SaintValentinProvider>
               </CartProvider>
             </FirebaseProvider>
           </SmoothScrollProvider>

@@ -1,10 +1,15 @@
+import "server-only"
 import { type NextRequest, NextResponse } from "next/server"
 import { adminDb } from "@/lib/firebase-admin"
 import { verifyAdminToken } from "@/lib/auth-utils"
 import { Timestamp } from "firebase-admin/firestore"
 import type { Product } from "@/lib/models"
+import { getProductsCached } from "@/lib/products.server"
+import { revalidateTag } from "next/cache"
 
 const PRODUCTS_COLLECTION = "products"
+
+// caching is handled by lib/product-cache
 
 function sanitizePerfumeNotes(notes: any) {
   if (!notes) return null
@@ -116,6 +121,13 @@ export async function POST(request: NextRequest) {
       updatedAt: productData.updatedAt.toDate().toISOString(),
     } as Product
 
+    // Invalidate Next.js tag cache so all server cached reads refresh
+    try {
+      await revalidateTag("products", "default")
+    } catch (e) {
+      console.warn("Failed to revalidate products tag:", e)
+    }
+
     return NextResponse.json(newProduct, { status: 201 })
   } catch (error) {
     console.error("Error creating product:", error)
@@ -123,6 +135,20 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// GET - fetch all products (admin only). Supports `?force=true` to bypass cache.
+export async function GET(request: NextRequest) {
+  try {
+    const authResult = await verifyAdminToken(request)
+    if (!authResult.valid) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
 
+    // Use server-only cached fetch
+    const products = await getProductsCached()
 
-
+    return NextResponse.json(products)
+  } catch (error) {
+    console.error("Error fetching products:", error)
+    return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 })
+  }
+}

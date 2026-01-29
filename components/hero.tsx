@@ -47,7 +47,7 @@ export function Hero() {
                                     <Button 
                                         size="lg" 
                                         variant="ghost"
-                                        className="w-full sm:w-auto group h-12 sm:h-13 px-8 rounded-full text-base font-medium hover:bg-primary/5 transition-all duration-300"
+                                        className="w-full sm:w-auto group h-12 sm:h-13 px-8 rounded-full text-base font-medium hover:bg-primary/5 hover:text-primary/45 transition-all duration-300"
                                     >
                                         Diagnostic de Peau IA
                                         <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />

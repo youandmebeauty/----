@@ -1,8 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import Link from "next/link"
-import { ProductCard } from "./product-card"
+import { ProductCard } from "./product/product-card"
 import { getFeaturedProducts } from "@/lib/services/product-service"
 import type { Product } from "@/lib/models"
 import { ScrollAnimation } from "./scroll-animation"

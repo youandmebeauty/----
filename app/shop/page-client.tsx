@@ -47,7 +47,7 @@ function SearchContent() {
     const category = searchParams.get("category") || "all"
     const subcategory = searchParams.get("subcategory")
     const search = searchParams.get("q") || searchParams.get("shop") || ""
-    const sort = searchParams.get("sort") || "newest"
+    const sort = searchParams.get("sort")   || "newest"
 
     setSelectedCategory(category)
     setSelectedSubcategory(subcategory || null)
@@ -74,10 +74,7 @@ function SearchContent() {
         if (selectedSubcategory) filters.subcategory = selectedSubcategory
         if (selectedSkinTypes.length > 0) filters.skinType = selectedSkinTypes
         if (selectedHairTypes.length > 0) filters.hairType = selectedHairTypes
-        if (sortBy !== "featured") {
-          filters.sortBy = sortBy as any
-        }
-
+        if (sortBy) filters.sortBy = sortBy as any
         const productsData = await searchProducts(searchQuery, filters)
         setProducts(productsData)
       } catch (error) {
@@ -113,7 +110,7 @@ function SearchContent() {
     paramsCurrent.delete("subcategory")
 
     // Preserve sortBy in URL
-    if (sortBy && sortBy !== "featured") {
+    if (sortBy ) {
       paramsCurrent.set("sort", sortBy)
     }
 
@@ -137,11 +134,7 @@ function SearchContent() {
   const handleSortChange = (newSortBy: string) => {
     setSortBy(newSortBy)
     const params = new URLSearchParams(searchParams.toString())
-    if (newSortBy && newSortBy !== "featured") {
-      params.set("sort", newSortBy)
-    } else {
-      params.delete("sort")
-    }
+    params.set("sort", newSortBy)
     router.replace(`/shop?${params.toString()}`, { scroll: false })
   }
 
@@ -163,7 +156,7 @@ function SearchContent() {
     setSelectedSkinTypes([])
     setSelectedHairTypes([])
     setPriceRange([0, 1000])
-    setSortBy("featured")
+    setSortBy("newest")
 
     // Clear all URL parameters
     router.replace('/shop', { scroll: false })
