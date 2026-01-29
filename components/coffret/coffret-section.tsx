@@ -77,7 +77,24 @@ export function CoffretSection({
     }
 
     if ((loading && coffrets.length === 0) || coffrets.length === 0) {
-        return null
+        return (
+      <div className="py-16 mt-24 bg-background rounded-3xl m-4">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-2xl md:text-3xl font-medium tracking-tight text-foreground">Nos Packs Exclusifs</h2>
+          </div>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="animate-pulse">
+                <div className="aspect-[4/5] bg-secondary/20 mb-4" />
+                <div className="h-4 bg-secondary/20 w-3/4 mb-2" />
+                <div className="h-4 bg-secondary/20 w-1/2" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
     }
 
     const productMap = new Map(products.map(p => [p.id, p]))
