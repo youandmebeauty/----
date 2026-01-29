@@ -7,6 +7,7 @@ export function validateCartItem(item: any): item is CartItem {
     typeof item.id === "string" &&
     typeof item.name === "string" &&
     typeof item.price === "number" &&
+    (item.promoPrice === undefined || typeof item.promoPrice === "number") &&
     typeof item.image === "string" &&
     typeof item.category === "string" &&
     typeof item.quantity === "number" &&
@@ -24,6 +25,7 @@ export function sanitizeCartItems(items: any[]): CartItem[] {
     ...item,
     quantity: Math.max(1, Math.floor(item.quantity)), // Ensure quantity is at least 1 and is an integer
     price: Math.max(0, item.price), // Ensure price is not negative
+    promoPrice: typeof item.promoPrice === "number" ? Math.max(0, item.promoPrice) : undefined,
   }))
 }
 

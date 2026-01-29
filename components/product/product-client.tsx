@@ -172,6 +172,7 @@ export function ProductClient({ product }: ProductClientProps) {
                 id: itemId,
                 name: itemName,
                 price: product.price,
+                promoPrice: typeof product.promoPrice === "number" && product.promoPrice < product.price ? product.promoPrice : undefined,
                 image: displayImage || "/placeholder.svg",
                 category: product.category,
             })
@@ -369,10 +370,22 @@ export function ProductClient({ product }: ProductClientProps) {
                             </h1>
                 
                             <div className="flex items-baseline gap-3 pt-2">
-                                <p className="text-3xl md:text-4xl font-light tabular-nums">
-                                    {product.price.toFixed(2)}
-                                </p>
-                                <span className="text-base  font-light">DT</span>
+                                {typeof product.promoPrice === "number" && product.promoPrice < product.price ? (
+                                    <>
+                                        <p className="text-3xl md:text-4xl font-light tabular-nums">
+                                            {product.promoPrice.toFixed(2)}
+                                        </p>
+                                        <span className="text-base  font-light">DT</span>
+                                        <span className="text-sm line-through text-zinc-400 ml-3">{product.price.toFixed(2)} DT</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <p className="text-3xl md:text-4xl font-light tabular-nums">
+                                            {product.price.toFixed(2)}
+                                        </p>
+                                        <span className="text-base  font-light">DT</span>
+                                    </>
+                                )}
                             </div>
                         </div>
 
@@ -456,7 +469,7 @@ export function ProductClient({ product }: ProductClientProps) {
                                         </div>
                                         <div className="flex-1">
                                             <div className="text-xs font-light">
-                                                Total:{(product.price * quantity).toFixed(2)} DT
+                                                Total: {(((typeof product.promoPrice === "number" && product.promoPrice < product.price) ? product.promoPrice : product.price) * quantity).toFixed(2)} DT
                                             </div>
                                         </div>
                                     </div>

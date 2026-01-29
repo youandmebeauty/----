@@ -12,6 +12,7 @@ export interface Product {
   barcode?: string
   brand: string
   price: number
+  promoPrice?: number
   image?: string // Kept for backward compatibility, will use first image from images array
   images?: string[] // Array of product images
   category: string

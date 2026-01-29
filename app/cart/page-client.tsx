@@ -391,10 +391,18 @@ export default function CartPage() {
                                 {item.category}
                               </span>
                             </div>
-                            
+                            {typeof item.promoPrice === "number" && item.promoPrice < item.price ? (
                             <p className="hidden sm:block text-sm font-semibold text-primary">
-                              {item.price.toFixed(2)} DT chacun
+                              {item.promoPrice.toFixed(2)} DT chacun
+                    <span className="text-xs line-through text-muted-foreground/60 ml-2">
+                      {item.price.toFixed(2)}
+                    </span>
                             </p>
+                            ) : (
+                              <p className="hidden sm:block text-sm font-semibold text-primary">
+                                {item.price.toFixed(2)} DT chacun
+                              </p>
+                            )}
                           </div>
 
                           <div className="sm:hidden w-full pt-2">

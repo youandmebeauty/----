@@ -31,6 +31,7 @@ function EditProductContent() {
     brand: "",
     barcode: "",
     price: "",
+    promoPrice: "",
     category: "",
     subcategory: "",
     description: "",
@@ -65,6 +66,7 @@ function EditProductContent() {
           brand: productData.brand || "",
           barcode: productData.barcode || "",
           price: productData.price.toString(),
+          promoPrice: productData.promoPrice ? productData.promoPrice.toString() : "",
           category: productData.category,
           subcategory: productData.subcategory || "",
           description: productData.description,
@@ -90,6 +92,7 @@ function EditProductContent() {
         })
         router.push("/admin/dashboard")
       }
+
     } catch (error) {
       console.error("Error fetching product:", error)
       toast({
@@ -165,6 +168,7 @@ function EditProductContent() {
         brand: formData.brand.trim(),
         barcode: formData.barcode.trim(),
         price: Number.parseFloat(formData.price) || 0,
+        promoPrice: formData.promoPrice ? Number.parseFloat(formData.promoPrice) : undefined,
         category: formData.category,
         subcategory: formData.subcategory?.trim() || undefined,
         description: formData.description.trim(),
@@ -359,6 +363,20 @@ function EditProductContent() {
                       placeholder="0.00"
                       className="bg-background/50"
                     />
+                    <div className="mt-2">
+                      <Label htmlFor="promoPrice">Prix Promo (optionnel)</Label>
+                      <Input
+                        id="promoPrice"
+                        name="promoPrice"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        value={formData.promoPrice}
+                        onChange={handleInputChange}
+                        placeholder="0.00"
+                        className="bg-background/50"
+                      />
+                    </div>
                   </div>
                   <div>
                     <Label htmlFor="quantity">

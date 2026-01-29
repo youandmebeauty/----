@@ -9,6 +9,7 @@ export interface CartItem {
   id: string
   name: string
   price: number
+  promoPrice?: number
   image: string
   quantity: number
   category: string
@@ -88,6 +89,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0)
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
+  // Prefer promoPrice when present and lower than price
+  const totalWithPromos = items.reduce((sum, item) => {
+    const unit = typeof item.promoPrice === "number" && item.promoPrice < item.price ? item.promoPrice : item.price
+    return sum + unit * item.quantity
+  }, 0)
 
   return (
     <CartContext.Provider
@@ -97,7 +103,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         removeItem,
         updateQuantity,
         clearCart,
-        total,
+        total: totalWithPromos,
         itemCount,
         isLoading,
       }}

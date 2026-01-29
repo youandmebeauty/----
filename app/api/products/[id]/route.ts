@@ -44,6 +44,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       name,
       brand,
       price,
+      promoPrice,
       category,
       barcode,
       subcategory,
@@ -83,7 +84,8 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     if (name !== undefined) updateData.name = name
     if (brand !== undefined) updateData.brand = brand
     if (price !== undefined) updateData.price = Number(price)
-    if (category !== undefined) updateData.category = category
+    if (promoPrice !== undefined) updateData.promoPrice = promoPrice ? Number(promoPrice) : undefined
+    if (category !== undefined) updateData.category = category?.trim() || null
     if (subcategory !== undefined) {
       updateData.subcategory = subcategory || FieldValue.delete()
     }
