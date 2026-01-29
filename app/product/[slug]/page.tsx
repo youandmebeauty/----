@@ -85,6 +85,16 @@ export async function generateMetadata(
       description,
       images: [productImage],
     },
+        robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
   }
 }
 

@@ -236,7 +236,7 @@ return            NotFound()
                   return (
                     <div 
                       key={coffret.id}
-                      className="absolute transition-all w-80  duration-500 hover:z-30 hover:scale-105 cursor-pointer"
+                      className="absolute transition-all lg:w-80 w-64 duration-500 hover:z-30 hover:scale-105 cursor-pointer overflow-x-hidden"
                       style={{
                         left: position.left,
                         top: position.top,

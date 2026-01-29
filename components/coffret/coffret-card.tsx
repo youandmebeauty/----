@@ -126,12 +126,13 @@ export function CoffretCard({
                     )}
 
                     {/* Main Image */}
-                    <div className="absolute inset-0  ">
+                    <div className="absolute w-full h-full flex items-center justify-center inset-0 rounded-lg bg-white ">
                         <Image
                             src={coffret.images?.[0] || "/placeholder.svg"}
                             alt={`Image du coffret ${coffret.name}`}
-                            fill
-                            className="object-cover rounded-xl"
+                                          width={1350}
+              height={1080}
+                            className="object-cover rounded-xl "
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             priority={priority}
                         />
