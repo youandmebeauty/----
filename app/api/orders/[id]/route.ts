@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { adminDb } from "@/lib/firebase-admin"
+import { revalidateProducts } from "@/lib/revalidate"
 import type { Order } from "@/lib/models"
 
 const PRODUCTS_COLLECTION = "products"
@@ -205,6 +206,13 @@ export async function PATCH(
 
     // Update order status after any necessary stock changes
     await orderRef.update({ status })
+
+    // Revalidate products cache because stock changes occurred
+    try {
+      await revalidateProducts("order-status-change", { id, status, previousStatus })
+    } catch (e) {
+      console.warn("Failed to revalidate products after order status change:", e)
+    }
 
     // Handle stock restoration only if a previously shipped or delivered order is cancelled
     if (status === "cancelled" && (previousStatus === "shipped" || previousStatus === "delivered")) {
