@@ -106,9 +106,7 @@ export function FeaturedProductsClient() {
     return (
       <div className="py-16 mt-24 bg-background rounded-3xl m-4">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-2xl md:text-3xl font-medium tracking-tight text-foreground">Produits Vedettes</h2>
-          </div>
+
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[...Array(4)].map((_, i) => (
               <div key={i} className="animate-pulse">
