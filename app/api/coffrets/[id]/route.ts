@@ -6,10 +6,10 @@ const COFFRETS_COLLECTION = "coffrets"
 
 export async function PUT(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> } // ✅ params is now a Promise
 ) {
     try {
-        const { id } = params
+        const { id } = await params // ✅ await params
         const updates: Partial<Omit<Coffret, "id" | "createdAt">> = await request.json()
 
         if (!id) {
@@ -75,7 +75,7 @@ export async function PUT(
         ) as Coffret
 
         // Revalidate the coffrets cache
-        revalidateTag("coffrets", "default")
+        revalidateTag("coffrets","default")
 
         return NextResponse.json(updatedCoffret)
     } catch (error) {
@@ -89,10 +89,10 @@ export async function PUT(
 
 export async function DELETE(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> } // ✅ params is now a Promise
 ) {
     try {
-        const { id } = params
+        const { id } = await params // ✅ await params
 
         if (!id) {
             return NextResponse.json(
@@ -106,7 +106,7 @@ export async function DELETE(
         await adminDb.collection(COFFRETS_COLLECTION).doc(id).delete()
 
         // Revalidate the coffrets cache
-        revalidateTag("coffrets", "default")
+        revalidateTag("coffrets","default")
 
         return NextResponse.json({ success: true })
     } catch (error) {

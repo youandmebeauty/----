@@ -86,7 +86,7 @@ function AddCoffretContent() {
                 name: formData.name,
                 description: formData.description,
                 price: Number.parseFloat(formData.price),
-                quantity: formData.quantity ? Number.parseInt(formData.quantity, 10) : 0,
+                quantity: formData.quantity ? Number.parseInt(formData.quantity) : 0,
                 images: formData.images,
                 productIds: formData.productIds,
             })

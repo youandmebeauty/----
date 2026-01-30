@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
         const docRef = await adminDb.collection(COFFRETS_COLLECTION).add({
             ...coffret,
             originalPrice,
+            createdAt: Timestamp.now(),
             updatedAt: Timestamp.now()
         })
 

@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
 import { getCoffretById, updateCoffret,deleteCoffret } from "@/lib/services/coffret-service"
 import { getProducts } from "@/lib/services/product-service"
-import type { Product } from "@/lib/models/models"
+import type { Coffret, Product } from "@/lib/models/models"
 import { ArrowLeft, Image as ImageIcon, X, Plus, Trash2 } from "lucide-react"
 import { CldUploadWidget } from 'next-cloudinary'
 
@@ -25,6 +25,8 @@ function EditCoffretContent() {
     const { toast } = useToast()
     const [loading, setLoading] = useState(false)
     const [dataLoading, setDataLoading] = useState(true)
+      const [coffretData, setCoffretData] = useState<Coffret | null>(null)
+    
     const [products, setProducts] = useState<Product[]>([])
     const [formData, setFormData] = useState({
         name: "",
@@ -75,7 +77,7 @@ const handleDelete = async () => {
                     getCoffretById(id)
                 ])
                 setProducts(productsData)
-
+                setCoffretData(coffretData)
                 if (coffretData) {
                     
                     setFormData({
@@ -137,8 +139,16 @@ const handleDelete = async () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
-
+        
         try {
+            const coffretData: any = {
+                name: formData.name,
+                description: formData.description,
+                price: parseFloat(formData.price),
+                quantity: parseInt(formData.quantity) || 0,
+                images: formData.images,
+                productIds: formData.productIds,
+            }
             if (formData.images.length === 0) {
                 toast({
                     title: "Erreur",
@@ -149,14 +159,7 @@ const handleDelete = async () => {
                 return
             }
 
-            await updateCoffret(id, {
-                name: formData.name,
-                description: formData.description,
-                price: Number.parseFloat(formData.price),
-                quantity: Number(formData.quantity),
-                images: formData.images,
-                productIds: formData.productIds
-            })
+            await updateCoffret(id, coffretData)
 
             toast({
                 title: "Coffret mis à jour",
