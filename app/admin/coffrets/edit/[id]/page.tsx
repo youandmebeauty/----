@@ -30,7 +30,7 @@ function EditCoffretContent() {
         name: "",
         description: "",
         price: "",
-        stock: "",
+        quantity: "",
         images: [] as string[],
         productIds: [] as string[],
     })
@@ -82,7 +82,7 @@ const handleDelete = async () => {
                         name: coffretData.name ?? "",
                         description: coffretData.description ?? "",
                         price: (coffretData.price ?? 0).toString(),
-                        stock: coffretData.stock !== undefined && coffretData.stock !== null ? String(coffretData.stock) : "",
+                        quantity: coffretData.quantity !== undefined && coffretData.quantity !== null ? String(coffretData.quantity) : "",
                         images: Array.isArray(coffretData.images) ? coffretData.images : [],
                         productIds: Array.isArray(coffretData.productIds) ? coffretData.productIds : []
                     })
@@ -153,7 +153,7 @@ const handleDelete = async () => {
                 name: formData.name,
                 description: formData.description,
                 price: Number.parseFloat(formData.price),
-                stock: formData.stock ? Number.parseInt(formData.stock, 10) : 0,
+                quantity: Number.parseFloat(formData.quantity),
                 images: formData.images,
                 productIds: formData.productIds
             })
@@ -234,14 +234,14 @@ const handleDelete = async () => {
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="stock">Stock</Label>
+                                    <Label htmlFor="quantity">Quantité</Label>
                                     <Input
-                                        id="stock"
-                                        name="stock"
+                                        id="quantity"
+                                        name="quantity"
                                         type="number"
                                         step="1"
                                         min="0"
-                                        value={formData.stock}
+                                        value={formData.quantity}
                                         onChange={handleInputChange}
                                         placeholder="0"
                                         className="bg-background/50"

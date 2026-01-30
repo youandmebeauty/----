@@ -1,5 +1,6 @@
 import type { Product, SearchFilters } from "@/lib/models/models"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
+import { getCoffretById, getCoffretAvailableStock } from "@/lib/services/coffret-service"
 
 // Create a category order map for sorting
 const categoryOrderMap = new Map<string, number>()
@@ -346,6 +347,13 @@ export function parseItemId(itemId: string): { productId: string; variantIndex: 
 // Get stock for an item (handles variants)
 export async function getItemStock(itemId: string): Promise<number> {
   try {
+    // First check if it's a coffret
+    const coffret = await getCoffretById(itemId)
+    if (coffret) {
+      return await getCoffretAvailableStock(coffret)
+    }
+
+    // Otherwise, handle as a product (with possible variants)
     const { productId, variantIndex } = parseItemId(itemId)
     
     const product = await getProductById(productId)
@@ -373,7 +381,6 @@ export async function getItemStock(itemId: string): Promise<number> {
         return 0
       }
       
-      // Check if quantity exists and is a valid number
       const stock = typeof variant.quantity === 'number' ? variant.quantity : (parseInt(String(variant.quantity || 0), 10) || 0)
       return stock
     }

@@ -28,7 +28,7 @@ function AddCoffretContent() {
         name: "",
         description: "",
         price: "",
-        stock: "",
+        quantity: "",
         images: [] as string[],
         productIds: [] as string[],
     })
@@ -86,7 +86,7 @@ function AddCoffretContent() {
                 name: formData.name,
                 description: formData.description,
                 price: Number.parseFloat(formData.price),
-                stock: formData.stock ? Number.parseInt(formData.stock, 10) : 0,
+                quantity: formData.quantity ? Number.parseInt(formData.quantity, 10) : 0,
                 images: formData.images,
                 productIds: formData.productIds,
             })
@@ -160,14 +160,14 @@ function AddCoffretContent() {
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="stock">Stock</Label>
+                                    <Label htmlFor="quantity">Quantité</Label>
                                     <Input
-                                        id="stock"
-                                        name="stock"
+                                        id="quantity"
+                                        name="quantity"
                                         type="number"
                                         step="1"
                                         min="0"
-                                        value={formData.stock}
+                                        value={formData.quantity}
                                         onChange={handleInputChange}
                                         placeholder="0"
                                         className="bg-background/50"

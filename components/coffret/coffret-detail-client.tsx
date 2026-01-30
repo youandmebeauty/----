@@ -76,7 +76,7 @@ export function CoffretDetailClient({
     .filter((item) => item.id === coffret.id)
     .reduce((sum, item) => sum + item.quantity, 0)
 
-  const remainingStock = (coffret.stock || 0) - cartQuantity
+  const remainingStock = (coffret.quantity || 0) - cartQuantity
   const inStock = remainingStock > 0
 
   // Reset image loaded state when image changes

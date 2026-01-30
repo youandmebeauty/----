@@ -20,7 +20,41 @@ export async function getCoffrets(): Promise<Coffret[]> {
         return []
     }
 }
-
+// Add this helper function to calculate available coffret stock
+export async function getCoffretAvailableStock(coffret: Coffret): Promise<number> {
+  try {
+    // Coffret stock is limited by:
+    // 1. The coffret's own quantity field
+    // 2. The minimum stock of all constituent products
+    
+    const coffretQuantity = coffret.quantity ?? 0
+    
+    // If no products in coffret, return coffret quantity
+    if (!coffret.productIds || coffret.productIds.length === 0) {
+      return coffretQuantity
+    }
+    
+    // Get stock for all products in the coffret
+    const productStocks = await Promise.all(
+      coffret.productIds.map(async (productId) => {
+        const product = await getProductById(productId)
+        return product?.quantity ?? 0
+      })
+    )
+    
+    // The available stock is the minimum of:
+    // - coffret's own quantity
+    // - the lowest stock among its products
+    const minProductStock = productStocks.length > 0 
+      ? Math.min(...productStocks) 
+      : 0
+    
+    return Math.min(coffretQuantity, minProductStock)
+  } catch (error) {
+    console.error('Error calculating coffret stock:', error)
+    return 0
+  }
+}
 export async function getCoffretById(id: string): Promise<Coffret | null> {
     if (!id) return null
     

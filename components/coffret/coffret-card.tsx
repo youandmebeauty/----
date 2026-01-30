@@ -37,7 +37,7 @@ export function CoffretCard({
     .reduce((sum, item) => sum + item.quantity, 0)
   const displayImage = coffretImages[0]
 
-  const remainingStock = (coffret.stock || 0) - cartQuantity
+  const remainingStock = (coffret.quantity || 0) - cartQuantity
   const inStock = remainingStock > 0
   const handleAddToCart = async () => {
     if (1 > remainingStock) {
@@ -114,7 +114,7 @@ export function CoffretCard({
 
 
                     {/* Out of Stock Badge */}
-                    {coffret.stock === 0 && (
+                    {coffret.quantity === 0 && (
                         <div className="absolute top-3 right-3 z-10">
                             <Badge 
                                 variant="secondary" 
