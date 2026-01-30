@@ -178,7 +178,7 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
       "@context": "https://schema.org",
       "@type": "Product",
       name: coffret.name,
-      image: coffret.images && coffret.images.length > 0 ? coffret.images : [],
+      image: coffret.images[0],
       description: coffret.description,
       sku: coffret.id,
       category: "Coffret Cadeau",
@@ -191,6 +191,15 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
         "@type": "Offer",
         priceCurrency: "TND",
         price: coffret.price,
+              hasMerchantReturnPolicy: false,
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingDestination: {
+          "@type": "DefinedRegion",
+          addressCountry: "TN",
+        },
+      },
+    
         priceValidUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         availability: coffret.quantity === 0 
           ? "https://schema.org/OutOfStock" 

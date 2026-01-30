@@ -140,7 +140,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    image: product.images ?? [],
+    image: product.image,
     description: product.longDescription ?? product.description,
     brand: product.brand,
     sku: product.id,
@@ -155,6 +155,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock",
       url: canonicalUrl,
+      // Indicate whether a merchant return policy exists and basic shipping details
+      hasMerchantReturnPolicy: false,
+      shippingDetails: {
+        "@type": "OfferShippingDetails",
+        shippingDestination: {
+          "@type": "DefinedRegion",
+          addressCountry: "TN",
+        },
+      },
     },
   }
 

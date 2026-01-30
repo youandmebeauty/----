@@ -208,7 +208,7 @@ const handleDelete = async () => {
                         </Button>
                         <h1 className="font-serif lg:text-3xl text-lg font-medium tracking-tight">Modifier le Coffret</h1></div>
                                 <Button variant="destructive" onClick={handleDelete} disabled={deleting} className="rounded-full">
-              {deleting ?  <span className="flex flex-row md:w-24"><Trash2 className="h-4 w-4 md:mr-2  animate-spin" /><p className="hidden md:inline">Suppression...</p></span> : <span className="flex flex-row md:w-24"><Trash2 className="h-4 w-4 md:mr-2  animate-spin" /><p className="hidden md:inline">Supprimer</p></span>}
+              {deleting ?  <span className="flex flex-row md:w-24"><Trash2 className="h-4 w-4 md:mr-2  animate-spin" /><p className="hidden md:inline">Suppression...</p></span> : <span className="flex flex-row md:w-24"><Trash2 className="h-4 w-4 md:mr-2" /><p className="hidden md:inline">Supprimer</p></span>}
             </Button></div>
 
                     <Card className="max-w-2xl mx-auto bg-background/50 backdrop-blur-sm border-border/50 shadow-sm">
