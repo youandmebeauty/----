@@ -141,7 +141,7 @@ export default function GoogleAnalytics() {
           <CardContent className="relative">
             <p className="text-xs opacity-75 mb-2">au cours des 30 dernières minutes</p>
             <div className="text-3xl font-serif font-medium">
-              {realtimeUsers !== null ? realtimeUsers.toLocaleString() : '-'}
+              {realtimeUsers !== null ? (realtimeUsers - 1).toLocaleString() : '-'}
             </div>
           </CardContent>
         </Card>

@@ -269,7 +269,7 @@ export default function Sidebar({ className = "" }: { className?: string }) {
         onClick={() => setOpen((v) => !v)}
         className="
           fixed top-4 left-4 z-50 p-2.5 rounded-xl
-          bg-background/90 backdrop-blur-sm
+          bg-background 
           border border-border/50 shadow-lg
           transition-all duration-200 hover:scale-105 active:scale-95
           md:hidden
@@ -302,11 +302,11 @@ export default function Sidebar({ className = "" }: { className?: string }) {
           />
           
           {/* Drawer */}
-          <div className="fixed inset-0 z-50 md:hidden pointer-events-none">
+          <div className="fixed inset-0 z-40 md:hidden pointer-events-none">
             <div
               className="
-                absolute left-0 top-0 bottom-0 w-[280px] max-w-[85vw]
-                bg-background/98 backdrop-blur-md
+                absolute left-0 top-0 bottom-0 w-full
+                bg-background 
                 border-r border-border/50 shadow-2xl
                 pointer-events-auto
                 animate-in slide-in-from-left duration-300
