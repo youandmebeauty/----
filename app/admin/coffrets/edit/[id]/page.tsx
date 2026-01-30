@@ -153,7 +153,7 @@ const handleDelete = async () => {
                 name: formData.name,
                 description: formData.description,
                 price: Number.parseFloat(formData.price),
-                quantity: Number.parseFloat(formData.quantity),
+                quantity: Number(formData.quantity),
                 images: formData.images,
                 productIds: formData.productIds
             })
