@@ -273,14 +273,14 @@ function EditProductContent() {
 
   if (!product) {
     return (
-      <div className=" h-screen bg-background z-40 flex items-center justify-center">
+      <div className=" h-screen bg-background z-40 flex items-center justify-center w-full">
         <LoadingAnimation size={140} className="text-primary" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background p-4">
+    <div className="min-h-screen bg-background p-4 w-full lg:w-10/12">
       <div className="relative border border-border/50 bg-gradient-to-br from-secondary/30 via-secondary/20 to-background rounded-3xl overflow-hidden min-h-[calc(100vh-2rem)]">
         {/* Subtle grid pattern */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>

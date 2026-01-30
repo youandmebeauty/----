@@ -15,7 +15,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Tag, Plus, Edit, Trash2 } from "lucide-react"
 import { getPromoCodes, createPromoCode, updatePromoCode, deletePromoCode } from "@/lib/services/promo-code-service"
 import type { PromoCode } from "@/lib/models/models"
-
+import { LoadingAnimation } from "@/components/ui/loading-animation"
 export function PromoManager() {
   const { toast } = useToast()
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([])
@@ -105,8 +105,13 @@ export function PromoManager() {
     }
   }
 
-  if (loading) return <div className="py-8 text-center text-muted-foreground">Chargement...</div>
-
+  if (loading) {
+    return (
+      <div className=" h-screen w-full z-40 bg-background flex items-center justify-center  ">
+        <LoadingAnimation size={140} className="text-primary" />
+      </div>
+    )
+  }
   return (
     <div>
       <Card className="bg-background/50 backdrop-blur-sm border-border/50 shadow-sm overflow-hidden">

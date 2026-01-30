@@ -28,7 +28,7 @@ export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
   // Show loading while checking authentication
   if (loading) {
     return (
-      <div className=" h-screen z-40 bg-background flex items-center justify-center ">
+      <div className=" h-screen w-full z-40 bg-background flex items-center justify-center  ">
         <LoadingAnimation size={140} className="text-primary" />
       </div>
     )

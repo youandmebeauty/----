@@ -41,14 +41,14 @@ export default function AdminProductsPage() {
   }
   if (loading) {
     return (
-      <div className=" h-screen bg-background z-40 flex items-center justify-center">
+      <div className=" h-screen bg-background z-40 flex items-center justify-center w-full">
         <LoadingAnimation size={140} className="text-primary" />
       </div>
     )
   }
   return (
     <AdminRouteGuard>
-      <div className="min-h-screen bg-background p-4">
+      <div className="min-h-screen bg-background p-4 w-full lg:w-10/12">
         <div className="container mx-auto">
           <Card className="bg-background/50 backdrop-blur-sm border-border/50 shadow-sm overflow-hidden">
             <CardHeader className="flex items-center justify-between">

@@ -31,7 +31,7 @@ export default function AdminLoginPage() {
   // Show loading if checking auth status
   if (loading) {
     return (
-      <div className=" h-screen bg-background z-40 flex items-center justify-center">
+      <div className=" h-screen bg-background z-40 flex items-center justify-center w-full">
         <LoadingAnimation size={140} className="text-primary" />
       </div>
     )

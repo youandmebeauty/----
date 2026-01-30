@@ -15,5 +15,5 @@ export const metadata: Metadata = {
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  return( <div className="flex  gap-5 w-full "><Sidebar />{children}</div>)
+  return( <div className="flex  gap-5 w-full min-h-screen "><Sidebar />{children}</div>)
 }
