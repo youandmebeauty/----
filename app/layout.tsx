@@ -8,8 +8,7 @@ import { FirebaseProvider } from "@/components/providers/firebase-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { Footer } from "@/components/navigation/footer"
 import { Header } from "@/components/navigation/header"
-import { SpeedInsights } from '@vercel/speed-insights/next';
-import {Analytics } from "@vercel/analytics/next";
+
 
 const inter = Inter({ subsets: ["latin"] })
 import { SaintValentinProvider } from "@/components/coffret/saint-valentin-provider"
@@ -51,9 +50,6 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-                <Analytics />
-
-        <SpeedInsights/>
         <ThemeProvider attribute="class" defaultTheme="light">
           <SmoothScrollProvider>
             <FirebaseProvider>
