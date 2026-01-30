@@ -59,8 +59,7 @@ useEffect(() => {
               try {
                 const newToken = await user.getIdToken(true) // Force refresh
                 document.cookie = `admin-token=${newToken}; path=/; max-age=3600; secure; samesite=strict`
-                console.log('Token refreshed successfully')
-              } catch (error) {
+               } catch (error) {
                 console.error('Token refresh failed:', error)
                 clearInterval(refreshInterval!)
                 // Optionally sign out user if refresh fails

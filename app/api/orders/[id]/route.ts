@@ -4,6 +4,7 @@ import { revalidateProducts } from "@/lib/utils/revalidate-util"
 import type { Order } from "@/lib/models/models"
 
 const PRODUCTS_COLLECTION = "products"
+const COFFRETS_COLLECTION = "coffrets"
 const ORDERS_COLLECTION = "orders"
 
 // Helper function to parse item ID and extract product ID and variant index
@@ -19,9 +20,56 @@ function parseItemId(itemId: string): { productId: string; variantIndex: number 
   return { productId: itemId, variantIndex: null }
 }
 
-// Get stock for an item (handles variants)
+// Get stock for a coffret (checks all constituent products)
+async function getCoffretStock(coffretId: string): Promise<number> {
+  try {
+    const coffretDoc = await adminDb.collection(COFFRETS_COLLECTION).doc(coffretId).get()
+    
+    if (!coffretDoc.exists) {
+      console.warn(`Coffret not found: ${coffretId}`)
+      return 0
+    }
+
+    const coffret = coffretDoc.data() as any
+    const coffretQuantity = coffret.quantity ?? 0
+    
+    // If no products in coffret, return coffret quantity
+    if (!coffret.productIds || coffret.productIds.length === 0) {
+      return coffretQuantity
+    }
+    
+    // Get stock for all products in the coffret
+    const productStocks = await Promise.all(
+      coffret.productIds.map(async (productId: string) => {
+        const productDoc = await adminDb.collection(PRODUCTS_COLLECTION).doc(productId).get()
+        if (!productDoc.exists) {
+          console.warn(`Product ${productId} in coffret ${coffretId} not found`)
+          return 0
+        }
+        const product = productDoc.data() as any
+        return product.quantity ?? 0
+      })
+    )
+    
+    // Return the minimum of coffret quantity and lowest product stock
+    const minProductStock = productStocks.length > 0 ? Math.min(...productStocks) : 0
+    return Math.min(coffretQuantity, minProductStock)
+  } catch (error) {
+    console.error(`Error getting coffret stock for ${coffretId}:`, error)
+    return 0
+  }
+}
+
+// Get stock for an item (handles products, variants, AND coffrets)
 async function getItemStock(itemId: string): Promise<number> {
   try {
+    // First check if it's a coffret
+    const coffretDoc = await adminDb.collection(COFFRETS_COLLECTION).doc(itemId).get()
+    if (coffretDoc.exists) {
+      return await getCoffretStock(itemId)
+    }
+
+    // Otherwise handle as product (with possible variant)
     const { productId, variantIndex } = parseItemId(itemId)
     const productDoc = await adminDb.collection(PRODUCTS_COLLECTION).doc(productId).get()
     
@@ -54,8 +102,51 @@ async function getItemStock(itemId: string): Promise<number> {
   }
 }
 
-// Update stock for an item (handles variants)
+// Update stock for a coffret (reduces stock for coffret and all constituent products)
+async function updateCoffretStock(coffretId: string, newCoffretQuantity: number): Promise<void> {
+  const coffretDoc = await adminDb.collection(COFFRETS_COLLECTION).doc(coffretId).get()
+  
+  if (!coffretDoc.exists) {
+    throw new Error(`Coffret not found: ${coffretId}`)
+  }
+
+  const coffret = coffretDoc.data() as any
+  const currentCoffretQuantity = coffret.quantity ?? 0
+  const quantityChange = currentCoffretQuantity - newCoffretQuantity
+
+  // Update coffret's own quantity
+  await adminDb.collection(COFFRETS_COLLECTION).doc(coffretId).update({
+    quantity: newCoffretQuantity
+  })
+
+  // Update stock for all products in the coffret
+  if (coffret.productIds && Array.isArray(coffret.productIds) && quantityChange !== 0) {
+    await Promise.all(
+      coffret.productIds.map(async (productId: string) => {
+        const productDoc = await adminDb.collection(PRODUCTS_COLLECTION).doc(productId).get()
+        if (productDoc.exists) {
+          const product = productDoc.data() as any
+          const currentProductQuantity = product.quantity ?? 0
+          const newProductQuantity = Math.max(0, currentProductQuantity - quantityChange)
+          await adminDb.collection(PRODUCTS_COLLECTION).doc(productId).update({
+            quantity: newProductQuantity
+          })
+        }
+      })
+    )
+  }
+}
+
+// Update stock for an item (handles products, variants, AND coffrets)
 async function updateItemStock(itemId: string, quantity: number): Promise<void> {
+  // Check if it's a coffret
+  const coffretDoc = await adminDb.collection(COFFRETS_COLLECTION).doc(itemId).get()
+  if (coffretDoc.exists) {
+    await updateCoffretStock(itemId, quantity)
+    return
+  }
+
+  // Otherwise handle as product with possible variant
   const { productId, variantIndex } = parseItemId(itemId)
   const productRef = adminDb.collection(PRODUCTS_COLLECTION).doc(productId)
   
@@ -226,10 +317,10 @@ export async function PATCH(
           }
 
           try {
-            // Get current stock (handles variants)
+            // Get current stock (handles coffrets, variants)
             const currentStock = await getItemStock(item.id)
             const newStock = currentStock + item.quantity
-            // Restore stock (handles variants)
+            // Restore stock (handles coffrets, variants)
             await updateItemStock(item.id, newStock)
           } catch (stockError) {
             console.error(`Error restoring stock for item ${item.id}:`, stockError)
