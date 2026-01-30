@@ -17,6 +17,7 @@ import type { AnalyticsPeriod } from "@/lib/services/analytics-service"
 import { MetricsCard } from "@/components/admin/metrics-card"
 import { AnalyticsChart } from "@/components/admin/analytics-chart"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
+import GoogleAnalytics from "@/components/admin/googleAnalytics"
 
 const getCreatedAtMillis = (product: Product): number => {
   const ts: any = product.createdAt
@@ -82,7 +83,7 @@ function DashboardContent() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 w-full lg:w-10/12 w-full lg:w-10/12">
+    <div className="min-h-screen bg-background p-4  w-full lg:w-10/12">
       <div className="relative border border-border/50 bg-gradient-to-br from-secondary/30 via-secondary/20 to-background rounded-3xl overflow-hidden min-h-[calc(100vh-2rem)]">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
 
@@ -97,7 +98,7 @@ function DashboardContent() {
               Déconnexion
             </Button>
           </div>
-
+          <GoogleAnalytics />
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card className="bg-background/50 backdrop-blur-sm border-border/50 shadow-sm hover:shadow-md transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -106,9 +107,7 @@ function DashboardContent() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-serif font-medium">{stats.totalProducts}</div>
-                <div className="mt-3">
-                  <Button onClick={() => router.push('/admin/products')} className="rounded-full">Gérer Produits</Button>
-                </div>
+ 
               </CardContent>
             </Card>
 
@@ -119,9 +118,7 @@ function DashboardContent() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-serif font-medium">{stats.totalOrders}</div>
-                <div className="mt-3">
-                  <Button onClick={() => router.push('/admin/orders')} className="rounded-full">Gérer Commandes</Button>
-                </div>
+ 
               </CardContent>
             </Card>
 
@@ -143,9 +140,7 @@ function DashboardContent() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-serif font-medium">{stats.pendingOrders}</div>
-                <div className="mt-3">
-                  <Button onClick={() => router.push('/admin/orders')} className="rounded-full">Voir Commandes</Button>
-                </div>
+ 
               </CardContent>
             </Card>
           </div>
@@ -161,40 +156,7 @@ function DashboardContent() {
               <AnalyticsChart data={analytics.salesChart} title="Ventes des 7 derniers jours" />
             </div>
           )}
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <Card className="p-4 bg-background/50 backdrop-blur-sm border-border/50">
-              <CardTitle className="font-serif text-lg">Commandes</CardTitle>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">Gérez et suivez les commandes client.</p>
-                <Button onClick={() => router.push('/admin/orders')}>Ouvrir Commandes</Button>
-              </CardContent>
-            </Card>
-
-            <Card className="p-4 bg-background/50 backdrop-blur-sm border-border/50">
-              <CardTitle className="font-serif text-lg">Produits</CardTitle>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">Ajoutez, modifiez ou supprimez des produits.</p>
-                <Button onClick={() => router.push('/admin/products')}>Gérer Produits</Button>
-              </CardContent>
-            </Card>
-
-            <Card className="p-4 bg-background/50 backdrop-blur-sm border-border/50">
-              <CardTitle className="font-serif text-lg">Coffrets</CardTitle>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">Gérez vos coffrets.</p>
-                <Button onClick={() => router.push('/admin/coffrets')}>Gérer Coffrets</Button>
-              </CardContent>
-            </Card>
-
-            <Card className="p-4 bg-background/50 backdrop-blur-sm border-border/50">
-              <CardTitle className="font-serif text-lg">Codes Promo</CardTitle>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">Créer et gérer les codes promotionnels.</p>
-                <Button onClick={() => router.push('/admin/promos')}>Gérer Codes Promo</Button>
-              </CardContent>
-            </Card>
-          </div>
+ 
         </main>
       </div>
     </div>
