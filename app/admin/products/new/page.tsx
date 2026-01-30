@@ -170,7 +170,7 @@ function AddProductContent() {
         description: "Le produit a été créé avec succès.",
       })
 
-      router.push("/admin/dashboard")
+      router.push("/admin/products")
     } catch (error) {
       console.error("Error creating product:", error)
       toast({

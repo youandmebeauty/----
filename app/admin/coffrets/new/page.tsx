@@ -107,7 +107,7 @@ function AddCoffretContent() {
                 description: "Le coffret a été créé avec succès.",
             })
 
-            router.push("/admin/dashboard")
+            router.push("/admin/coffrets")
         } catch (error) {
             console.error("Error creating coffret:", error)
             toast({

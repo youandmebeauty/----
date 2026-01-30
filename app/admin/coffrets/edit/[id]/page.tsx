@@ -176,7 +176,7 @@ const handleDelete = async () => {
                 description: "Le coffret a été mis à jour avec succès.",
             })
 
-            router.push("/admin/dashboard")
+            router.push("/admin/coffrets")
         } catch (error) {
             console.error("Error updating coffret:", error)
             toast({

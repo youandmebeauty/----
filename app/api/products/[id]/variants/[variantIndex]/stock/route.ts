@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { revalidateProducts } from "@/lib/utils/revalidate-util"
 import { adminDb } from "@/lib/utils/firebase-admin-util"
+import { revalidateTag } from "next/cache"
 import type { Product } from "@/lib/models/models"
 
 const PRODUCTS_COLLECTION = "products"
@@ -67,6 +68,17 @@ export async function PATCH(
 
     // Revalidate products cache and record an audit log
     await revalidateProducts("variant-stock-update", { id, variantIndex: variantIdx })
+
+    // If product is part of any coffret, revalidate coffrets cache
+    try {
+      const coffretSnap = await adminDb.collection("coffrets").where("productIds", "array-contains", id).limit(1).get()
+      if (!coffretSnap.empty) {
+        await revalidateTag("coffrets", "default")
+        console.info(`[coffrets revalidate] product ${id} variant ${variantIdx} updated, revalidated coffrets tag`)
+      }
+    } catch (err) {
+      console.warn("Failed to check coffrets for revalidation:", err)
+    }
 
     return NextResponse.json({ 
       success: true, 

@@ -40,7 +40,7 @@ export default function AdminLoginPage() {
   // If already authenticated, show redirect message
   if (isAdmin && hasValidToken) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background w-full flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">Déjà connecté</h1>
           <p className="text-muted-foreground">Redirection vers le tableau de bord...</p>
@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background w-full flex items-center justify-center p-4 relative overflow-hidden">
       {/* Background elements */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse pointer-events-none"></div>

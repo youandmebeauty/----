@@ -38,7 +38,7 @@ function OrderDetailsContent() {
           description: "Commande introuvable.",
           variant: "destructive",
         })
-        router.push("/admin/dashboard")
+        router.push("/admin/orders")
       }
     } catch (error) {
       console.error("Error fetching order:", error)

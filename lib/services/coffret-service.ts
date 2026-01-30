@@ -24,7 +24,7 @@ export async function getCoffretAvailableStock(coffret: Coffret): Promise<number
   try {
 
     
-    const coffretQuantity = coffret.quantity ?? 0
+    const coffretQuantity =  0
     
     // If no products in coffret, return coffret quantity
     if (!coffret.productIds || coffret.productIds.length === 0) {
@@ -40,18 +40,13 @@ export async function getCoffretAvailableStock(coffret: Coffret): Promise<number
         return stock
       })
     )
-    
-    // The available stock is the minimum of:
-    // - coffret's own quantity
-    // - the lowest stock among its products
+
     const minProductStock = productStocks.length > 0 
       ? Math.min(...productStocks) 
       : 0
-    
-    const finalStock = Math.min(coffretQuantity, minProductStock)
 
     
-    return finalStock
+    return minProductStock
   } catch (error) {
     console.error('[getCoffretAvailableStock] Error calculating coffret stock:', error)
     return 0

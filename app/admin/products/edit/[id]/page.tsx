@@ -230,7 +230,7 @@ function EditProductContent() {
         description: "Le produit a été mis à jour avec succès.",
       })
 
-      router.push("/admin/dashboard")
+      router.push("/admin/products")
     } catch (error) {
       console.error("Error updating product:", error)
       toast({
