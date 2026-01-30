@@ -7,7 +7,7 @@ const COFFRETS_COLLECTION = "coffrets"
 
 export async function POST(request: NextRequest) {
     try {
-        const coffret: Omit<Coffret, "id" | "createdAt" | "updatedAt"> = await request.json()
+        const coffret: Omit<Coffret, "id" | "createdAt" | "updatedAt"> & Partial<Pick<Coffret, "quantity">> = await request.json()
 
         // Validate coffret data
         if (!coffret.name?.trim()) {
@@ -44,8 +44,24 @@ export async function POST(request: NextRequest) {
             console.error("Failed computing originalPrice during createCoffret:", err)
         }
 
+        // Compute coffret quantity as minimum stock among selected products
+        let computedQuantity = 0
+        try {
+            const { getProductById } = await import("@/lib/services/product-service")
+            const stocks = await Promise.all(
+                (coffret.productIds || []).map(async (pid: string) => {
+                    const p = await getProductById(pid)
+                    return p?.quantity ?? 0
+                })
+            )
+            computedQuantity = stocks.length > 0 ? Math.min(...stocks) : 0
+        } catch (err) {
+            console.error("Failed computing coffret quantity during createCoffret:", err)
+        }
+
         const docRef = await adminDb.collection(COFFRETS_COLLECTION).add({
             ...coffret,
+            quantity: computedQuantity,
             originalPrice,
             createdAt: Timestamp.now(),
             updatedAt: Timestamp.now()

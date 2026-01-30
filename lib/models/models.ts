@@ -102,7 +102,7 @@ export interface Coffret {
   originalPrice?: number // For showing discounts
   images: string[]
   productIds: string[]
-  quantity: number
+  quantity?: number
   featured?: boolean
   createdAt: string | Date
   updatedAt: string | Date

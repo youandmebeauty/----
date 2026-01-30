@@ -40,7 +40,7 @@ export async function PUT(
             Object.entries(updates).filter(([_, v]) => v !== undefined)
         )
 
-        // If productIds are being updated, recompute originalPrice
+        // If productIds are being updated, recompute originalPrice and quantity
         if (updates.productIds !== undefined) {
             try {
                 const { getProductById } = await import("@/lib/services/product-service")
@@ -48,8 +48,13 @@ export async function PUT(
                 const products = await Promise.all(proms)
                 const originalPrice = products.reduce((sum, p) => sum + (p?.price ?? 0), 0)
                 ;(cleanUpdates as any).originalPrice = originalPrice
+
+                // Compute quantity as minimum stock among selected products
+                const stocks = products.map(p => p?.quantity ?? 0)
+                const computedQuantity = stocks.length > 0 ? Math.min(...stocks) : 0
+                ;(cleanUpdates as any).quantity = computedQuantity
             } catch (err) {
-                console.error("Failed computing originalPrice during updateCoffret:", err)
+                console.error("Failed computing originalPrice/quantity during updateCoffret:", err)
             }
         }
 

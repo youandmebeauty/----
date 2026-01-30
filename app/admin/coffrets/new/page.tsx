@@ -28,7 +28,6 @@ function AddCoffretContent() {
         name: "",
         description: "",
         price: "",
-        quantity: "",
         images: [] as string[],
         productIds: [] as string[],
     })
@@ -67,6 +66,19 @@ function AddCoffretContent() {
         })
     }
 
+    // Derived computed quantity based on selected products
+    const computedQuantity = (() => {
+        try {
+            const selected = products.filter(p => formData.productIds.includes(p.id))
+            if (selected.length === 0) return 0
+            const stocks = selected.map(p => p.quantity ?? 0)
+            return stocks.length > 0 ? Math.min(...stocks) : 0
+        } catch (err) {
+            console.error("Error computing computedQuantity:", err)
+            return 0
+        }
+    })()
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setLoading(true)
@@ -86,7 +98,6 @@ function AddCoffretContent() {
                 name: formData.name,
                 description: formData.description,
                 price: Number.parseFloat(formData.price),
-                quantity: formData.quantity ? Number.parseInt(formData.quantity) : 0,
                 images: formData.images,
                 productIds: formData.productIds,
             })
@@ -159,20 +170,7 @@ function AddCoffretContent() {
                                     />
                                 </div>
 
-                                <div>
-                                    <Label htmlFor="quantity">Quantité</Label>
-                                    <Input
-                                        id="quantity"
-                                        name="quantity"
-                                        type="number"
-                                        step="1"
-                                        min="0"
-                                        value={formData.quantity}
-                                        onChange={handleInputChange}
-                                        placeholder="0"
-                                        className="bg-background/50"
-                                    />
-                                </div>
+                                
 
                                 <div className="space-y-4">
                                     <Label  className="text-xl">Images du coffret *</Label>
@@ -318,6 +316,12 @@ function AddCoffretContent() {
                                     </div>
                                     </ScrollArea>
                                     <p className="text-xs text-muted-foreground mt-1">Sélectionnez les produits inclus dans ce coffret.</p>
+
+                                    <div className="mt-3">
+                                        <Label className="mb-1">Quantité calculée</Label>
+                                        <Input value={String(computedQuantity)} disabled className="bg-background/50" />
+                                        <p className="text-xs text-muted-foreground mt-1">La quantité est calculée automatiquement comme le minimum des stocks des produits sélectionnés.</p>
+                                    </div>
                                 </div>
 
                                 <div className="flex gap-4 pt-4">

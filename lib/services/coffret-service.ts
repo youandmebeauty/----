@@ -1,7 +1,6 @@
 import type { Coffret } from "@/lib/models/models"
 import { getRelatedProducts, getProductById } from "./product-service"
 
-const COFFRETS_COLLECTION = "coffrets"
 
 // =============================================================================
 // STEP 1: ✅ All in-memory caches DELETED
@@ -124,8 +123,10 @@ export async function searchCoffrets(searchTerm: string): Promise<Coffret[]> {
 // STEP 4: ✅ Mutations call API routes (which invalidate cache)
 // =============================================================================
 
+type CoffretCreatePayload = Omit<Coffret, "id" | "createdAt" | "updatedAt"> & Partial<Pick<Coffret, "quantity">>
+
 export async function createCoffret(
-    coffret: Omit<Coffret, "id" | "createdAt" | "updatedAt">
+    coffret: CoffretCreatePayload
 ): Promise<Coffret> {
     try {
         const response = await fetch("/api/coffrets", {
