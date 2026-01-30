@@ -1,5 +1,5 @@
 import { getAuth } from "firebase-admin/auth"
-import { adminApp } from "./firebase-admin"
+import { adminApp } from "../utils/firebase-admin-util"
 import type { NextRequest } from "next/server"
 
 export async function verifyAdminToken(request: NextRequest): Promise<{ valid: boolean; uid?: string; error?: string }> {

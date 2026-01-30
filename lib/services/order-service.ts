@@ -1,6 +1,5 @@
 import type { Order} from "@/lib/models/models"
 import { sendOrderConfirmationEmail } from "@/lib/services/email-service"
-import { getItemStock } from "@/lib/services/product-service"
 
 // Dynamic imports for client-side Firebase
 let firestoreModule: any = null

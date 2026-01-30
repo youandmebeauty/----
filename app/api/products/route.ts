@@ -1,7 +1,7 @@
 import "server-only"
 import { type NextRequest, NextResponse } from "next/server"
 import { adminDb } from "@/lib/utils/firebase-admin-util"
-import { verifyAdminToken } from "@/lib/auth-utils"
+import { verifyAdminToken } from "@/lib/utils/auth-utils"
 import { Timestamp } from "firebase-admin/firestore"
 import type { Product } from "@/lib/models/models"
 import { getProducts } from "@/lib/services/product-service"

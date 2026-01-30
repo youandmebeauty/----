@@ -4,7 +4,7 @@ import Link from "next/link"
 import { Sparkles, Heart, Package, Award, Shield, Truck, ArrowRight } from "lucide-react"
 import Image from "next/image"
 import { ScrollAnimation } from "@/components/navigation/scroll-animation"
-import ScrollStack, { ScrollStackItem } from "./ScrollStack"
+import ScrollStack, { ScrollStackItem } from "../ScrollStack"
 
 const values = [
     {

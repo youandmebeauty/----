@@ -1,6 +1,6 @@
 "use client"
 
-import { ScrollAnimation } from "./navigation/scroll-animation";
+import { ScrollAnimation } from "../navigation/scroll-animation";
 const categories = [
   {
     id: "soins",
