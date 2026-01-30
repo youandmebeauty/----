@@ -76,7 +76,20 @@ export function CoffretDetailClient({
     .filter((item) => item.id === coffret.id)
     .reduce((sum, item) => sum + item.quantity, 0)
 
-  const remainingStock = (coffret.quantity || 0) - cartQuantity
+  // Compute available coffret stock from the products (minimum product stock)
+  const computedCoffretQuantity = (() => {
+    try {
+      if (products && products.length > 0) {
+        const stocks = products.map(p => p.quantity ?? 0)
+        return stocks.length > 0 ? Math.min(...stocks) : (coffret.quantity ?? 0)
+      }
+    } catch (err) {
+      console.warn("[coffret] failed to compute quantity from products:", err)
+    }
+    return coffret.quantity ?? 0
+  })()
+
+  const remainingStock = (computedCoffretQuantity || 0) - cartQuantity
   const inStock = remainingStock > 0
 
   // Reset image loaded state when image changes

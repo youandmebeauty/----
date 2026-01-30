@@ -90,14 +90,14 @@ export async function generateMetadata({
       other: {
         "product:price:amount": coffret.price.toString(),
         "product:price:currency": "TND",
-        "product:availability": coffret.stock === 0 ? "out of stock" : "in stock",
+        "product:availability": coffret.quantity === 0 ? "out of stock" : "in stock",
         "product:condition": "new",
         "product:category": "Coffret Cadeau",
         ...(hasDiscount && { "product:sale_price": coffret.price.toString() }),
         ...(hasDiscount && { "product:original_price": coffret.originalPrice!.toString() }),
       },
       robots: {
-        index: coffret.stock !== 0,
+        index: coffret.quantity !== 0,
         follow: true,
       }
     }
@@ -192,7 +192,7 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
         priceCurrency: "TND",
         price: coffret.price,
         priceValidUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        availability: coffret.stock === 0 
+        availability: coffret.quantity === 0 
           ? "https://schema.org/OutOfStock" 
           : "https://schema.org/InStock",
         url: canonicalUrl,
