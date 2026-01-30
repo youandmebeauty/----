@@ -175,7 +175,7 @@ function AddCoffretContent() {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <Label>Images du coffret *</Label>
+                                    <Label  className="text-xl">Images du coffret *</Label>
 
                                     {/* Images Gallery */}
                                     {formData.images.length > 0 && (

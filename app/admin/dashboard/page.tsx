@@ -15,9 +15,9 @@ import { getAnalytics } from "@/lib/services/analytics-service"
 import type { Product, Order, Coffret } from "@/lib/models/models"
 import type { AnalyticsPeriod } from "@/lib/services/analytics-service"
 import { MetricsCard } from "@/components/admin/metrics-card"
-import { AnalyticsChart } from "@/components/admin/analytics-chart"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
 import GoogleAnalytics from "@/components/admin/googleAnalytics"
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts"
 
 const getCreatedAtMillis = (product: Product): number => {
   const ts: any = product.createdAt
@@ -153,7 +153,53 @@ function DashboardContent() {
                 <MetricsCard title="Cette Semaine" value={`${analytics.week.totalRevenue.toFixed(2)} DT`} icon={<TrendingUp className="h-4 w-4" />} format="currency" />
                 <MetricsCard title="Ce Mois" value={`${analytics.month.totalRevenue.toFixed(2)} DT`} icon={<BarChart3 className="h-4 w-4" />} format="currency" />
               </div>
-              <AnalyticsChart data={analytics.salesChart} title="Ventes des 7 derniers jours" />
+              
+              <Card className="bg-background/50 backdrop-blur-sm border-border/50 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="font-serif text-xl font-medium">Ventes des 7 derniers jours</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <LineChart data={analytics.salesChart}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                      <XAxis 
+                        dataKey="date" 
+                        className="text-xs text-muted-foreground"
+                        tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                      />
+                      <YAxis 
+                        className="text-xs text-muted-foreground"
+                        tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                      />
+                      <Tooltip 
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--background))',
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                        }}
+                        labelStyle={{ color: 'hsl(var(--foreground))' }}
+                      />
+                      <Legend />
+                      <Line 
+                        type="monotone" 
+                        dataKey="revenue" 
+                        stroke="hsl(var(--primary))" 
+                        strokeWidth={2}
+                        dot={{ fill: 'hsl(var(--primary))' }}
+                        name="Revenu (DT)"
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="orders" 
+                        stroke="hsl(var(--secondary))" 
+                        strokeWidth={2}
+                        dot={{ fill: 'hsl(var(--secondary))' }}
+                        name="Commandes"
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </CardContent>
+              </Card>
             </div>
           )}
  

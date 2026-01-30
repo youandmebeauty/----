@@ -198,14 +198,14 @@ function AddProductContent() {
             <h1 className="font-serif text-3xl font-medium tracking-tight">Ajouter un Produit</h1>
           </div>
 
-          <Card className="max-w-2xl mx-auto bg-background/50 backdrop-blur-sm border-border/50 shadow-sm">
+          <Card className="  mx-auto bg-background/50 backdrop-blur-sm border-border/50 shadow-sm">
             <CardHeader>
               <CardTitle className="font-serif text-2xl">Détails du Produit</CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <Label htmlFor="name">Nom du produit *</Label>
+                  <Label className=" text-xl "  htmlFor="name">Nom du produit *</Label>
                   <Input
                     id="name"
                     name="name"
@@ -213,12 +213,12 @@ function AddProductContent() {
                     onChange={handleInputChange}
                     required
                     placeholder="Entrez le nom du produit"
-                    className="bg-background/50"
+                    className="bg-background/50 text-xl"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="brand">Marque *</Label>
+                  <Label className=" text-xl "  htmlFor="brand">Marque *</Label>
                   <Input
                     id="brand"
                     name="brand"
@@ -226,27 +226,27 @@ function AddProductContent() {
                     onChange={handleInputChange}
                     required
                     placeholder="Entrez la marque du produit"
-                    className="bg-background/50"
+                    className="bg-background/50 text-xl"
                   />
                 </div>
 
                 {!formData.hasColorVariants && (
                   <div>
-                    <Label htmlFor="barcode">Code à barre</Label>
+                    <Label className=" text-xl "  htmlFor="barcode">Code à barre</Label>
                     <Input
                       id="barcode"
                       name="barcode"
                       value={formData.barcode}
                       onChange={handleInputChange}
                       placeholder="Entrez le code à barre du produit"
-                      className="bg-background/50"
+                      className="bg-background/50 text-xl"
                     />
                   </div>
                 )}
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="price">Prix *</Label>
+                    <Label className=" text-xl "  htmlFor="price">Prix *</Label>
                     <Input
                       id="price"
                       name="price"
@@ -257,10 +257,10 @@ function AddProductContent() {
                       onChange={handleInputChange}
                       required
                       placeholder="0.00"
-                      className="bg-background/50"
+                      className="bg-background/50 text-xl"
                     />
                     <div className="mt-2">
-                      <Label htmlFor="promoPrice">Prix Promo (optionnel)</Label>
+                      <Label className=" text-xl "  htmlFor="promoPrice">Prix Promo (optionnel)</Label>
                       <Input
                         id="promoPrice"
                         name="promoPrice"
@@ -270,12 +270,12 @@ function AddProductContent() {
                         value={formData.promoPrice}
                         onChange={handleInputChange}
                         placeholder="0.00"
-                        className="bg-background/50"
+                        className="bg-background/50 text-xl"
                       />
                     </div>
                   </div>
                   <div>
-                    <Label htmlFor="quantity">
+                    <Label className=" text-xl "  htmlFor="quantity">
                       Quantité {formData.hasColorVariants ? "(calculée automatiquement)" : "*"}
                     </Label>
                     <Input
@@ -290,7 +290,7 @@ function AddProductContent() {
                       required={!formData.hasColorVariants}
                       disabled={formData.hasColorVariants}
                       placeholder="0"
-                      className="bg-background/50"
+                      className="bg-background/50 text-xl"
                     />
                     {formData.hasColorVariants && (
                       <p className="text-xs text-muted-foreground mt-1">
@@ -301,7 +301,7 @@ function AddProductContent() {
                 </div>
 
                 <div>
-                  <Label htmlFor="category">Catégorie *</Label>
+                  <Label className=" text-xl "  htmlFor="category">Catégorie *</Label>
                   <select
                     id="category"
                     name="category"
@@ -314,7 +314,7 @@ function AddProductContent() {
                         subcategory: "" // Reset subcategory when category changes
                       }));
                     }}
-                    className="w-full border rounded-md px-3 py-2 bg-background/50"
+                    className="w-full border rounded-md px-3 py-2 bg-background/50 text-xl"
                     required
                   >
                     {SHOP_CATEGORIES.map((category) => (
@@ -326,13 +326,13 @@ function AddProductContent() {
                 </div>
 
                 <div>
-                  <Label htmlFor="subcategory">Sous-catégorie</Label>
+                  <Label className=" text-xl "  htmlFor="subcategory">Sous-catégorie</Label>
                   <select
                     id="subcategory"
                     name="subcategory"
                     value={formData.subcategory}
                     onChange={handleInputChange}
-                    className="w-full border rounded-md px-3 py-2 bg-background/50"
+                    className="w-full border rounded-md px-3 py-2 bg-background/50 text-xl"
                     disabled={!formData.category || !SHOP_CATEGORIES.find(c => c.id === formData.category)?.subcategories?.length}
                   >
                     <option value="">Sélectionner une sous-catégorie</option>
@@ -360,7 +360,7 @@ function AddProductContent() {
                 {/* Skin Type Filter - Show for Soins category with visage/corps subcategory */}
                 {formData.category === "soins" && (formData.subcategory === "visage" || formData.subcategory === "corps" || !formData.subcategory) && (
                   <div>
-                    <Label>Type de peau</Label>
+                    <Label  className="text-xl">Type de peau</Label>
                     <div className="grid grid-cols-2 gap-2 mt-2">
                       {SHOP_CATEGORIES.find(c => c.id === "soins")?.filters?.find(f => f.id === "skinType")?.options.map((type) => (
                         <label key={type} className="flex items-center space-x-2 cursor-pointer">
@@ -368,7 +368,7 @@ function AddProductContent() {
                             checked={formData.skinType.includes(type)}
                             onCheckedChange={() => toggleSkinType(type)}
                           />
-                          <span className="text-sm">{type}</span>
+                          <span className="text-lg">{type}</span>
                         </label>
                       ))}
                     </div>
@@ -378,7 +378,7 @@ function AddProductContent() {
                 {/* Hair Type Filter - Show for Soins category with cheveux subcategory */}
                 {formData.category === "soins" && (formData.subcategory === "cheveux" || !formData.subcategory) && (
                   <div>
-                    <Label>Type de cheveux</Label>
+                    <Label  className="text-xl">Type de cheveux</Label>
                     <div className="grid grid-cols-2 gap-2 mt-2">
                       {SHOP_CATEGORIES.find(c => c.id === "soins")?.filters?.find(f => f.id === "hairType")?.options.map((type) => (
                         <label key={type} className="flex items-center space-x-2 cursor-pointer">
@@ -386,7 +386,7 @@ function AddProductContent() {
                             checked={formData.hairType.includes(type)}
                             onCheckedChange={() => toggleHairType(type)}
                           />
-                          <span className="text-sm">{type}</span>
+                          <span className="text-lg">{type}</span>
                         </label>
                       ))}
                     </div>
@@ -394,9 +394,9 @@ function AddProductContent() {
                 )}
 
                 {!formData.hasColorVariants && (
-                  <div className="space-y-4">
-                    <Label>Images du produit *</Label>
-                    
+                  <div className="space-y-4 ">
+                    <Label className="text-xl">Images du produit *</Label>
+                    <div>
                     {/* Images Gallery */}
                     {formData.images.length > 0 && (
                       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -479,7 +479,7 @@ function AddProductContent() {
                     </CldUploadWidget>
 
                     {formData.images.length === 0 && (
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-lg text-muted-foreground">
                         Ajoutez au moins une image du produit. La première image sera l'image principale.
                       </p>
                     )}
@@ -491,11 +491,11 @@ function AddProductContent() {
                       value={formData.images.join(',')}
                       required
                     />
-                  </div>
+                  </div></div>
                 )}
 
                 <div>
-                  <Label htmlFor="description">Description *</Label>
+                  <Label className=" text-xl "  htmlFor="description">Description *</Label>
                   <Textarea
                     id="description"
                     name="description"
@@ -504,12 +504,12 @@ function AddProductContent() {
                     required
                     rows={3}
                     placeholder="Description courte du produit"
-                    className="bg-background/50"
+                    className="bg-background/50 text-xl"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="longDescription">Description longue</Label>
+                  <Label className=" text-xl "  htmlFor="longDescription">Description longue</Label>
                   <Textarea
                     id="longDescription"
                     name="longDescription"
@@ -517,12 +517,12 @@ function AddProductContent() {
                     onChange={handleInputChange}
                     rows={5}
                     placeholder="Description détaillée du produit"
-                    className="bg-background/50"
+                    className="bg-background/50 text-xl"
                   />
                 </div>
 {formData.category === "soins"  && (
                   <div>
-                    <Label>Conseil d'utilisation</Label>
+                    <Label  className="text-xl">Conseil d'utilisation</Label>
                     <Textarea
                     id="howToUse"
                     name="howToUse"
@@ -530,12 +530,12 @@ function AddProductContent() {
                     onChange={handleInputChange}
                     rows={3}
                     placeholder="Mode d'emploi du produit"
-                    className="bg-background/50"
+                    className="bg-background/50 text-xl"
                   />
                   </div>
                 )}
                 <div>
-                  <Label htmlFor="ingredients">Ingrédients (séparés par des virgules)</Label>
+                  <Label className=" text-xl "  htmlFor="ingredients">Ingrédients (séparés par des virgules)</Label>
                   <Textarea
                     id="ingredients"
                     name="ingredients"
@@ -543,7 +543,7 @@ function AddProductContent() {
                     onChange={handleInputChange}
                     rows={3}
                     placeholder="Water, Glycerin, Hyaluronic Acid, ..."
-                    className="bg-background/50"
+                    className="bg-background/50 text-xl"
                   />
                 </div>
 
@@ -553,13 +553,13 @@ function AddProductContent() {
                     <h3 className="font-medium text-lg mb-2">Notes olfactives</h3>
                     
                     <div>
-                      <Label htmlFor="perfumeNotesTop">Notes de tête</Label>
+                      <Label className=" text-xl "  htmlFor="perfumeNotesTop">Notes de tête</Label>
                       <div className="space-y-2">
                         <div className="flex gap-2">
                           <Input
                             id="perfumeNotesTop"
                             placeholder="Cassis, bergamote, citron..."
-                            className="bg-background/50"
+                            className="bg-background/50 text-xl"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') {
                                 e.preventDefault()
@@ -598,7 +598,7 @@ function AddProductContent() {
                             {formData.perfumeNotesTop.map((note, index) => (
                               <span
                                 key={index}
-                                className="px-3 py-1 rounded-full bg-secondary/30 text-sm flex items-center gap-2"
+                                className="px-3 py-1 rounded-full bg-secondary/30 text-lg flex items-center gap-2"
                               >
                                 {note}
                                 <button
@@ -621,7 +621,7 @@ function AddProductContent() {
                     </div>
 
                     <div>
-                      <Label htmlFor="perfumeNotesHeart">Notes de cœur</Label>
+                      <Label className=" text-xl "  htmlFor="perfumeNotesHeart">Notes de cœur</Label>
                       <div className="space-y-2">
                         <div className="flex gap-2">
                           <Input
@@ -666,7 +666,7 @@ function AddProductContent() {
                             {formData.perfumeNotesHeart.map((note, index) => (
                               <span
                                 key={index}
-                                className="px-3 py-1 rounded-full bg-secondary/30 text-sm flex items-center gap-2"
+                                className="px-3 py-1 rounded-full bg-secondary/30 text-lg flex items-center gap-2"
                               >
                                 {note}
                                 <button
@@ -689,7 +689,7 @@ function AddProductContent() {
                     </div>
 
                     <div>
-                      <Label htmlFor="perfumeNotesBase">Notes de fond</Label>
+                      <Label className=" text-xl "  htmlFor="perfumeNotesBase">Notes de fond</Label>
                       <div className="space-y-2">
                         <div className="flex gap-2">
                           <Input
@@ -734,7 +734,7 @@ function AddProductContent() {
                             {formData.perfumeNotesBase.map((note, index) => (
                               <span
                                 key={index}
-                                className="px-3 py-1 rounded-full bg-secondary/30 text-sm flex items-center gap-2"
+                                className="px-3 py-1 rounded-full bg-secondary/30 text-lg flex items-center gap-2"
                               >
                                 {note}
                                 <button
@@ -760,18 +760,18 @@ function AddProductContent() {
 
                 <div className="flex items-center space-x-2">
                   <Checkbox id="featured" checked={formData.featured} onCheckedChange={handleCheckboxChange} />
-                  <Label htmlFor="featured">Produit en vedette</Label>
+                  <Label className=" text-xl "  htmlFor="featured">Produit en vedette</Label>
                 </div>
 
                 <div className="flex items-center space-x-2">
                   <Checkbox id="hasColorVariants" checked={formData.hasColorVariants} onCheckedChange={handleColorVariantsToggle} />
-                  <Label htmlFor="hasColorVariants">A des variantes de couleur</Label>
+                  <Label className=" text-xl "  htmlFor="hasColorVariants">A des variantes de couleur</Label>
                 </div>
 
                 {formData.hasColorVariants && (
                   <div className="space-y-4 p-4 border border-border/50 rounded-lg bg-background/30">
                     <div className="flex items-center justify-between">
-                      <Label>Variantes de couleur</Label>
+                      <Label  className="text-xl">Variantes de couleur</Label>
                       <Button
                         type="button"
                         variant="outline"
@@ -785,7 +785,7 @@ function AddProductContent() {
                     </div>
 
                     {colorVariants.length === 0 && (
-                      <p className="text-sm text-muted-foreground text-center py-4">
+                      <p className="text-lg text-muted-foreground text-center py-4">
                         Aucune variante ajoutée. Cliquez sur "Ajouter une variante" pour commencer.
                       </p>
                     )}
@@ -808,14 +808,14 @@ function AddProductContent() {
 
                           <div className="grid grid-cols-2 gap-4">
                             <div>
-                              <Label htmlFor={`variant-color-picker-${index}`}>Couleur *</Label>
+                              <Label className=" text-xl "  htmlFor={`variant-color-picker-${index}`}>Couleur *</Label>
                               <div className="flex items-center gap-2 mt-2">
                                 <input
                                   id={`variant-color-picker-${index}`}
                                   type="color"
                                   value={variant.color || "#000000"}
                                   onChange={(e) => updateColorVariant(index, "color", e.target.value)}
-                                  className="w-16 h-10 rounded-lg border border-border cursor-pointer bg-background/50"
+                                  className="w-16 h-10 rounded-lg border border-border cursor-pointer bg-background/50 text-xl"
                                 />
                                 <Input
                                   type="text"
@@ -823,25 +823,25 @@ function AddProductContent() {
                                   onChange={(e) => updateColorVariant(index, "color", e.target.value)}
                                   placeholder="#000000"
                                   pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
-                                  className="bg-background/50 flex-1"
+                                  className="bg-background/50 flex-1 text-xl"
                                 />
                               </div>
                             </div>
                             <div>
-                              <Label htmlFor={`variant-color-name-${index}`}>Nom de la couleur *</Label>
+                              <Label className=" text-xl "  htmlFor={`variant-color-name-${index}`}>Nom de la couleur *</Label>
                               <Input
                                 id={`variant-color-name-${index}`}
                                 value={variant.colorName}
                                 onChange={(e) => updateColorVariant(index, "colorName", e.target.value)}
                                 placeholder="Ex: Rouge, Bleu, Noir..."
                                 required
-                                className="bg-background/50"
+                                className="bg-background/50 text-xl"
                               />
                             </div>
                           </div>
 
                           <div>
-                            <Label htmlFor={`variant-quantity-${index}`}>Quantité *</Label>
+                            <Label className=" text-xl "  htmlFor={`variant-quantity-${index}`}>Quantité *</Label>
                             <Input
                               id={`variant-quantity-${index}`}
                               type="number"
@@ -849,23 +849,23 @@ function AddProductContent() {
                               value={variant.quantity}
                               onChange={(e) => updateColorVariant(index, "quantity", Number.parseInt(e.target.value) || 0)}
                               required
-                              className="bg-background/50"
+                              className="bg-background/50 text-xl"
                             />
                           </div>
 
                           <div>
-                            <Label htmlFor={`variant-barcode-${index}`}>Code à barre</Label>
+                            <Label className=" text-xl "  htmlFor={`variant-barcode-${index}`}>Code à barre</Label>
                             <Input
                               id={`variant-barcode-${index}`}
                               value={variant.barcode || ""}
                               onChange={(e) => updateColorVariant(index, "barcode", e.target.value)}
                               placeholder="Entrez le code à barre de cette variante"
-                              className="bg-background/50"
+                              className="bg-background/50 text-xl"
                             />
                           </div>
 
                           <div>
-                            <Label>Image de la variante *</Label>
+                            <Label  className="text-xl">Image de la variante *</Label>
                             <div className="flex flex-col gap-4 mt-2">
                               {variant.image && (
                                 <div className="relative w-32 h-32 rounded-lg overflow-hidden border border-border">
@@ -901,7 +901,7 @@ function AddProductContent() {
                                       variant="outline"
                                       size="sm"
                                       onClick={() => open()}
-                                      className="w-full sm:w-auto"
+                                      className="w-full sm:w-auto text-xl"
                                     >
                                       <ImageIcon className="mr-2 h-4 w-4" />
                                       {variant.image ? "Changer l'image" : "Télécharger une image"}
