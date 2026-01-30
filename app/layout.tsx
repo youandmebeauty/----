@@ -54,7 +54,7 @@ export default function RootLayout({
           <SmoothScrollProvider>
             <FirebaseProvider>
               <CartProvider>
-                <SaintValentinProvider saintValentin={false}>
+                <SaintValentinProvider saintValentin={true}>
                     <Header />
                   {children}
                   <Footer />
