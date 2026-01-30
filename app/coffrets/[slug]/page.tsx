@@ -190,16 +190,16 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
       offers: {
         "@type": "Offer",
         priceCurrency: "TND",
-        price: coffret.price,
-              hasMerchantReturnPolicy: false,
-      shippingDetails: {
-        "@type": "OfferShippingDetails",
-        shippingDestination: {
-          "@type": "DefinedRegion",
-          addressCountry: "TN",
+        price: coffret.price?.toString(),
+        hasMerchantReturnPolicy: false,
+        shippingDetails: {
+          "@type": "OfferShippingDetails",
+          shippingDestination: {
+            "@type": "DefinedRegion",
+            addressCountry: "TN",
+          },
         },
-      },
-    
+
         priceValidUntil: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         availability: coffret.quantity === 0 
           ? "https://schema.org/OutOfStock" 
@@ -208,19 +208,12 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
         ...(coffret.originalPrice && coffret.originalPrice > coffret.price && {
           priceSpecification: {
             "@type": "PriceSpecification",
-            price: coffret.price,
+            price: coffret.price?.toString(),
             priceCurrency: "TND",
           }
         })
       },
 
-      // Include product IDs as part numbers
-      ...(coffret.productIds && coffret.productIds.length > 0 && {
-        isRelatedTo: coffret.productIds.map(id => ({
-          "@type": "Product",
-          productID: id
-        }))
-      })
     }
 
     // ========================================================================
