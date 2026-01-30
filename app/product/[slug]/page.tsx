@@ -140,7 +140,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    image: product.colorVariants?.[0].image || product.image,
+    image: 
+                product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
+                  ? product.colorVariants[0].image || "/placeholder.svg"
+                  : (product.images && product.images.length > 0 ? product.images[0] : product.image) || "/placeholder.svg"
+              ,
     description: product.longDescription ?? product.description,
     brand: product.brand,
     sku: product.id,
