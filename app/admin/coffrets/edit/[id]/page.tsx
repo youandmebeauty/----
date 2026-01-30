@@ -82,7 +82,7 @@ const handleDelete = async () => {
                         name: coffretData.name ?? "",
                         description: coffretData.description ?? "",
                         price: (coffretData.price ?? 0).toString(),
-                        quantity: coffretData.quantity !== undefined && coffretData.quantity !== null ? String(coffretData.quantity) : "",
+                        quantity: coffretData.quantity ?.toString() ?? "",
                         images: Array.isArray(coffretData.images) ? coffretData.images : [],
                         productIds: Array.isArray(coffretData.productIds) ? coffretData.productIds : []
                     })
