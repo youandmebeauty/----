@@ -98,7 +98,6 @@ function DashboardContent() {
               Déconnexion
             </Button>
           </div>
-          <GoogleAnalytics />
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card className="bg-background/50 backdrop-blur-sm border-border/50 shadow-sm hover:shadow-md transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -144,6 +143,7 @@ function DashboardContent() {
               </CardContent>
             </Card>
           </div>
+          <GoogleAnalytics />
 
           {analytics && (
             <div className="space-y-6 mb-12">

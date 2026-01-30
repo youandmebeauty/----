@@ -1,17 +1,13 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import { BetaAnalyticsDataClient } from '@google-analytics/data';
 
-type Data = {
-  data?: any;
-  error?: string;
-};
-
-export default async function handler(
-  res: NextApiResponse<Data>
-) {
+export async function GET(request: NextRequest) {
   try {
     if (!process.env.FIREBASE_ADMIN_KEY) {
-      return res.status(500).json({ error: 'Missing FIREBASE_ADMIN_KEY env variable' });
+      return NextResponse.json(
+        { error: 'Missing FIREBASE_ADMIN_KEY env variable' },
+        { status: 500 }
+      );
     }
 
     // Parse the service account JSON from env variable
@@ -21,6 +17,7 @@ export default async function handler(
       credentials,
     });
 
+    // Fetch historical data (last 30 days)
     const [response] = await analyticsDataClient.runReport({
       property: 'properties/514862251',
       dateRanges: [{ startDate: '30daysAgo', endDate: 'today' }],
@@ -28,9 +25,31 @@ export default async function handler(
       dimensions: [{ name: 'date' }],
     });
 
-    res.status(200).json({ data: response.rows });
+    // Fetch realtime data (active users in last 30 minutes)
+    let realtimeUsers = 0;
+    try {
+      const [realtimeResponse] = await analyticsDataClient.runRealtimeReport({
+        property: 'properties/514862251',
+        metrics: [{ name: 'activeUsers' }],
+      });
+      
+      if (realtimeResponse.rows && realtimeResponse.rows.length > 0) {
+        realtimeUsers = parseInt(realtimeResponse.rows[0].metricValues?.[0]?.value || '0', 10);
+      }
+    } catch (realtimeError) {
+      console.error('Realtime data error:', realtimeError);
+      // Continue without realtime data if it fails
+    }
+
+    return NextResponse.json({ 
+      data: response.rows,
+      realtimeUsers 
+    });
   } catch (error: any) {
     console.error('Analytics API error:', error);
-    res.status(500).json({ error: 'Failed to fetch analytics data' });
+    return NextResponse.json(
+      { error: error.message || 'Failed to fetch analytics data' },
+      { status: 500 }
+    );
   }
 }
