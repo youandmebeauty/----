@@ -246,12 +246,13 @@ export function CoffretDetailClient({
           <div className="relative">
             <div className="lg:sticky lg:top-24 space-y-6">
               {/* Main Image */}
-               <Badge 
-                    variant="sticker" 
-                    className="absolute top-4 -left-4  py-1 scale-125 shadow-lg"
-                  >
-                    -{discountPercentage}%
-                  </Badge>
+               <div className="absolute -top-2 -left-2 z-10">
+                                                              <div className="bg-red-600 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-lg border-2 border-white transform -rotate-12">
+
+                                -{discountPercentage}%
+                            </div>
+                            
+                        </div>
                 
               <div className="relative aspect-[3/4] w-full overflow-hidden bg-zinc-50 rounded-sm">
                 
