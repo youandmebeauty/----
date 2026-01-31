@@ -11,7 +11,7 @@ import { Header } from "@/components/navigation/header"
 
 
 const inter = Inter({ subsets: ["latin"] })
-import { SaintValentinProvider } from "@/components/coffret/saint-valentin-provider"
+import { FeteThemeProvider } from "@/components/coffret/fete-theme-provider"
 
 export default function RootLayout({
   children,
@@ -55,11 +55,11 @@ export default function RootLayout({
             <FirebaseProvider>
               <CartProvider>
 
-                <SaintValentinProvider saintValentin={false}>
+                <FeteThemeProvider>
                     <Header />
                   {children}
                   <Footer />
-                  <Toaster /></SaintValentinProvider>
+                  <Toaster /></FeteThemeProvider>
               </CartProvider>
             </FirebaseProvider>
           </SmoothScrollProvider>

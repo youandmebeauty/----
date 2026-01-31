@@ -5,7 +5,7 @@ import type { Coffret, Product } from "@/lib/models/models"
 import { CoffretCard } from "@/components/coffret/coffret-card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {  AlertCircle, Gift } from "lucide-react"
-import { useSaintValentin } from "@/components/coffret/saint-valentin-provider"
+import { useFeteTheme } from "@/components/coffret/fete-theme-provider"
 import { useEffect, useState } from "react"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
 import { ScrollAnimation } from "@/components/navigation/scroll-animation"
@@ -50,7 +50,7 @@ function generateCreativeLayout(count: number) {
 }
 
 export default function CoffretPage() {
-  const { saintValentin } = useSaintValentin();
+  const { themeKey, theme } = useFeteTheme();
 
   const [coffrets, setCoffrets] = useState<Coffret[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
@@ -99,20 +99,17 @@ export default function CoffretPage() {
           
   return (
     <>
-      {saintValentin && (
+      {themeKey !== "none" && (
   <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
     {[...Array(30)].map((_, i) => {
-      // Random size between 20 and 80
       const size = Math.floor(Math.random() * 60) + 20;
-      // Random color from a predefined palette
-      const colors = ['#FF0055', '#0066FF', '#FFCC00', '#00D9FF', '#FF00CC', '#7B61FF', '#FF6B00', '#00FF88', '#FF3399', '#33FF99', '#9933FF', '#FF9933'];
-      const color = colors[Math.floor(Math.random() * colors.length)];
-      // Random position
+      const palette = [theme.colors.primary, theme.colors.secondary || theme.colors.primary];
+      const color = palette[Math.floor(Math.random() * palette.length)];
       const left = Math.floor(Math.random() * 90) + 5;
       const top = Math.floor(Math.random() * 90) + 5;
-      // Random animation duration and delay
       const duration = Math.floor(Math.random() * 6) + 5;
       const delay = Math.floor(Math.random() * 5);
+      const icon = (theme.icons && theme.icons.length > 0) ? theme.icons[i % theme.icons.length] : "🎁";
 
       return (
         <div
@@ -124,9 +121,9 @@ export default function CoffretPage() {
             animation: `coffret-float ${duration}s ease-in-out infinite ${delay}s`
           }}
         >
-          <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill={color}/>
-          </svg>
+          <span style={{ fontSize: size, color }} aria-hidden>
+            {icon}
+          </span>
         </div>
       );
     })}
@@ -162,7 +159,7 @@ export default function CoffretPage() {
               />
             </ScrollAnimation>
 
-          {saintValentin ? (
+          {themeKey ? (
           <div className="max-w-7xl mx-auto ">
             <div className="space-y-8 flex flex-col items-center justify-center">
               <ScrollAnimation
@@ -172,7 +169,7 @@ export default function CoffretPage() {
               >
                 <Gift className="w-4 h-4 text-primary transition-transform duration-300 group-hover:rotate-12" />
                 <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-                  Saint-Valentin 2026
+                  {themeKey !== "none" ? theme.displayName : "Offre Spéciale"}
                 </span>
               </ScrollAnimation>
               

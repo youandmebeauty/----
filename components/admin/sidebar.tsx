@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
-import { Menu, X, LayoutDashboard, ShoppingCart, Package, Gift, Tag, Cloud, CloudRain, Sun, Wind, MapPin } from "lucide-react"
+import { Menu, X, LayoutDashboard, ShoppingCart, Package, Gift, Cog, Cloud, CloudRain, Sun, Wind, MapPin } from "lucide-react"
 import type React from "react"
 import { LoadingAnimation } from "../ui/loading-animation"
 
@@ -35,7 +35,7 @@ export default function Sidebar({ className = "" }: { className?: string }) {
     { href: "/admin/orders", label: "Commandes", icon: <ShoppingCart className="w-5 h-5" /> },
     { href: "/admin/products", label: "Produits", icon: <Package className="w-5 h-5" /> },
     { href: "/admin/coffrets", label: "Coffrets", icon: <Gift className="w-5 h-5" /> },
-    { href: "/admin/promos", label: "Codes Promo", icon: <Tag className="w-5 h-5" /> },
+    { href: "/admin/config", label: "Configuration", icon: <Cog className="w-5 h-5" /> },
   ]
 
   // Hide sidebar on the admin login page
