@@ -96,13 +96,12 @@ export function CoffretCard({
         >                       <Link 
                     href={coffretUrl} className="flex flex-col gap-3"
                 >             {hasDiscount && (
-                        <div className="absolute top-3 left-3 z-10">
-                            <Badge 
-                                variant="sticker" 
-                                className="absolute top-2 -left-8 font-semibold tracking-widest shadow-lg bg-red-400"
-                            >
+                        <div className="absolute -top-2 -left-2 z-10">
+                                                              <div className="bg-red-600 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-lg border-2 border-white transform -rotate-12">
+
                                 -{discountPercentage}%
-                            </Badge>
+                            </div>
+                            
                         </div>
                     )}
             {/* Image Container */}

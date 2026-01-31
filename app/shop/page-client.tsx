@@ -6,7 +6,7 @@ import { searchProducts } from "@/lib/services/product-service"
 import type { Product, SearchFilters } from "@/lib/models/models"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 import { Sparkles, User, Wind, Pill } from "lucide-react"
-
+import { ProductCard } from "@/components/product/product-card"
 // Components
 import { ShopHeader } from "@/components/shop/shop-header"
 import { ShopFilters } from "@/components/shop/shop-filters"
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog"
 import { FeaturedSection } from "@/components/shop/featured-section"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
-
+import ProduitSolde from "@/components/produitSolde"
 function SearchContent() {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -229,7 +229,7 @@ function SearchContent() {
     )
   }
   return (
-    <div className="min-h-screen bg-background ">
+    <div className="min-h-screen bg-background">
       <main className="container mx-auto  px-4 lg:px-6 xl:px-8 py-8">
         {/* Breadcrumb */}
         <ScrollAnimation variant="slideUp" className="mb-6">
@@ -243,6 +243,9 @@ function SearchContent() {
           <FeaturedSection />
         </ScrollAnimation>
 
+        <ScrollAnimation variant="blurRise" className="mb-12">
+          <ProduitSolde  />
+        </ScrollAnimation>
         
         {/* Header & Controls */}
         <ScrollAnimation
@@ -284,6 +287,7 @@ function SearchContent() {
               </div>
             </ScrollAnimation>
           </aside>
+
 
           {/* Main Content */}
           <div className="shop-layout-pane flex-1">

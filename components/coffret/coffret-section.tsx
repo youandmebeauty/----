@@ -158,7 +158,7 @@ export function CoffretSection({
                                 {showViewAll && (
                                                     <Button 
                                         size="sm" 
-                                        className="w-full sm:w-auto group bg-primary mt-4 hover:bg-primary/90 text-primary-foreground h-12 sm:h-13 px-8 rounded-full text-base font-medium transition-all duration-300 ease-out hover:scale-105"
+                                        className="w-full hidden lg:inline-flex sm:w-auto group bg-primary mt-4 hover:bg-primary/90 text-primary-foreground h-12 sm:h-13 px-8 rounded-full text-base font-medium transition-all duration-300 ease-out hover:scale-105"
                                     >
                                                         <Link href="/coffrets" className="flex items-center justify-center ">
                                                             Voir tout

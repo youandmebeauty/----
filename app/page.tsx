@@ -1,11 +1,12 @@
 import { Hero } from "@/components/homePageComps/hero"
-import { FeaturedProductsServer } from "@/components/homePageComps/featured-products-server"
+import { FeaturedProducts } from "@/components/homePageComps/featured-products"
 import { Categories } from "@/components/homePageComps/categories"
 import { WhyChooseUs } from "@/components/homePageComps/why-choose-us"
 import { MakeupModelWrapper } from "@/components/homePageComps/makeup-model-wrapper"
 import { Metadata } from "next"
 import { CoffretSection } from "@/components/coffret/coffret-section"
 import { ScrollAnimation } from "@/components/navigation/scroll-animation"
+import ProduitSolde from "@/components/produitSolde"
 export const metadata: Metadata = {
   title: "You & Me Beauty - Parapharmacie et Cosmétique Sfax | Maquillage & Parfums en Ligne Tunisie",
   alternates: {
@@ -105,9 +106,19 @@ export default function Home() {
         </section>
         <ScrollAnimation
             variant="blurRise"
-            duration={2.5} className="hidden md:block absolute mt-10 md:h-[65%] top-0 right-0 lg:h-[90%] w-1/2 z-20" >
+            duration={2.5} className="hidden md:block absolute mt-10 md:h-[65%] -top-10 right-0 lg:h-[90%] w-1/2 " >
           <MakeupModelWrapper />
         </ScrollAnimation>
+        
+        <section aria-label="solde section">
+          <ScrollAnimation
+            variant="slideUp"
+            duration={0.9}
+            className="container"
+            delay={0.15}
+          >
+          <ProduitSolde /></ScrollAnimation>
+        </section>
              <section aria-label="Coffret section">
           <ScrollAnimation
             variant="slideUp"
@@ -117,7 +128,9 @@ export default function Home() {
           >
             <CoffretSection />
           </ScrollAnimation>
+
         </section>
+
         <section aria-label="Product categories">
             <Categories />
         </section>
@@ -129,7 +142,7 @@ export default function Home() {
           
             delay={0.15}
           >
-            <FeaturedProductsServer />
+            <FeaturedProducts />
           </ScrollAnimation>
         </section>
         

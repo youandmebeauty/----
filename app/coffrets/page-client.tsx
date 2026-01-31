@@ -15,24 +15,15 @@ import NotFound from "../not-found"
 // Creative scattered layout - like photos pinned on a mood board
 function generateCreativeLayout(count: number) {
   const layouts: Array<{ 
-    size: 'sm' | 'md' | 'lg';
-    rotation: number;
+     rotation: number;
     offsetY: number;
     aspectRatio: 'portrait' | 'square';
   }> = []
   
   for (let i = 0; i < count; i++) {
     // Create organic size distribution
-    let size: 'sm' | 'md' | 'lg'
     const rand = Math.random()
-    
-    if (i % 5 === 0) {
-      size = 'lg' // Every 5th is large (hero)
-    } else if (rand > 0.7) {
-      size = 'md'
-    } else {
-      size = 'sm'
-    }
+ 
     
     // Dramatic rotations for visual interest
     const rotation = -8 + Math.random() * 16
@@ -43,7 +34,7 @@ function generateCreativeLayout(count: number) {
     // Mix aspect ratios
     const aspectRatio = Math.random() > 0.3 ? 'portrait' : 'square'
     
-    layouts.push({ size, rotation, offsetY, aspectRatio })
+    layouts.push({ rotation, offsetY, aspectRatio })
   }
   
   return layouts
@@ -259,8 +250,7 @@ export default function CoffretPage() {
                 }
               }
 
-              const gridClass = sizeMap[layout.size]
-
+              const gridClass = sizeMap['md'] // Using 'md' size for balanced layout
               return (
                 <div 
                   key={coffret.id}

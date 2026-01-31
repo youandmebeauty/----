@@ -8,7 +8,7 @@ import { ScrollAnimation } from "../navigation/scroll-animation"
 import { ChevronLeft, ChevronRight } from "lucide-react"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
 
-export function FeaturedProductsClient() {
+export function FeaturedProducts() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)

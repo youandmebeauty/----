@@ -114,11 +114,11 @@ export function PromoManager() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 w-full lg:w-10/12">
+    <div className="min-h-screen bg-background  w-full">
       <div className="relative border border-border/50 bg-gradient-to-br from-secondary/30 via-secondary/20 to-background rounded-3xl overflow-hidden min-h-[calc(100vh-2rem)]">
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808008_1px,transparent_1px),linear-gradient(to_bottom,#80808008_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
         
-        <main className="container relative mx-auto py-8">
+        <main className="container relative mx-auto py-8 w-full">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
               <h1 className="font-serif text-3xl md:text-4xl font-medium tracking-tight mb-2">Codes Promo</h1>
@@ -188,7 +188,7 @@ export function PromoManager() {
           </div>
 
           {promoCodes.length === 0 ? (
-            <Card className="bg-background/50 backdrop-blur-sm border-border/50 shadow-sm">
+            <Card className="w-full bg-background/50 backdrop-blur-sm border-border/50 shadow-sm">
               <CardContent className="flex flex-col items-center justify-center py-16">
                 <Tag className="h-16 w-16 text-muted-foreground/50 mb-4" />
                 <p className="text-muted-foreground text-lg">Aucun code promo trouvé</p>
