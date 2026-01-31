@@ -145,7 +145,7 @@ export function CoffretCard({
                         <div className="absolute bottom-3 left-3 z-10 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                             <Badge 
                                 variant="secondary" 
-                                className="bg-white/90 backdrop-blur-sm text-foreground shadow-lg"
+                                className="bg-background backdrop-blur-sm shadow-lg"
                             >
                                 <Package className="w-3 h-3 mr-1" />
                                 {coffret.productIds.length} produits
@@ -158,7 +158,7 @@ export function CoffretCard({
                         <div className="absolute bottom-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                             <Button 
                                 size="icon" 
-                                className="rounded-full bg-white text-black hover:bg-white/90 shadow-lg"
+                                className="rounded-full bg-white text-black hover:bg-background shadow-lg"
                                 aria-label="Ajouter au panier"
                                 onClick={handleAddToCart}
                             >

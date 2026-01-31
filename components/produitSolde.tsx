@@ -97,22 +97,7 @@ export default function ProduitSolde() {
       : 0
 
   if (isLoading) {
-    return (
-      <div className="py-16 mt-24 bg-background rounded-3xl m-4">
-        <div className="container mx-auto px-4">
-
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="aspect-[4/5] bg-secondary/20 mb-4" />
-                <div className="h-4 bg-secondary/20 w-3/4 mb-2" />
-                <div className="h-4 bg-secondary/20 w-1/2" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    )
+    return null
   }
 
   if (discounted.length === 0) {
