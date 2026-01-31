@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast"
 import { getCoffretById, updateCoffret,deleteCoffret } from "@/lib/services/coffret-service"
 import { getProducts } from "@/lib/services/product-service"
 import type { Coffret, Product } from "@/lib/models/models"
-import { ArrowLeft, Image as ImageIcon, X, Plus, Trash2 } from "lucide-react"
+import { ArrowLeft, Image as ImageIcon, X, Plus, Trash2, Package, SearchX, Search, CheckCircle2 } from "lucide-react"
 import { CldUploadWidget } from 'next-cloudinary'
 
 function EditCoffretContent() {
@@ -211,14 +211,14 @@ const handleDelete = async () => {
               {deleting ?  <span className="flex flex-row md:w-24"><Trash2 className="h-4 w-4 md:mr-2  animate-spin" /><p className="hidden md:inline">Suppression...</p></span> : <span className="flex flex-row md:w-24"><Trash2 className="h-4 w-4 md:mr-2" /><p className="hidden md:inline">Supprimer</p></span>}
             </Button></div>
 
-                    <Card className="max-w-2xl mx-auto bg-background/50 backdrop-blur-sm border-border/50 shadow-sm">
+          <Card className="  mx-auto bg-background/50 backdrop-blur-sm border-border/50 shadow-sm">
                         <CardHeader>
                             <CardTitle className="font-serif text-2xl">Détails du Coffret</CardTitle>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-6">
                                 <div>
-                                    <Label htmlFor="name">Nom du coffret *</Label>
+                                    <Label className="text-xl" htmlFor="name">Nom du coffret *</Label>
                                     <Input
                                         id="name"
                                         name="name"
@@ -231,7 +231,7 @@ const handleDelete = async () => {
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="price">Prix *</Label>
+                                    <Label className="text-xl" htmlFor="price">Prix *</Label>
                                     <Input
                                         id="price"
                                         name="price"
@@ -334,7 +334,7 @@ const handleDelete = async () => {
                                 </div>
 
                                 <div>
-                                    <Label htmlFor="description">Description *</Label>
+                                    <Label className="text-xl" htmlFor="description">Description *</Label>
                                     <Textarea
                                         id="description"
                                         name="description"
@@ -346,70 +346,127 @@ const handleDelete = async () => {
                                         className="bg-background/50"
                                     />
                                 </div>
+    <div className="mt-3">
+        <Label className="mb-1 text-xl">Quantité calculée</Label>
+        <Input value={String(computedQuantity)} disabled className="bg-background/50" />
+        <p className="text-sm text-muted-foreground mt-1">La quantité est calculée automatiquement comme le minimum des stocks des produits sélectionnés.</p>
+    </div>
+<div className="space-y-3">
+  <div>
+    <Label className="text-xl font-semibold">Produits inclus</Label>
+    <p className="text-sm text-muted-foreground mt-1">
+      Sélectionnez les produits inclus dans ce coffret
+    </p>
+  </div>
 
-<div>
-  <Label className="mb-2 block">Produits inclus</Label>
+  <div className="relative">
+    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+    <Input
+      placeholder="Rechercher par nom ou marque..."
+      className="pl-9 bg-background/50 border-border/50 focus:bg-background transition-colors"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+    {searchTerm && (
+      <button
+        type="button"
+        onClick={() => setSearchTerm('')}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+      >
+        <X className="h-4 w-4" />
+      </button>
+    )}
+  </div>
 
-  <Input
-    placeholder="Rechercher un produit..."
-    className="mb-2 bg-background/50"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-  />
+  <div className="space-y-2">
+    {formData.productIds.length > 0 && (
+      <div className="flex items-center justify-between px-3 py-2 bg-primary/5 rounded-md border border-primary/10">
+        <span className="text-sm font-medium">
+          {formData.productIds.length} produit{formData.productIds.length > 1 ? 's' : ''} sélectionné{formData.productIds.length > 1 ? 's' : ''}
+        </span>
+        <button
+          type="button"
+          onClick={() => setFormData(prev => ({ ...prev, productIds: [] }))}
+          className="text-xs text-muted-foreground hover:text-foreground transition-colors underline"
+        >
+          Tout désélectionner
+        </button>
+      </div>
+    )}
 
-  <ScrollArea className="h-60 rounded-md border border-border bg-background/50">
-    <div className="p-4 space-y-2">
-      {products.length > 0 ? (
-        <>
-          {products
-            .filter(product =>
-              product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              product.brand.toLowerCase().includes(searchTerm.toLowerCase())
-            )
-            .map(product => (
-              <div key={product.id} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`prod-${product.id}`}
-                  checked={formData.productIds.includes(product.id)}
-                  onCheckedChange={() => toggleProductSelection(product.id)}
-                />
-                <Label
-                  htmlFor={`prod-${product.id}`}
-                  className="text-sm cursor-pointer flex-1"
-                >
-                  {product.name} ({product.brand})
-                </Label>
-              </div>
-            ))}
+    <div 
+      className="rounded-lg border border-border/50 bg-background/30 backdrop-blur-sm"
+      onWheel={(e) => e.stopPropagation()}
+    >
+      <ScrollArea className="h-64">
+        <div className="p-3">
+          {products.length > 0 ? (
+            (() => {
+              const filteredProducts = products.filter(product =>
+                product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                product.brand.toLowerCase().includes(searchTerm.toLowerCase())
+              );
 
-          {products.filter(product =>
-            product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            product.brand.toLowerCase().includes(searchTerm.toLowerCase())
-          ).length === 0 && (
-            <div className="text-muted-foreground text-sm text-center">
-              Aucun produit trouvé
+              return filteredProducts.length > 0 ? (
+                <div className="space-y-1">
+                  {filteredProducts.map(product => {
+                    const isSelected = formData.productIds.includes(product.id);
+                    return (
+                      <div
+                        key={product.id}
+                        className={`
+                          flex items-center space-x-3 p-2.5 rounded-md transition-all
+                          hover:bg-accent/50 cursor-pointer group
+                          ${isSelected ? 'bg-accent/30 border border-primary/20' : 'border border-transparent'}
+                        `}
+                      >
+                        <Checkbox
+                          id={`prod-${product.id}`}
+                          checked={isSelected}
+                          onCheckedChange={() => toggleProductSelection(product.id)}
+                        />
+                        <Label
+                          htmlFor={`prod-${product.id}`}
+                          className="text-sm cursor-pointer flex-1 select-none"
+                        >
+                          <span className="font-medium">{product.name}</span>
+                          <span className="text-muted-foreground ml-2">({product.brand})</span>
+                        </Label>
+                        {isSelected && (
+                          <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <SearchX className="h-12 w-12 text-muted-foreground/40 mb-3" />
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Aucun produit trouvé
+                  </p>
+                  <p className="text-xs text-muted-foreground/70 mt-1">
+                    Essayez un autre terme de recherche
+                  </p>
+                </div>
+              );
+            })()
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Package className="h-12 w-12 text-muted-foreground/40 mb-3" />
+              <p className="text-sm font-medium text-muted-foreground">
+                Aucun produit disponible
+              </p>
+              <p className="text-xs text-muted-foreground/70 mt-1">
+                Ajoutez des produits pour commencer
+              </p>
             </div>
           )}
-        </>
-      ) : (
-        <div className="text-muted-foreground text-sm text-center">
-          Aucun produit disponible
         </div>
-      )}
+      </ScrollArea>
     </div>
-  </ScrollArea>
-
-  <p className="text-xs text-muted-foreground mt-1">
-    Sélectionnez les produits inclus dans ce coffret.
-  </p>
-
-    <div className="mt-3">
-        <Label className="mb-1">Quantité calculée</Label>
-        <Input value={String(computedQuantity)} disabled className="bg-background/50" />
-        <p className="text-xs text-muted-foreground mt-1">La quantité est calculée automatiquement comme le minimum des stocks des produits sélectionnés.</p>
-    </div>
+  </div>
 </div>
-
 
                                 <div className="flex gap-4 pt-4">
                                     <Button type="button" variant="outline" onClick={() => router.back()} className="w-full">

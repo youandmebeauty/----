@@ -34,7 +34,6 @@ import {
 import { CoffretCard } from "./coffret-card"
 import { cn } from "@/lib/utils/utils"
 import { generateSlug } from "@/lib/urls/product-url"
-import "../../app/coffrets/coffret-hearts.css"
 import { useSaintValentin } from "./saint-valentin-provider"
 interface CoffretDetailClientProps {
   coffret: Coffret
@@ -209,35 +208,40 @@ export function CoffretDetailClient({
 
   return (
        <>
-      {saintValentin ? (
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        {[...Array(8)].map((_, i) => {
-          const colors = ['#FF0055', '#0066FF', '#FFCC00', '#00D9FF', '#FF00CC', '#7B61FF', '#FF6B00', '#00FF88']
-          const sizes = [60, 45, 50, 55, 40, 30, 35, 38]
-          const heartPositions = [
-            { left: '10%', top: '15%' },
-            { right: '15%', top: '25%' },
-            { left: '80%', top: '60%' },
-            { left: '5%', top: '70%' },
-            { right: '20%', top: '75%' },
-            { left: '25%', top: '35%' },
-            { right: '35%', top: '45%' },
-            { left: '60%', top: '20%' }
-          ]
-          
-          return (
-            <div 
-              key={i}
-              className={`coffret-heart coffret-heart-${i + 1}`}
-              style={heartPositions[i]}
-            >
-              <svg width={sizes[i]} height={sizes[i]} viewBox="0 0 24 24" fill="none">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill={colors[i]}/>
-              </svg>
-            </div>
-          )
-        })}
-      </div> ) : null}
+{saintValentin && (
+  <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    {[...Array(50)].map((_, i) => {
+      // Random size between 20 and 80
+      const size = Math.floor(Math.random() * 60) + 20;
+      // Random color from a predefined palette
+      const colors = ['#FF0055', '#0066FF', '#FFCC00', '#00D9FF', '#FF00CC', '#7B61FF', '#FF6B00', '#00FF88', '#FF3399', '#33FF99', '#9933FF', '#FF9933'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      // Random position
+      const left = Math.floor(Math.random() * 90) + 5;
+      const top = Math.floor(Math.random() * 90) + 5;
+      // Random animation duration and delay
+      const duration = Math.floor(Math.random() * 6) + 5;
+      const delay = Math.floor(Math.random() * 5);
+
+      return (
+        <div
+          key={i}
+          className="coffret-heart"
+          style={{
+            left: `${left}%`,
+            top: `${top}%`,
+            animation: `coffret-float ${duration}s ease-in-out infinite ${delay}s`
+          }}
+        >
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill={color}/>
+          </svg>
+        </div>
+      );
+    })}
+  </div>
+)}
+
     <div className="min-h-screen">
       <main className="container mx-auto px-4 lg:px-8 py-8 lg:py-16">
         <Breadcrumb items={breadcrumbItems} className="mb-8" />

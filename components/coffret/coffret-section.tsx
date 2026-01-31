@@ -101,49 +101,40 @@ export function CoffretSection({
     return (
     <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4 shadow-inner relative">
             
-           {saintValentin && (<div className="absolute inset-0 pointer-events-none">
+            {saintValentin && (
+  <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+    {[...Array(50)].map((_, i) => {
+      // Random size between 20 and 80
+      const size = Math.floor(Math.random() * 60) + 20;
+      // Random color from a predefined palette
+      const colors = ['#FF0055', '#0066FF', '#FFCC00', '#00D9FF', '#FF00CC', '#7B61FF', '#FF6B00', '#00FF88', '#FF3399', '#33FF99', '#9933FF', '#FF9933'];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      // Random position
+      const left = Math.floor(Math.random() * 90) + 5;
+      const top = Math.floor(Math.random() * 90) + 5;
+      // Random animation duration and delay
+      const duration = Math.floor(Math.random() * 6) + 5;
+      const delay = Math.floor(Math.random() * 5);
 
-                <div className="heart heart-1" style={{ left: '10%', top: '15%' }}>
-                    <svg width="60" height="60" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#FF0055"/>
-                    </svg>
-                </div>
-                <div className="heart heart-2" style={{ right: '15%', top: '25%' }}>
-                    <svg width="45" height="45" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#0066FF"/>
-                    </svg>
-                </div>
-                <div className="heart heart-3" style={{ left: '80%', top: '60%' }}>
-                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#FFCC00"/>
-                    </svg>
-                </div>
-                <div className="heart heart-4" style={{ left: '5%', top: '70%' }}>
-                    <svg width="55" height="55" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#00D9FF"/>
-                    </svg>
-                </div>
-                <div className="heart heart-5" style={{ right: '20%', top: '75%' }}>
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#FF00CC"/>
-                    </svg>
-                </div>
-                <div className="heart heart-6" style={{ left: '25%', top: '35%' }}>
-                    <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#7B61FF"/>
-                    </svg>
-                </div>
-                <div className="heart heart-7" style={{ right: '35%', top: '45%' }}>
-                    <svg width="35" height="35" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#FF6B00"/>
-                    </svg>
-                </div>
-                <div className="heart heart-8" style={{ left: '60%', top: '20%' }}>
-                    <svg width="38" height="38" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#00FF88"/>
-                    </svg>
-                </div>
-            </div>)  }
+      return (
+        <div
+          key={i}
+          className="coffret-heart"
+          style={{
+            left: `${left}%`,
+            top: `${top}%`,
+            animation: `coffret-float ${duration}s ease-in-out infinite ${delay}s`
+          }}
+        >
+          <svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill={color}/>
+          </svg>
+        </div>
+      );
+    })}
+  </div>
+)}
+
 
            <div className="container mx-auto px-4">
 

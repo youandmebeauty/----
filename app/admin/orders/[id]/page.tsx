@@ -134,7 +134,7 @@ function OrderDetailsContent() {
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Retour
               </Button>
-              <h1 className="font-serif text-3xl font-medium tracking-tight">
+              <h1 className="font-serif text-xl lg:text-2xl font-medium tracking-tight">
                 Détails de la commande #{order.id.slice(0, 8)}
               </h1>
             </div>

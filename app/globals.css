@@ -152,3 +152,26 @@ html.lenis body {
     animation: gradient 4s ease infinite;
   }
 }
+
+@keyframes coffret-float {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg) scale(0.9);
+  }
+  33% {
+    transform: translateY(-20px) rotate(5deg) scale(1.1);
+  }
+  66% {
+    transform: translateY(-10px) rotate(-5deg) scale(0.9);
+  }
+}
+
+.coffret-heart {
+  position: absolute;
+  opacity: 0.15;
+  transition: all 0.8s ease;
+}
+
+.coffret-heart:hover {
+  opacity: 0.4;
+  transform: scale(1.1);
+}
