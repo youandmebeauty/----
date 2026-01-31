@@ -224,16 +224,45 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
       "@type": "ItemList",
       name: `Produits inclus dans ${coffret.name}`,
       numberOfItems: coffretProducts.length,
-      itemListElement: coffretProducts.map((product, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        item: {
+      itemListElement: coffretProducts.map((product, index) => {
+        const productSlug = `${product.id}-${generateSlug(product.name)}`
+        const productUrl = `https://youandme.tn/product/${productSlug}`
+        const effectivePrice = (typeof product.promoPrice === 'number' && product.promoPrice < product.price) ? product.promoPrice : product.price
+
+        const productNode: any = {
           "@type": "Product",
           name: product.name,
           image: product.images?.[0] || product.image,
           description: product.description,
+          sku: product.id,
+          url: productUrl,
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "TND",
+            price: effectivePrice?.toString(),
+            availability: (product.quantity === 0) ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+            url: productUrl
+          }
         }
-      }))
+
+        // Optional aggregateRating if available on product (metadata or rating fields)
+        const ratingValue = (product as any).rating ?? (product as any).metadata?.aggregateRating?.ratingValue
+        const reviewCount = (product as any).ratingCount ?? (product as any).metadata?.aggregateRating?.reviewCount
+
+        if (ratingValue !== undefined) {
+          productNode.aggregateRating = {
+            "@type": "AggregateRating",
+            ratingValue: ratingValue,
+            ...(reviewCount !== undefined && { reviewCount: reviewCount })
+          }
+        }
+
+        return {
+          "@type": "ListItem",
+          position: index + 1,
+          item: productNode,
+        }
+      })
     } : null
 
     return (
