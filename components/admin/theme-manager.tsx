@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label"
 import { Badge } from "@/components/ui/badge"
 import { useToast } from "@/hooks/use-toast"
-import { useFeteTheme } from "@/components/coffret/fete-theme-provider"
+import { useFeteTheme } from "@/components/providers/fete-theme-provider"
 
 const THEME_OPTIONS = [
   { key: "none", label: "Aucune" },
@@ -65,10 +65,10 @@ export default function ThemeManager() {
             <Label>Aperçu</Label>
             <div className="mt-2 p-3 rounded-md border border-border/30 bg-background/50">
               <div className="flex items-center gap-2 mb-2">
-                {(theme.icons || []).slice(0,3).map((ic, i) => (
-                  <span key={i} style={{ fontSize: 20 }} aria-hidden>{ic}</span>
-                ))}
-              </div>
+  {(theme.icons || []).slice(0, 3).map((Icon, i) => (
+    <Icon key={i} size={20} color={theme.colors.primary} aria-hidden="true" />
+  ))}
+</div>
               <div className="h-8 w-full rounded-sm" style={{ background: theme.colors.primary }} />
               <div className="mt-2 text-sm">{theme.announcementText || "Aucun texte d'annonce"}</div>
             </div>

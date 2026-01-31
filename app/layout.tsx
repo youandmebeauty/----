@@ -11,7 +11,7 @@ import { Header } from "@/components/navigation/header"
 
 
 const inter = Inter({ subsets: ["latin"] })
-import { FeteThemeProvider } from "@/components/coffret/fete-theme-provider"
+import { FeteThemeProvider } from "@/components/providers/fete-theme-provider"
 
 export default function RootLayout({
   children,

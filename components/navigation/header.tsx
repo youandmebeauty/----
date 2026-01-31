@@ -14,7 +14,7 @@ import { Moon, Sun, ShoppingBag, Menu, Search, X } from "lucide-react"
 import GlassSurface from "../GlassSurface"
 import { gsap } from "@/lib/utils/gsap-util"
 import { AnnounceOffre } from "../announceOffre"
-import { useFeteTheme } from "@/components/coffret/fete-theme-provider"
+import { useFeteTheme } from "@/components/providers/fete-theme-provider"
 
 export function Header() {
   const { theme, setTheme } = useTheme()

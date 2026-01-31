@@ -8,8 +8,8 @@ import { CoffretCard } from "./coffret-card"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Link from "next/link"
-import { AlertCircle, ArrowRight, Dice1, RefreshCw } from "lucide-react"
-import { useFeteTheme } from "./fete-theme-provider"
+import { AlertCircle, ArrowRight, Dice1, Gift, RefreshCw } from "lucide-react"
+import { useFeteTheme } from "../providers/fete-theme-provider"
 import { ScrollAnimation } from "../navigation/scroll-animation"
 interface CoffretSectionProps {
     limit?: number
@@ -103,32 +103,30 @@ export function CoffretSection({
             
                         {themeKey !== "none" && (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        {[...Array(50)].map((_, i) => {
-            const size = Math.floor(Math.random() * 60) + 20;
-            const palette = [theme.colors.primary, theme.colors.secondary || theme.colors.primary];
-            const color = palette[Math.floor(Math.random() * palette.length)];
-            const left = Math.floor(Math.random() * 90) + 5;
-            const top = Math.floor(Math.random() * 90) + 5;
-            const duration = Math.floor(Math.random() * 6) + 5;
-            const delay = Math.floor(Math.random() * 5);
-            const icon = (theme.icons && theme.icons.length > 0) ? theme.icons[i % theme.icons.length] : "🎁";
+       {[...Array(30)].map((_, i) => {
+  const size = Math.floor(Math.random() * 60) + 20;
+  const palette = [theme.colors.primary, theme.colors.secondary || theme.colors.primary];
+  const color = palette[Math.floor(Math.random() * palette.length)];
+  const left = Math.floor(Math.random() * 90) + 5;
+  const top = Math.floor(Math.random() * 90) + 5;
+  const duration = Math.floor(Math.random() * 6) + 5;
+  const delay = Math.floor(Math.random() * 5);
+  const Icon = (theme.icons && theme.icons.length > 0) ? theme.icons[i % theme.icons.length] : Gift;
 
-            return (
-                <div
-                    key={i}
-                    className="coffret-heart"
-                    style={{
-                        left: `${left}%`,
-                        top: `${top}%`,
-                        animation: `coffret-float ${duration}s ease-in-out infinite ${delay}s`
-                    }}
-                >
-                    <span style={{ fontSize: size, color }} aria-hidden>
-                        {icon}
-                    </span>
-                </div>
-            );
-        })}
+  return (
+    <div
+      key={i}
+      className="coffret-heart"
+      style={{
+        left: `${left}%`,
+        top: `${top}%`,
+        animation: `coffret-float ${duration}s ease-in-out infinite ${delay}s`,
+      }}
+    >
+      <Icon size={size} color={color} aria-hidden="true" />
+    </div>
+  );
+})}
     </div>
 )}
 

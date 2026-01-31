@@ -1,4 +1,4 @@
-import { useFeteTheme } from "@/components/coffret/fete-theme-provider"
+import { useFeteTheme } from "@/components/providers/fete-theme-provider"
 
 export function AnnounceOffre() {
   const { theme } = useFeteTheme()
@@ -18,12 +18,15 @@ export function AnnounceOffre() {
       <div className={`peer-checked:hidden -mt-4 peer-checked:mt-0 bg-gradient-to-r w-full text-white sticky top-0 z-50 shadow-lg overflow-hidden`} style={{ backgroundImage: `linear-gradient(90deg, ${gradientFrom}, ${gradientTo})` }}>
         <div className="relative py-3">
           <div className="flex animate-slide">
-            {[...Array(4)].map((_, idx) => (
-              <div key={idx} className="flex items-center gap-3 whitespace-nowrap px-8">
-                <span className="inline-block text-white animate-pulse flex-shrink-0" style={{ fontSize: 18 }}>{icon}</span>
-                <p className="font-medium text-sm sm:text-base">{announcementText}</p>
-              </div>
-            ))}
+{[...Array(4)].map((_, idx) => {
+              const Icon = theme.icons[idx % theme.icons.length];
+              return (
+                <div key={idx} className="flex items-center gap-3 whitespace-nowrap px-8">
+                  {Icon && <Icon size={18} color="#ffffff" className="animate-pulse flex-shrink-0" aria-hidden="true" />}
+                  <p className="font-medium text-sm sm:text-base">{announcementText}</p>
+                </div>
+              );
+            })}
           </div>
 
           <label htmlFor="announcement-toggle" className="cursor-pointer absolute top-1/2 -translate-y-1/2 right-4 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-full w-6 h-6 flex items-center justify-center text-white transition-all duration-200 hover:scale-110" aria-label="Close announcement">
