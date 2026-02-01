@@ -99,7 +99,7 @@ export function CoffretSection({
     const displayedCoffrets = coffrets.slice(0, limit)
 
         return (
-        <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4 shadow-inner relative">
+        <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4 z-0 shadow-inner relative">
             
                         {themeKey !== "none" && (
     <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
@@ -131,7 +131,7 @@ export function CoffretSection({
 )}
 
 
-           <div className="container mx-auto px-4">
+           <div className="container mx-auto px-4 ">
 
                         {/* Title Column */}
                                 {themeKey !== "none" ? 

@@ -106,7 +106,7 @@ export default function Home() {
         </section>
         <ScrollAnimation
             variant="blurRise"
-            duration={2.5} className="hidden md:block absolute mt-10 md:h-[65%] -top-10 right-0 lg:h-[90%] w-1/2 " >
+            duration={2.5} className="hidden md:block absolute mt-10 md:h-[65%] z-20 -top-10 right-0 lg:h-[90%] w-1/2 " >
           <MakeupModelWrapper />
         </ScrollAnimation>
         
@@ -123,7 +123,7 @@ export default function Home() {
           <ScrollAnimation
             variant="slideUp"
             duration={0.9}
-          
+            className="z-0"
             delay={0.15}
           >
             <CoffretSection />
