@@ -22,7 +22,11 @@ interface LocationData {
 }
 
 export default function Sidebar({ className = "" }: { className?: string }) {
-  const pathname = usePathname() || ""
+  const pathname = usePathname()
+  
+  // Hide sidebar on the admin login page - check this early
+  if (!pathname || pathname === "/admin/login" || pathname.startsWith("/admin/login")) return null
+
   const [open, setOpen] = useState(false)
   const [greeting, setGreeting] = useState("")
   const [weather, setWeather] = useState<WeatherData | null>(null)
@@ -37,9 +41,6 @@ export default function Sidebar({ className = "" }: { className?: string }) {
     { href: "/admin/coffrets", label: "Coffrets", icon: <Gift className="w-5 h-5" /> },
     { href: "/admin/config", label: "Configuration", icon: <Cog className="w-5 h-5" /> },
   ]
-
-  // Hide sidebar on the admin login page
-  if (pathname === "/admin/login" || pathname.startsWith("/admin/login")) return null
 
   // Get user's location
   useEffect(() => {
