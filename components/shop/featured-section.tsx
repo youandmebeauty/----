@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { useSearchParams } from "next/navigation"
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { gsap } from "@/lib/utils/gsap-util"
 
 const CATEGORY_VIDEOS: Record<string, string> = {
@@ -69,101 +69,107 @@ export function FeaturedSection() {
     const searchParams = useSearchParams()
     const category = searchParams.get("category")
     const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
-    const [isSlideshow, setIsSlideshow] = useState(true)
     const videoRef = useRef<HTMLVideoElement | null>(null)
     const contentRef = useRef<HTMLDivElement | null>(null)
+    const gsapContextRef = useRef<ReturnType<typeof gsap.context> | null>(null)
 
+    // Determine the active video src
+    const videoSrc =
+        !category || category === "all"
+            ? ALL_VIDEOS[currentVideoIndex]
+            : CATEGORY_VIDEOS[category] ?? ALL_VIDEOS[0]
+
+    // Determine the displayed content
+    const content =
+        category && CATEGORY_CONTENT[category]
+            ? CATEGORY_CONTENT[category]
+            : CATEGORY_CONTENT.default
+
+    const contentKey = category || "default"
+
+    // Slideshow interval — only when no category is selected
     useEffect(() => {
         if (!category || category === "all") {
-            setIsSlideshow(true)
             const interval = setInterval(() => {
                 setCurrentVideoIndex((prev) => (prev + 1) % ALL_VIDEOS.length)
-            }, 2000) // Change video every 2 seconds
-
+            }, 2000)
             return () => clearInterval(interval)
         } else {
-            setIsSlideshow(false)
+            setCurrentVideoIndex(0) // reset index when a category is picked
         }
     }, [category])
 
-    const getVideoSrc = () => {
-        if (isSlideshow) {
-            return ALL_VIDEOS[currentVideoIndex]
-        }
-        if (category && CATEGORY_VIDEOS[category]) {
-            return CATEGORY_VIDEOS[category]
-        }
-        return ALL_VIDEOS[0] // Fallback
-    }
-
-    const getContent = () => {
-        if (category && CATEGORY_CONTENT[category]) {
-            return CATEGORY_CONTENT[category]
-        }
-        return CATEGORY_CONTENT.default
-    }
-
-    const videoSrc = useMemo(() => getVideoSrc(), [category, currentVideoIndex, isSlideshow])
-    const content = useMemo(() => getContent(), [category])
-    const contentKey = category || "default"
-
+    // Crossfade the video when src changes — NO remount
     useEffect(() => {
-        const videoElement = videoRef.current
-        if (!videoElement) return
+        const video = videoRef.current
+        if (!video) return
 
-        const ctx = gsap.context(() => {
-            gsap.fromTo(
-                videoElement,
-                { opacity: 0 },
-                { opacity: 1, duration: 0.5, ease: "power1.out" }
-            )
-        }, videoElement)
+        // Fade out
+        gsap.to(video, {
+            opacity: 0,
+            duration: 0.3,
+            ease: "power1.in",
+            onComplete: () => {
+                // Swap src only after fade-out finishes
+                video.src = videoSrc
+                video.load() // triggers the browser to start loading the new source
+                video.play().catch(() => {}) // autoplay may need user gesture on some browsers
 
-        return () => ctx.revert()
+                // Fade back in
+                gsap.to(video, {
+                    opacity: 1,
+                    duration: 0.5,
+                    ease: "power1.out",
+                })
+            },
+        })
     }, [videoSrc])
 
+    // Animate content text when category changes
     useEffect(() => {
-        const contentElement = contentRef.current
-        if (!contentElement) return
+        const el = contentRef.current
+        if (!el) return
 
-        const ctx = gsap.context(() => {
+        if (gsapContextRef.current) gsapContextRef.current.revert()
+
+        gsapContextRef.current = gsap.context(() => {
             gsap.fromTo(
-                contentElement,
+                el,
                 { opacity: 0, y: 20 },
                 { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
             )
-        }, contentElement)
+        }, el)
 
-        return () => ctx.revert()
+        return () => {
+            gsapContextRef.current?.revert()
+        }
     }, [contentKey])
 
     const handleDiscoverClick = () => {
         requestAnimationFrame(() => {
-            const productSection = document.getElementById('product-section')
-            if (productSection) {
-                productSection.scrollIntoView({ behavior: 'smooth' })
-            }
+            document.getElementById("product-section")?.scrollIntoView({ behavior: "smooth" })
         })
     }
 
     return (
         <section className="relative w-full h-[400px] lg:h-[500px] mb-16 overflow-hidden rounded-2xl">
             <div className="absolute inset-0">
+                {/* Single video element — never remounted */}
                 <video
-                    key={videoSrc}
                     ref={videoRef}
                     src={videoSrc}
                     autoPlay
                     loop
                     muted
                     playsInline
-                    className="absolute inset-0 h-full w-full object-cover opacity-0"
+                    className="absolute inset-0 h-full w-full object-cover"
+                    style={{ opacity: 1 }}
                 />
                 <div className="absolute inset-0 bg-black/40" />
             </div>
 
             <div className="relative h-full flex flex-col justify-center items-center text-center text-white px-4">
-                <div ref={contentRef} key={contentKey} className="space-y-6 opacity-0">
+                <div ref={contentRef} key={contentKey} className="space-y-6">
                     <span className="text-sm font-medium uppercase tracking-[0.2em]">{content.subtitle}</span>
                     <h2 className="text-4xl font-light md:text-5xl lg:text-6xl">{content.title}</h2>
                     <p className="mx-auto max-w-lg text-lg font-light text-white/90">
