@@ -102,83 +102,7 @@ async function getItemStock(itemId: string): Promise<number> {
   }
 }
 
-// Update stock for a coffret (reduces stock for coffret and all constituent products)
-async function updateCoffretStock(coffretId: string, newCoffretQuantity: number): Promise<void> {
-  const coffretDoc = await adminDb.collection(COFFRETS_COLLECTION).doc(coffretId).get()
-  
-  if (!coffretDoc.exists) {
-    throw new Error(`Coffret not found: ${coffretId}`)
-  }
 
-  const coffret = coffretDoc.data() as any
-  const currentCoffretQuantity = coffret.quantity ?? 0
-  const quantityChange = currentCoffretQuantity - newCoffretQuantity
-
-  // Update coffret's own quantity
-  await adminDb.collection(COFFRETS_COLLECTION).doc(coffretId).update({
-    quantity: newCoffretQuantity
-  })
-
-  // Update stock for all products in the coffret
-  if (coffret.productIds && Array.isArray(coffret.productIds) && quantityChange !== 0) {
-    await Promise.all(
-      coffret.productIds.map(async (productId: string) => {
-        const productDoc = await adminDb.collection(PRODUCTS_COLLECTION).doc(productId).get()
-        if (productDoc.exists) {
-          const product = productDoc.data() as any
-          const currentProductQuantity = product.quantity ?? 0
-          const newProductQuantity = Math.max(0, currentProductQuantity - quantityChange)
-          await adminDb.collection(PRODUCTS_COLLECTION).doc(productId).update({
-            quantity: newProductQuantity
-          })
-        }
-      })
-    )
-  }
-}
-
-// Update stock for an item (handles products, variants, AND coffrets)
-async function updateItemStock(itemId: string, quantity: number): Promise<void> {
-  // Check if it's a coffret
-  const coffretDoc = await adminDb.collection(COFFRETS_COLLECTION).doc(itemId).get()
-  if (coffretDoc.exists) {
-    await updateCoffretStock(itemId, quantity)
-    return
-  }
-
-  // Otherwise handle as product with possible variant
-  const { productId, variantIndex } = parseItemId(itemId)
-  const productRef = adminDb.collection(PRODUCTS_COLLECTION).doc(productId)
-  
-  if (variantIndex !== null) {
-    // Update variant stock
-    const productDoc = await productRef.get()
-    if (!productDoc.exists) {
-      throw new Error("Product not found")
-    }
-
-    const productData = productDoc.data() as any
-    if (!productData.hasColorVariants || !productData.colorVariants || !productData.colorVariants[variantIndex]) {
-      throw new Error(`Variant ${variantIndex} not found`)
-    }
-
-    const updatedVariants = [...productData.colorVariants]
-    updatedVariants[variantIndex] = {
-      ...updatedVariants[variantIndex],
-      quantity
-    }
-
-    const totalQuantity = updatedVariants.reduce((sum: number, v: any) => sum + v.quantity, 0)
-
-    await productRef.update({
-      colorVariants: updatedVariants,
-      quantity: totalQuantity
-    })
-  } else {
-    // Update product stock
-    await productRef.update({ quantity })
-  }
-}
 
 export async function GET(
   request: NextRequest,
@@ -247,53 +171,6 @@ export async function PATCH(
       return NextResponse.json(currentOrder)
     }
 
-    // When marking an order as shipped or delivered for the first time, reduce stock for each item
-    if ((status === "shipped" || status === "delivered") && previousStatus !== "shipped" && previousStatus !== "delivered") {
-      if (!orderData.items || !Array.isArray(orderData.items)) {
-        return NextResponse.json(
-          { error: "Order items are invalid, cannot update stock" },
-          { status: 500 }
-        )
-      }
-
-      const stockChanges: { itemId: string; newStock: number }[] = []
-
-      // First validate stock for all items
-      for (const item of orderData.items) {
-        if (!item.id || !item.quantity || item.quantity <= 0) {
-          console.warn(`Invalid item in order ${id}:`, item)
-          return NextResponse.json(
-            { error: "One or more order items are invalid" },
-            { status: 400 }
-          )
-        }
-
-        const currentStock = await getItemStock(item.id)
-        if (currentStock < item.quantity) {
-          return NextResponse.json(
-            {
-              error: `Stock insuffisant pour ${item.name}. Demandé: ${item.quantity}, Disponible: ${currentStock}`
-            },
-            { status: 400 }
-          )
-        }
-
-        stockChanges.push({ itemId: item.id, newStock: currentStock - item.quantity })
-      }
-
-      // Apply stock updates
-      for (const change of stockChanges) {
-        try {
-          await updateItemStock(change.itemId, change.newStock)
-        } catch (stockError) {
-          console.error(`Error reducing stock for item ${change.itemId}:`, stockError)
-          return NextResponse.json(
-            { error: "Failed to update product stock for shipment" },
-            { status: 500 }
-          )
-        }
-      }
-    }
 
     // Update order status after any necessary stock changes
     await orderRef.update({ status })
@@ -305,30 +182,6 @@ export async function PATCH(
       console.warn("Failed to revalidate products after order status change:", e)
     }
 
-    // Handle stock restoration only if a previously shipped or delivered order is cancelled
-    if (status === "cancelled" && (previousStatus === "shipped" || previousStatus === "delivered")) {
-      if (!orderData.items || !Array.isArray(orderData.items)) {
-        console.warn(`Order ${id} has no valid items array`)
-      } else {
-        for (const item of orderData.items) {
-          if (!item.id || !item.quantity || item.quantity <= 0) {
-            console.warn(`Invalid item in order ${id}:`, item)
-            continue
-          }
-
-          try {
-            // Get current stock (handles coffrets, variants)
-            const currentStock = await getItemStock(item.id)
-            const newStock = currentStock + item.quantity
-            // Restore stock (handles coffrets, variants)
-            await updateItemStock(item.id, newStock)
-          } catch (stockError) {
-            console.error(`Error restoring stock for item ${item.id}:`, stockError)
-            // Continue with other items even if one fails
-          }
-        }
-      }
-    }
 
     const updatedOrder: Order = {
       ...orderData,
