@@ -69,60 +69,94 @@ export function FeaturedSection() {
     const searchParams = useSearchParams()
     const category = searchParams.get("category")
     const [currentVideoIndex, setCurrentVideoIndex] = useState(0)
-    const videoRef = useRef<HTMLVideoElement | null>(null)
-    const contentRef = useRef<HTMLDivElement | null>(null)
-    const gsapContextRef = useRef<ReturnType<typeof gsap.context> | null>(null)
 
-    // Determine the active video src
+    // Two video refs for crossfade — activeIndex tracks which one is currently visible
+    const videoRefA = useRef<HTMLVideoElement | null>(null)
+    const videoRefB = useRef<HTMLVideoElement | null>(null)
+    const activeIndexRef = useRef(0) // which of the two <video> elements is currently showing
+
+    const getVideoEl = (index: number): HTMLVideoElement | null =>
+        index === 0 ? videoRefA.current : videoRefB.current
+
+    const contentRef = useRef<HTMLDivElement | null>(null)
+
+    // Resolve the target video src
     const videoSrc =
         !category || category === "all"
             ? ALL_VIDEOS[currentVideoIndex]
             : CATEGORY_VIDEOS[category] ?? ALL_VIDEOS[0]
 
-    // Determine the displayed content
+    // Resolve displayed text content
     const content =
         category && CATEGORY_CONTENT[category]
             ? CATEGORY_CONTENT[category]
             : CATEGORY_CONTENT.default
-
     const contentKey = category || "default"
 
-    // Slideshow interval — only when no category is selected
+    // Slideshow timer — only active when no category filter
     useEffect(() => {
         if (!category || category === "all") {
             const interval = setInterval(() => {
                 setCurrentVideoIndex((prev) => (prev + 1) % ALL_VIDEOS.length)
-            }, 2000)
+            }, 5000)
             return () => clearInterval(interval)
         } else {
-            setCurrentVideoIndex(0) // reset index when a category is picked
+            setCurrentVideoIndex(0)
         }
     }, [category])
 
-    // Crossfade the video when src changes — NO remount
+    // Crossfade between the two video elements when videoSrc changes
     useEffect(() => {
-        const video = videoRef.current
-        if (!video) return
+        const activeIndex = activeIndexRef.current
+        const nextIndex = activeIndex === 0 ? 1 : 0
 
-        // Fade out
-        gsap.to(video, {
-            opacity: 0,
-            duration: 0.3,
-            ease: "power1.in",
-            onComplete: () => {
-                // Swap src only after fade-out finishes
-                video.src = videoSrc
-                video.load() // triggers the browser to start loading the new source
-                video.play().catch(() => {}) // autoplay may need user gesture on some browsers
+        const activeVideo = getVideoEl(activeIndex)
+        const nextVideo = getVideoEl(nextIndex)
+        if (!activeVideo || !nextVideo) return
 
-                // Fade back in
-                gsap.to(video, {
+        // Set up the next video with the new source BEFORE playing
+        nextVideo.src = videoSrc
+        nextVideo.load()
+
+        // Wait for enough data to play without buffering stall
+        const startCrossfade = () => {
+            nextVideo.play().catch(() => {})
+
+            // Fade the next video in on top
+            gsap.fromTo(
+                nextVideo,
+                { opacity: 0 },
+                {
                     opacity: 1,
-                    duration: 0.5,
+                    duration: 0.6,
                     ease: "power1.out",
-                })
-            },
-        })
+                    onComplete: () => {
+                        // Once crossfade is done, hide the old video and clear its src
+                        // to free memory — it will be reused on the next swap
+                        gsap.set(activeVideo, { opacity: 0 })
+                        activeVideo.pause()
+                        activeVideo.removeAttribute("src")
+                        activeVideo.load() // reset internal state
+
+                        activeIndexRef.current = nextIndex
+                    },
+                }
+            )
+        }
+
+        // If enough data is already loaded, go immediately; otherwise wait
+        const onCanPlay = () => startCrossfade()
+
+        if (nextVideo.readyState >= 2) {
+            startCrossfade()
+        } else {
+            nextVideo.addEventListener("canplay", onCanPlay)
+        }
+
+        // Cleanup: remove listener if the effect re-runs before canplay fires
+        return () => {
+            nextVideo.removeEventListener("canplay", onCanPlay)
+        }
     }, [videoSrc])
 
     // Animate content text when category changes
@@ -130,19 +164,11 @@ export function FeaturedSection() {
         const el = contentRef.current
         if (!el) return
 
-        if (gsapContextRef.current) gsapContextRef.current.revert()
-
-        gsapContextRef.current = gsap.context(() => {
-            gsap.fromTo(
-                el,
-                { opacity: 0, y: 20 },
-                { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
-            )
-        }, el)
-
-        return () => {
-            gsapContextRef.current?.revert()
-        }
+        gsap.fromTo(
+            el,
+            { opacity: 0, y: 20 },
+            { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+        )
     }, [contentKey])
 
     const handleDiscoverClick = () => {
@@ -154,21 +180,30 @@ export function FeaturedSection() {
     return (
         <section className="relative w-full h-[400px] lg:h-[500px] mb-16 overflow-hidden rounded-2xl">
             <div className="absolute inset-0">
-                {/* Single video element — never remounted */}
+                {/* Video A */}
                 <video
-                    ref={videoRef}
-                    src={videoSrc}
+                    ref={videoRefA}
                     autoPlay
                     loop
                     muted
                     playsInline
+                    src={ALL_VIDEOS[0]}
                     className="absolute inset-0 h-full w-full object-cover"
-                    style={{ opacity: 1 }}
+                    style={{ opacity: 1, zIndex: 1 }}
                 />
-                <div className="absolute inset-0 bg-black/40" />
+                {/* Video B — starts hidden, swaps in on crossfade */}
+                <video
+                    ref={videoRefB}
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 h-full w-full object-cover"
+                    style={{ opacity: 0, zIndex: 2 }}
+                />
+                <div className="absolute inset-0 bg-black/40" style={{ zIndex: 3 }} />
             </div>
 
-            <div className="relative h-full flex flex-col justify-center items-center text-center text-white px-4">
+            <div className="relative h-full flex flex-col justify-center items-center text-center text-white px-4" style={{ zIndex: 4 }}>
                 <div ref={contentRef} key={contentKey} className="space-y-6">
                     <span className="text-sm font-medium uppercase tracking-[0.2em]">{content.subtitle}</span>
                     <h2 className="text-4xl font-light md:text-5xl lg:text-6xl">{content.title}</h2>
