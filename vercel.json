@@ -1,0 +1,29 @@
+{
+  "buildCommand": "pnpm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "env": {
+    "PRIVATE_MODELS_DIR": "/var/task/private-models"
+  },
+  "functions": {
+    "app/api/models/route.ts": {
+      "memory": 1024,
+      "maxDuration": 60
+    },
+    "app/api/**": {
+      "memory": 512,
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/models",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, immutable"
+        }
+      ]
+    }
+  ]
+}
