@@ -26,6 +26,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# private models (ONNX/ML models - keep secure)
+private-models/*.onnx
+private-models/*.wasm
+private-models/*.ort
+
 /scripts
 serviceAccountKey.json
 /posts

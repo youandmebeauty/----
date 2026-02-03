@@ -25,7 +25,6 @@ export async function loadModelFromSecureAPI(
 
       if (cachedResponse) {
         const buffer = await cachedResponse.arrayBuffer()
-        console.log(`[Model] Loaded ${modelName} from cache`)
         return buffer
       }
     }
@@ -64,7 +63,6 @@ export async function loadModelFromSecureAPI(
       )
     }
 
-    console.log(`[Model] Loaded ${modelName} from secure API`)
     return buffer
   } catch (error) {
     console.error(`[Model] Error loading ${modelName}:`, error)

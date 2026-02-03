@@ -32,7 +32,6 @@ const modelCache = new Map<string, Buffer>()
 export async function getModelFile(modelName: string): Promise<Buffer> {
   // Check in-memory cache first (reused across requests in same function instance)
   if (modelCache.has(modelName)) {
-    console.log(`[Model Cache] Hit for ${modelName}`)
     return modelCache.get(modelName)!
   }
 
@@ -58,11 +57,6 @@ export async function getModelFile(modelName: string): Promise<Buffer> {
   // Read and cache the model
   const buffer = fs.readFileSync(resolvedPath)
   modelCache.set(modelName, buffer)
-
-  console.log(
-    `[Model Loaded] ${modelName} (${(buffer.length / 1024 / 1024).toFixed(2)}MB) from ${resolvedPath}`
-  )
-
   return buffer
 }
 

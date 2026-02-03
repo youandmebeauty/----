@@ -14,6 +14,7 @@ import { AnalysisResults } from "@/components/skin-analyzer/analysis-results";
 import { LoadingAnimation } from "@/components/ui/loading-animation";
 import { ScrollAnimation } from "@/components/navigation/scroll-animation";
 import { getProductsForSkinConcern } from "@/lib/services/skin-product-matcher";
+import { loadModelFromSecureAPI } from "@/lib/client/secure-model-loader";
 import type { DetectionRaw, MappedDetection, GroupedDetection, Product } from "@/lib/models/skin-analyzer";
 
 // ----------------- Config -----------------
@@ -90,16 +91,8 @@ async function loadModel() {
         // Load ONNX Runtime from CDN and get the module
         const ort = await loadONNXRuntime();
 
-        const modelPath = "/models/best.onnx";
-
-        // Fetch the model file as ArrayBuffer for better error handling
-        const modelResponse = await fetch(modelPath);
-
-        if (!modelResponse.ok) {
-            throw new Error(`Failed to fetch model: ${modelResponse.status} ${modelResponse.statusText}`);
-        }
-
-        const modelArrayBuffer = await modelResponse.arrayBuffer();
+        // Load model from secure API endpoint instead of public folder
+        const modelArrayBuffer = await loadModelFromSecureAPI("best.onnx");
 
         // Load ONNX model with simplified configuration
         try {
@@ -133,9 +126,11 @@ async function loadModel() {
             } else if (errMsg.includes('wasm')) {
                 errorMessage = "Erreur lors du chargement des fichiers WebAssembly. Veuillez réessayer.";
             } else if (errMsg.includes('not accessible') || errMsg.includes('404')) {
-                errorMessage = "Le fichier du modèle est introuvable. Assurez-vous que best.onnx existe dans public/models/";
+                errorMessage = "Le fichier du modèle est introuvable. Contactez le support technique.";
             } else if (errMsg.includes('memory') || errMsg.includes('oom')) {
                 errorMessage = "Mémoire insuffisante pour charger le modèle. Fermez d'autres onglets et réessayez.";
+            } else if (errMsg.includes('rate limit')) {
+                errorMessage = "Trop de demandes. Veuillez patienter quelques instants et réessayer.";
             } else if ((error as any).code || typeof error === 'number') {
                 errorMessage = `Erreur ONNX Runtime (code: ${(error as any).code || error}). Le modèle pourrait être incompatible avec cette version d'ONNX Runtime.`;
             } else {
