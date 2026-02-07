@@ -136,15 +136,24 @@ export default async function ProductPage({ params }: ProductPageProps) {
     ],
   }
 
+  // Determine product availability based on variants or regular stock
+  const isInStock = product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
+    ? product.colorVariants.some(variant => variant.quantity > 0)
+    : product.quantity > 0
+
+  // Get all product images including variant images
+  const productImages = product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
+    ? [
+        ...product.colorVariants.map(variant => variant.image).filter(Boolean),
+        ...(product.images || [])
+      ]
+    : (product.images && product.images.length > 0 ? product.images : [product.image].filter(Boolean))
+
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    image: 
-                product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
-                  ? product.colorVariants[0].image || "/placeholder.svg"
-                  : (product.images && product.images.length > 0 ? product.images[0] : product.image) || "/placeholder.svg"
-              ,
+    image: productImages.length > 0 ? productImages : ["/placeholder.svg"],
     description: product.longDescription ?? product.description,
     brand: product.brand,
     sku: product.id,
@@ -154,10 +163,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
       "@type": "Offer",
       priceCurrency: "TND",
       price: product.price,
-      availability:
-        product.quantity > 0
-          ? "https://schema.org/InStock"
-          : "https://schema.org/OutOfStock",
+      availability: isInStock
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock",
       url: canonicalUrl,
       // Indicate whether a merchant return policy exists and basic shipping details
       hasMerchantReturnPolicy: false,
