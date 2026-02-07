@@ -152,8 +152,21 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-border mt-12 pt-8 text-center">
-          <p className="text-muted-foreground text-sm">
+        <div className="border-t border-border mt-12 pt-8">
+          <div className="flex flex-wrap justify-center gap-4 mb-6">
+            <Link href="/legal#conditions-retour" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+              Échange & Retour
+            </Link>
+            <span className="text-border">•</span>
+            <Link href="/legal#privacy" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+              Confidentialité
+            </Link>
+            <span className="text-border">•</span>
+            <Link href="/legal#terms" className="text-muted-foreground hover:text-primary text-sm transition-colors">
+              Conditions d'Utilisation
+            </Link>
+          </div>
+          <p className="text-muted-foreground text-sm text-center">
             © {new Date().getFullYear()} You & Me Beauty. Tous droits réservés.
           </p>
         </div>
