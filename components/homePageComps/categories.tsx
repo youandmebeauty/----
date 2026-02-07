@@ -23,6 +23,13 @@ const categories = [
     href: "/shop?category=parfum",
     rotation: -3,
   },
+  {
+    id: "maman-bebe",
+    name: "Maman & Bébé",
+    image: "/categories/maman-bebe.webp",
+    href: "/shop?category=maman-bebe",
+    rotation: 2,
+  },
   // {
   //   id: "outils",
   //   name: "Outils de Beauté",
@@ -62,7 +69,7 @@ export  function Categories() {
           duration={0.7}
           delay={0.2}
           ease="expo"
-          className="grid grid-cols-1 -my-24 md:my-16 gap-8 md:grid-cols-3 lg:grid-cols-3 scale-90 md:scale-100  mx-auto"
+          className="grid grid-cols-1 -my-24 md:my-16 gap-8 md:grid-cols-2 lg:grid-cols-4 scale-90 md:scale-100  mx-auto"
         >
           {categories.map((category) => (
             <a

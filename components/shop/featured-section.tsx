@@ -12,6 +12,7 @@ const CATEGORY_VIDEOS: Record<string, string> = {
     corps: "/boutique/soins.mp4",
     cheveux: "/boutique/soins.mp4",
     parfum: "/boutique/parfum.mp4",
+    "maman-bebe": "/boutique/maman-bebe.mp4",
     outils: "/boutique/outils.mp4",
 }
 
@@ -46,11 +47,12 @@ const CATEGORY_CONTENT: Record<string, { title: string; subtitle: string; descri
         title: "Signature Olfactive",
         description: "Laissez une empreinte inoubliable avec nos parfums d'exception."
     },
-    outils: {
-        subtitle: "Accessoires Pro",
-        title: "L'Art du Détail",
-        description: "Les outils indispensables pour une application parfaite et des résultats professionnels."
+    "maman-bebe": {
+        subtitle: "Maman & Bébé",
+        title: "Tendresse & Soin",
+        description: "Des produits spécialement conçus pour le bien-être des mamans et de leurs bébés."
     },
+
     default: {
         subtitle: "Sélection Exclusive",
         title: "L'Essence de la Beauté",
@@ -62,7 +64,7 @@ const ALL_VIDEOS = [
     "/boutique/maquillage.mp4",
     "/boutique/soins.mp4",
     "/boutique/parfum.mp4",
-    "/boutique/outils.mp4",
+    "/boutique/maman-bebe.mp4",
 ]
 
 export function FeaturedSection() {

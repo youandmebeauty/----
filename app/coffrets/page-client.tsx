@@ -148,7 +148,7 @@ export default function CoffretPage() {
               />
             </ScrollAnimation>
 
-          {themeKey ? (
+          {themeKey !== "none"  ? (
           <div className="max-w-7xl mx-auto ">
             <div className="space-y-8 flex flex-col items-center justify-center">
               <ScrollAnimation
@@ -158,7 +158,7 @@ export default function CoffretPage() {
               >
                 <Gift className="w-4 h-4 text-primary transition-transform duration-300 group-hover:rotate-12" />
                 <span className="text-sm font-semibold uppercase tracking-widest text-primary">
-                  {themeKey !== "none" ? theme.displayName : "Offre Spéciale"}
+                  {theme.displayName }
                 </span>
               </ScrollAnimation>
               

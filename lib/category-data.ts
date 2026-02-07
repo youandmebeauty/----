@@ -216,23 +216,36 @@ export const SHOP_CATEGORIES: Category[] = [
             {id: "unisex-perfume", label:"Parfums Unisex"},
             {id: "unisex-toilette", label:"Eaux de Toilette Unisex"},
             { id: "body-mist", label: "Brumes Parfumées" },
-            // { id: "niche", label: "Parfumerie de Niche" },
-            // { id: "exclusive", label: "Collections Exclusives" },
             { id: "sets", label: "Coffrets" },
         ],
     },
-    // {
-    //     id: "outils",
-    //     label: "Accessoires",
-    //     subcategories: [
-    //         { id: "makeup-brush", label: "Pinceaux" },
-    //         { id: "sponge", label: "Éponges Teint" },
-    //         { id: "curler", label: "Recourbe-cils" },
-    //         { id: "makeup-bag", label: "Trousses" },
-    //         { id: "gua-sha", label: "Massage Visage" },
-    //         { id: "face-brush", label: "Brosses Nettoyantes" },
-    //         { id: "hair-brush", label: "Brosses & Peignes" },
-    //         { id: "hair-device", label: "Appareils Coiffure" },
-    //     ],
-    // },
+{
+    id: "maman-bebe",
+    label: "Maman & Bébé",
+    subcategories: [
+        {
+            id: "maman",
+            label: "Maman",
+            subcategories: [
+                { id: "grossesse", label: "Grossesse" },
+                { id: "post-accouchement", label: "Post-accouchement" },
+                { id: "allaitement", label: "Allaitement" },
+                { id: "hygiene-maman", label: "Hygiène & Soins Maman" },
+                { id: "complements-maternite", label: "Compléments Maternité" },
+            ],
+        },
+        {
+            id: "bebe",
+            label: "Bébé",
+            subcategories: [
+                { id: "change-hygiene", label: "Change & Hygiène" },
+                { id: "bain-bebe", label: "Bain Bébé" },
+                { id: "soins-bebe", label: "Soins Bébé" },
+                { id: "alimentation-bebe", label: "Alimentation Bébé" },
+                { id: "accessoires-bebe", label: "Accessoires Bébé" },
+            ],
+        },
+    ],
+}
+
 ]
