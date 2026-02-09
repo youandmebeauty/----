@@ -1,6 +1,7 @@
 import { getProducts, getProductById, getRelatedProducts } from "@/lib/services/product-service"
 import { ProductClient } from "@/components/product/product-client"
 import { RelatedProducts } from "@/components/product/related-products"
+import { ProductViewTracker } from "@/components/meta/product-view-tracker"
 import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { generateSlug } from "@/lib/urls/product-url"
@@ -190,6 +191,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
 
+      <ProductViewTracker 
+        productId={product.id}
+        productName={product.name}
+        productPrice={product.promoPrice || product.price}
+      />
       <ProductClient product={product} />
       <RelatedProducts products={relatedProducts} currentProduct={product} />
     </>

@@ -10,6 +10,7 @@ import {  getCoffretUrl } from "@/lib/urls/coffret-url"
 
 import { toast } from "../ui/use-toast"
 import { useCart } from "../providers/cart-provider"
+import { trackCartAddition } from "@/lib/services/meta-events"
 
 
 interface CoffretCardProps {
@@ -50,11 +51,14 @@ export function CoffretCard({
     }
 
     await new Promise(resolve => setTimeout(resolve, 300))
-
+  await trackCartAddition([
+    { id: coffret.id, name: coffret.name, price: coffret.price, quantity: 1 }
+  ])
     const existingItem = items.find((item) => item.id === coffret.id)
     if (existingItem) {
       updateQuantity(coffret.id, existingItem.quantity + 1)
     } else {
+        
       addItem({
         id: coffret.id,
         name: coffret.name,

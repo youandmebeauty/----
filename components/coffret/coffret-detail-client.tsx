@@ -35,6 +35,7 @@ import { CoffretCard } from "./coffret-card"
 import { cn } from "@/lib/utils/utils"
 import { generateSlug } from "@/lib/urls/product-url"
 import { useFeteTheme } from "../providers/fete-theme-provider"
+import { trackCartAddition } from "@/lib/services/meta-events"
 interface CoffretDetailClientProps {
   coffret: Coffret
   products: Product[]
@@ -144,7 +145,9 @@ export function CoffretDetailClient({
 
     setIsAdding(true)
     await new Promise(resolve => setTimeout(resolve, 300))
-
+  await trackCartAddition([
+    { id: coffret.id, name: coffret.name, price: coffret.price, quantity }
+  ])
     const existingItem = items.find((item) => item.id === coffret.id)
     if (existingItem) {
       updateQuantity(coffret.id, existingItem.quantity + quantity)

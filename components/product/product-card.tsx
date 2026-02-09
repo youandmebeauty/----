@@ -10,6 +10,7 @@ import { ShoppingBag } from "lucide-react"
 import { useState } from "react"
 import { generateSlug } from "@/lib/urls/product-url"
 import { Product } from "@/lib/models/models"
+import { trackCartAddition } from "@/lib/services/meta-events"
 
 interface ProductCardProps {
   product: Product
@@ -26,7 +27,7 @@ export function ProductCard({ product, className, onNavigateStart }: ProductCard
     .filter((item) => item.id === product.id)
     .reduce((sum, item) => sum + item.quantity, 0)
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
 
@@ -42,7 +43,9 @@ export function ProductCard({ product, className, onNavigateStart }: ProductCard
     if (quantityToAdd > remainingStock) {
       return
     }
-
+  await trackCartAddition([
+    { id: product.id, name: product.name, price: product.price, quantity: quantityToAdd }
+  ])
     const existingItem = items.find((item) => item.id === product.id)
     if (existingItem) {
       updateQuantity(product.id, existingItem.quantity + quantityToAdd)

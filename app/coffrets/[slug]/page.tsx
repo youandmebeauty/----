@@ -4,6 +4,7 @@ import { getCoffrets, getCoffretById } from "@/lib/services/coffret-service"
 import { generateSlug } from "@/lib/urls/product-url"
 import { getProducts } from "@/lib/services/product-service"
 import { CoffretDetailClient } from "@/components/coffret/coffret-detail-client"
+import { CoffretViewTracker } from "@/components/meta/coffret-view-tracker"
 import { getRelatedCoffrets } from "@/lib/services/coffret-service"
 
 interface CoffretPageProps {
@@ -286,6 +287,12 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
             dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
           />
         )}
+
+        <CoffretViewTracker 
+          coffretId={coffret.id}
+          coffretName={coffret.name}
+          coffretPrice={coffret.price}
+        />
 
         {/* Main Content */}
         <CoffretDetailClient 

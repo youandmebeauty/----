@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useCart } from "@/components/providers/cart-provider"
 import { useToast } from "@/hooks/use-toast"
 import { createOrder } from "@/lib/services/order-service"
+import { trackOrderConversion } from "@/lib/services/meta-events"
 import type { InvoiceDetails } from "@/lib/services/generate-invoice-service"
 import { getItemStock } from "@/lib/services/product-service"
 import { getPromoCodeByCode } from "@/lib/services/promo-code-service"
@@ -246,6 +247,20 @@ export default function CartPage() {
       }
 
       const createdOrder = await createOrder(orderData)
+
+      // Track order conversion (Lead event) to Meta - ONLY after order is confirmed saved
+      try {
+        await trackOrderConversion(
+          createdOrder.id,
+          createdOrder.total,
+          createdOrder.items,
+          createdOrder.email,
+          createdOrder.phone
+        )
+      } catch (metaError) {
+        console.error("Error tracking order conversion to Meta:", metaError)
+        // Continue - don't fail the order if Meta tracking fails
+      }
 
       // Persist lightweight order snapshot for invoice download on confirmation page
       if (typeof window !== "undefined") {

@@ -18,6 +18,7 @@ import { generateSlug } from "@/lib/urls/product-url"
 import { cn } from "@/lib/utils/utils"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 import { Breadcrumb } from "@/components/navigation/breadcrumb"
+import { trackCartAddition } from "@/lib/services/meta-events"
 
 interface ProductClientProps {
     product: Product
@@ -163,7 +164,9 @@ export function ProductClient({ product }: ProductClientProps) {
         const itemId = currentVariant 
             ? `${product.id}-${selectedColorIndex}`
             : product.id
-        
+          await trackCartAddition([
+    { id: product.id, name: product.name, price: product.price, quantity }
+  ])
         const existingItem = items.find((item) => item.id === itemId)
         if (existingItem) {
             updateQuantity(itemId, existingItem.quantity + quantity)

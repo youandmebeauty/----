@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { adminDb } from "@/lib/utils/firebase-admin-util"
 import type { Order } from "@/lib/models/models"
+import { sendConversionEventFromServer } from "@/lib/services/meta-events"
 
 const PRODUCTS_COLLECTION = "products"
 const COFFRETS_COLLECTION = "coffrets"
@@ -178,7 +179,18 @@ export async function POST(request: NextRequest) {
         console.error("Error incrementing promo code usage:", promoError)
       }
     }
-
+try {
+  await sendConversionEventFromServer(
+    newOrder.id,
+    newOrder.total,
+    newOrder.items,
+    newOrder.email,
+    newOrder.phone
+  )
+} catch (metaError) {
+  console.error('Meta tracking error (non-fatal):', metaError)
+  // Continue - don't fail order if Meta fails
+}
     return NextResponse.json(newOrder, { status: 201 })
   } catch (error: any) {
     console.error("Error creating order:", error)
