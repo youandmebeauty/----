@@ -108,6 +108,7 @@ export interface Coffret {
   updatedAt: string | Date
   category?: string
   tags?: string[]
+  theme?: string // Theme key (e.g., "saint-valentin", "fete-des-meres", "none")
   metadata?: Record<string, any>
 }
 

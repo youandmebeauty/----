@@ -96,7 +96,21 @@ export function CoffretSection({
     }
 
     const productMap = new Map(products.map(p => [p.id, p]))
-    const displayedCoffrets = coffrets.slice(0, limit)
+    
+    // Filter coffrets by theme - show ONLY theme-specific coffrets (not universal)
+    const filteredCoffrets = themeKey !== "none"
+        ? coffrets.filter(coffret => coffret.theme === themeKey)
+        : coffrets.filter(coffret => coffret.theme === "none");
+    
+    // Don't render if no coffrets match the theme
+    if (filteredCoffrets.length === 0) {
+        return null;
+    }
+    
+    const displayedCoffrets = filteredCoffrets.slice(0, limit)
+    
+    // Generate SEO-friendly URL with theme parameter
+    const coffretUrl = themeKey !== "none" ? `/coffrets?theme=${themeKey}` : "/coffrets"
 
         return (
         <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4 z-0 shadow-inner relative">
@@ -158,7 +172,7 @@ export function CoffretSection({
                                         size="sm" 
                                         className="w-full hidden lg:inline-flex sm:w-auto group bg-primary mt-4 hover:bg-primary/90 text-primary-foreground h-12 sm:h-13 px-8 rounded-full text-base font-medium transition-all duration-300 ease-out hover:scale-105"
                                     >
-                                                        <Link href="/coffrets" className="flex items-center justify-center ">
+                                                        <Link href={coffretUrl} className="flex items-center justify-center ">
                                                             Voir tout
                                         <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                                                             </Link>
@@ -188,7 +202,7 @@ export function CoffretSection({
                                         size="sm" 
                                         className="w-full hidden lg:inline-flex sm:w-auto group bg-primary mt-4 hover:bg-primary/90 text-primary-foreground h-12  px-8 rounded-full text-base font-medium transition-all duration-300 ease-out hover:scale-105"
                                     >
-                                                        <Link href="/coffrets" className="flex items-center justify-center ">
+                                                        <Link href={coffretUrl} className="flex items-center justify-center ">
                                                             Voir tout
                                         <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                                                             </Link>
@@ -228,7 +242,7 @@ export function CoffretSection({
                             asChild 
                             className="  max-w-md bg-primary rounded-full hover:bg-primary/90 text-white font-bold px-8 py-6  uppercase tracking-wider border-0"
                         >
-                            <Link href="/coffrets">
+                            <Link href={coffretUrl}>
                                 Voir tous les coffrets →
                             </Link>
                         </Button>

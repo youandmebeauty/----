@@ -7,6 +7,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {  AlertCircle, Gift } from "lucide-react"
 import { useFeteTheme } from "@/components/providers/fete-theme-provider"
 import { useEffect, useState } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
 import { ScrollAnimation } from "@/components/navigation/scroll-animation"
 import { Breadcrumb } from "@/components/navigation/breadcrumb"
@@ -42,11 +43,16 @@ function generateCreativeLayout(count: number) {
 
 export default function CoffretPage() {
   const { themeKey, theme } = useFeteTheme();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const urlTheme = searchParams.get("theme");
+  const urlView = searchParams.get("view");
 
   const [coffrets, setCoffrets] = useState<Coffret[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [showUniversalOnly, setShowUniversalOnly] = useState(urlView === "universal");
   
   useEffect(() => {
     async function fetchData() {
@@ -72,6 +78,20 @@ export default function CoffretPage() {
     }
     fetchData();
   }, []);
+
+  // Update URL when theme changes from provider (only if URL theme is not set)
+  useEffect(() => {
+    if (!urlTheme && themeKey !== "none") {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("theme", themeKey);
+      router.replace(`/coffrets?${params.toString()}`, { scroll: false });
+    }
+  }, [themeKey, urlTheme, searchParams, router]);
+
+  // Sync showUniversalOnly state with URL param (for browser back/forward navigation)
+  useEffect(() => {
+    setShowUniversalOnly(urlView === "universal");
+  }, [urlView]);
   
   if (loading) {
     return (
@@ -82,15 +102,33 @@ export default function CoffretPage() {
   }
   
   const productMap = new Map(products.map((p) => [p.id, p]));
-  const creativeLayout = generateCreativeLayout(coffrets.length);
   
-  if(!error && coffrets.length === 0) {
+  // Determine active theme: use URL theme if provided, otherwise use provider theme
+  const activeTheme = urlTheme || themeKey;
+  
+  // Separate coffrets: theme-specific and universal (none)
+  const themeCoffrets = coffrets.filter(coffret => coffret.theme === activeTheme);
+  const universalCoffrets = coffrets.filter(coffret => coffret.theme === "none");
+  
+  // Filter coffrets based on view mode
+  // If showUniversalOnly is true: show only universal coffrets
+  // Otherwise: show theme-specific coffrets + universal coffrets
+  // Never show all coffrets mixed when a specific theme is active (theme !== "none")
+  const filteredCoffrets = showUniversalOnly 
+    ? universalCoffrets
+    : activeTheme !== "none" 
+      ? [...themeCoffrets]
+      : [...universalCoffrets]; // If no specific theme, show all coffrets
+  
+  const creativeLayout = generateCreativeLayout(filteredCoffrets.length);
+  
+  if(!error && filteredCoffrets.length === 0) {
     return NotFound()
   }
           
   return (
     <>
-      {themeKey !== "none" && (
+      {activeTheme !== "none" && (
   <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
     {[...Array(30)].map((_, i) => {
   const size = Math.floor(Math.random() * 60) + 20;
@@ -148,7 +186,7 @@ export default function CoffretPage() {
               />
             </ScrollAnimation>
 
-          {themeKey !== "none"  ? (
+          {activeTheme !== "none"  ? (
           <div className="max-w-7xl mx-auto ">
             <div className="space-y-8 flex flex-col items-center justify-center">
               <ScrollAnimation
@@ -206,6 +244,33 @@ export default function CoffretPage() {
           </div>
         </ScrollAnimation>
       </div>
+
+      {/* Toggle button for universal coffrets */}
+      {activeTheme !== "none" && universalCoffrets.length > 0 && (
+        <div className="max-w-7xl mx-auto px-4 mb-8 flex justify-center">
+          <button
+            onClick={() => {
+              const newShowUniversal = !showUniversalOnly;
+              setShowUniversalOnly(newShowUniversal);
+              
+              // Update URL for SEO
+              const params = new URLSearchParams(searchParams.toString());
+              if (newShowUniversal) {
+                params.set("view", "universal");
+              } else {
+                params.delete("view");
+              }
+              if (activeTheme !== "none" && !urlTheme) {
+                params.set("theme", activeTheme);
+              }
+              router.replace(`/coffrets?${params.toString()}`, { scroll: false });
+            }}
+            className="px-6 py-2 rounded-full border border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary font-medium transition-all duration-300"
+          >
+            {showUniversalOnly ? "Voir les coffrets " + theme.displayName : "Voir les autres coffrets"}
+          </button>
+        </div>
+      )}
       
       {/* Error State */}
       {error && (
@@ -221,11 +286,11 @@ export default function CoffretPage() {
       )}
 
       {/* Coffrets - Creative Scattered Polaroid Layout */}
-      {!error && coffrets.length > 0 && (
+      {!error && filteredCoffrets.length > 0 && (
         <div className="max-w-7xl mx-auto px-4">
           {/* Staggered grid with varying sizes - like a creative mood board */}
           <div className="grid grid-cols-12 gap-4 md:gap-6  ">
-            {coffrets.map((coffret: Coffret, index) => {
+            {filteredCoffrets.map((coffret: Coffret, index) => {
               const productNames = coffret.productIds
                 ?.map(id => productMap.get(id)?.name)
                 .filter((name): name is string => !!name) || []

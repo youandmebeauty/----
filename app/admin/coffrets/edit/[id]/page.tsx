@@ -19,6 +19,17 @@ import type { Coffret, Product } from "@/lib/models/models"
 import { ArrowLeft, Image as ImageIcon, X, Plus, Trash2, Package, SearchX, Search, CheckCircle2 } from "lucide-react"
 import { CldUploadWidget } from 'next-cloudinary'
 
+const THEME_OPTIONS = [
+  { value: "none", label: "Universel (aucun thème)" },
+  { value: "saint-valentin", label: "Saint-Valentin" },
+  { value: "fete-des-meres", label: "Fête des Mères" },
+  { value: "fete-de-la-femme", label: "Fête de la Femme" },
+  { value: "aid-el-fitr", label: "Aïd el-Fitr" },
+  { value: "black-friday", label: "Black Friday" },
+  { value: "rentree-scolaire", label: "Rentrée Scolaire" },
+  { value: "fete-des-peres", label: "Fête des Pères" },
+];
+
 function EditCoffretContent() {
     const router = useRouter()
     const params = useParams()
@@ -32,6 +43,7 @@ function EditCoffretContent() {
         name: "",
         description: "",
         price: "",
+        theme: "none",
         images: [] as string[],
         productIds: [] as string[],
     })
@@ -83,6 +95,7 @@ const handleDelete = async () => {
                         name: coffretData.name ?? "",
                         description: coffretData.description ?? "",
                         price: (coffretData.price ?? 0).toString(),
+                        theme: coffretData.theme ?? "none",
                         images: Array.isArray(coffretData.images) ? coffretData.images : [],
                         productIds: Array.isArray(coffretData.productIds) ? coffretData.productIds : []
                     })
@@ -156,6 +169,7 @@ const handleDelete = async () => {
                 name: formData.name,
                 description: formData.description,
                 price: parseFloat(formData.price),
+                theme: formData.theme,
                 images: formData.images,
                 productIds: formData.productIds,
             }
@@ -244,6 +258,22 @@ const handleDelete = async () => {
                                         placeholder="0.00"
                                         className="bg-background/50"
                                     />
+                                </div>
+
+                                <div>
+                                    <Label className="text-xl" htmlFor="theme">Thème</Label>
+                                    <select
+                                        id="theme"
+                                        value={formData.theme}
+                                        onChange={(e) => setFormData(prev => ({ ...prev, theme: e.target.value }))}
+                                        className="w-full px-3 py-2 bg-background/50 border border-input rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                                    >
+                                        {THEME_OPTIONS.map(option => (
+                                            <option key={option.value} value={option.value}>
+                                                {option.label}
+                                            </option>
+                                        ))}
+                                    </select>
                                 </div>
 
                                 
