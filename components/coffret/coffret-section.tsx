@@ -96,29 +96,7 @@ export function CoffretSection({
     }
 
     const productMap = new Map(products.map(p => [p.id, p]))
-
-    const filteredCoffrets = themeKey !== "none"
-        ? coffrets.filter(coffret => {
-            const rawTheme =
-                coffret.theme ??
-                (coffret as { themeKey?: string }).themeKey ??
-                (coffret.metadata?.theme as string | undefined)
-            return rawTheme === themeKey
-        })
-        : coffrets.filter(coffret => {
-            const rawTheme =
-                coffret.theme ??
-                (coffret as { themeKey?: string }).themeKey ??
-                (coffret.metadata?.theme as string | undefined)
-            return !rawTheme || rawTheme === "none"
-        })
-
-    if (filteredCoffrets.length === 0) {
-        return null
-    }
-
-    const displayedCoffrets = filteredCoffrets.slice(0, limit)
-    const coffretUrl = themeKey !== "none" ? `/coffrets?theme=${themeKey}` : "/coffrets"
+    const displayedCoffrets = coffrets.slice(0, limit)
 
         return (
         <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4 z-0 shadow-inner relative">
@@ -180,7 +158,7 @@ export function CoffretSection({
                                         size="sm" 
                                         className="w-full hidden lg:inline-flex sm:w-auto group bg-primary mt-4 hover:bg-primary/90 text-primary-foreground h-12 sm:h-13 px-8 rounded-full text-base font-medium transition-all duration-300 ease-out hover:scale-105"
                                     >
-                                                        <Link href={coffretUrl} className="flex items-center justify-center ">
+                                                        <Link href="/coffrets" className="flex items-center justify-center ">
                                                             Voir tout
                                         <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                                                             </Link>
@@ -210,7 +188,7 @@ export function CoffretSection({
                                         size="sm" 
                                         className="w-full hidden lg:inline-flex sm:w-auto group bg-primary mt-4 hover:bg-primary/90 text-primary-foreground h-12  px-8 rounded-full text-base font-medium transition-all duration-300 ease-out hover:scale-105"
                                     >
-                                                        <Link href={coffretUrl} className="flex items-center justify-center ">
+                                                        <Link href="/coffrets" className="flex items-center justify-center ">
                                                             Voir tout
                                         <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                                                             </Link>
@@ -250,7 +228,7 @@ export function CoffretSection({
                             asChild 
                             className="  max-w-md bg-primary rounded-full hover:bg-primary/90 text-white font-bold px-8 py-6  uppercase tracking-wider border-0"
                         >
-                            <Link href={coffretUrl}>
+                            <Link href="/coffrets">
                                 Voir tous les coffrets →
                             </Link>
                         </Button>
