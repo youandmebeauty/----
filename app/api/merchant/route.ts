@@ -43,24 +43,63 @@ function isInStock(product: Product): boolean {
   return (product.quantity ?? 0) > 0
 }
 
-function getProductImages(product: Product): string[] {
-  const images: string[] = []
+function normalizeImageUrl(value: string, baseUrl: string): string | null {
+  const trimmed = value.trim()
+  if (!trimmed) return null
+
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+    return trimmed
+  }
+
+  if (trimmed.startsWith("//")) {
+    return `https:${trimmed}`
+  }
+
+  if (trimmed.startsWith("/")) {
+    return `${baseUrl}${trimmed}`
+  }
+
+  return `${baseUrl}/${trimmed}`
+}
+
+function getPrimaryAndAdditionalImages(product: Product, baseUrl: string): { primary?: string, additional: string[] } {
+  const primaryCandidates: string[] = []
+  const additionalCandidates: string[] = []
+
+  if (Array.isArray(product.images) && product.images.length > 0) {
+    primaryCandidates.push(product.images[0])
+    additionalCandidates.push(...product.images.slice(1))
+  } else if (product.image) {
+    primaryCandidates.push(product.image)
+  }
 
   if (product.hasColorVariants && Array.isArray(product.colorVariants)) {
     product.colorVariants.forEach((variant) => {
-      if (variant.image) images.push(variant.image)
+      if (variant.image) additionalCandidates.push(variant.image)
     })
   }
 
-  if (Array.isArray(product.images)) {
-    product.images.forEach((image) => {
-      if (image) images.push(image)
-    })
-  } else if (product.image) {
-    images.push(product.image)
+  if (primaryCandidates.length === 0 && additionalCandidates.length > 0) {
+    primaryCandidates.push(additionalCandidates.shift() as string)
   }
 
-  return Array.from(new Set(images))
+  const seen = new Set<string>()
+  const normalizeList = (values: string[]) => values
+    .map((value) => normalizeImageUrl(value, baseUrl))
+    .filter((value): value is string => !!value)
+    .filter((value) => {
+      if (seen.has(value)) return false
+      seen.add(value)
+      return true
+    })
+
+  const primaryList = normalizeList(primaryCandidates)
+  const additionalList = normalizeList(additionalCandidates)
+
+  return {
+    primary: primaryList[0],
+    additional: additionalList,
+  }
 }
 
 function buildItemXml(product: Product, baseUrl: string): string {
@@ -77,9 +116,9 @@ function buildItemXml(product: Product, baseUrl: string): string {
   const salePrice = hasSalePrice ? formatPrice(salePriceValue as number) : null
 
   const availability = isInStock(product) ? "in stock" : "out of stock"
-  const images = getProductImages(product)
-  const imageLink = images[0] ? escapeXml(images[0]) : ""
-  const additionalImages = images.slice(1, 10).map((image) => `<g:additional_image_link>${escapeXml(image)}</g:additional_image_link>`)
+  const { primary, additional } = getPrimaryAndAdditionalImages(product, baseUrl)
+  const imageLink = primary ? escapeXml(primary) : ""
+  const additionalImages = additional.slice(0, 9).map((image) => `<g:additional_image_link>${escapeXml(image)}</g:additional_image_link>`)
 
   const productTypeParts = [product.category, product.subcategory].filter(Boolean) as string[]
   const productType = productTypeParts.length ? escapeXml(productTypeParts.join(" > ")) : ""
