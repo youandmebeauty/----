@@ -13,6 +13,7 @@ export interface CartItem {
   image: string
   quantity: number
   category: string
+  metadata?: any // For storing additional data like variant selections
 }
 
 interface CartContextType {

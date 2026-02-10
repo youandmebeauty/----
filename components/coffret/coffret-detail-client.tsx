@@ -59,6 +59,17 @@ export function CoffretDetailClient({
   const [isAdding, setIsAdding] = useState(false)
   const [imageLoaded, setImageLoaded] = useState(false)
   const { themeKey, theme } = useFeteTheme();
+  
+  // Track selected variant for each product that has color variants
+  const [selectedVariants, setSelectedVariants] = useState<Record<string, number>>(() => {
+    const initialVariants: Record<string, number> = {}
+    products.forEach(product => {
+      if (product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0) {
+        initialVariants[product.id] = 0 // Default to first variant
+      }
+    })
+    return initialVariants
+  })
   const coffretImages = coffret.images && coffret.images.length > 0 
     ? coffret.images 
     : ["/placeholder.svg"]
@@ -77,10 +88,19 @@ export function CoffretDetailClient({
     .reduce((sum, item) => sum + item.quantity, 0)
 
   // Compute available coffret stock from the products (minimum product stock)
+  // Take into account selected variants
   const computedCoffretQuantity = (() => {
     try {
       if (products && products.length > 0) {
-        const stocks = products.map(p => p.quantity ?? 0)
+        const stocks = products.map(product => {
+          // If product has variants and one is selected, use that variant's stock
+          if (product.hasColorVariants && product.colorVariants && selectedVariants[product.id] !== undefined) {
+            const variantIndex = selectedVariants[product.id]
+            return product.colorVariants[variantIndex]?.quantity ?? 0
+          }
+          // Otherwise use the product's main stock
+          return product.quantity ?? 0
+        })
         return stocks.length > 0 ? Math.min(...stocks) : (coffret.quantity ?? 0)
       }
     } catch (err) {
@@ -148,6 +168,22 @@ export function CoffretDetailClient({
   await trackCartAddition([
     { id: coffret.id, name: coffret.name, price: coffret.price, quantity }
   ])
+    
+    // Build metadata with selected variants
+    const variantMetadata: Record<string, { variantIndex: number, variantName: string }> = {}
+    products.forEach(product => {
+      if (product.hasColorVariants && product.colorVariants && selectedVariants[product.id] !== undefined) {
+        const variantIndex = selectedVariants[product.id]
+        const variant = product.colorVariants[variantIndex]
+        if (variant) {
+          variantMetadata[product.id] = {
+            variantIndex,
+            variantName: variant.colorName
+          }
+        }
+      }
+    })
+    
     const existingItem = items.find((item) => item.id === coffret.id)
     if (existingItem) {
       updateQuantity(coffret.id, existingItem.quantity + quantity)
@@ -158,6 +194,7 @@ export function CoffretDetailClient({
         price: coffret.price,
         image: displayImage,
         category: "Coffret",
+        metadata: Object.keys(variantMetadata).length > 0 ? { variants: variantMetadata } : undefined,
       })
       if (quantity > 1) {
         updateQuantity(coffret.id, quantity)
@@ -488,48 +525,111 @@ export function CoffretDetailClient({
   const slug = generateSlug(product.name, {
     includeBrand: product.brand,
   })
-  const productImage =
+  
+  // Determine which image to show based on selected variant
+  const selectedVariantIndex = selectedVariants[product.id]
+  const hasVariants = product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
+  const selectedVariant = hasVariants && selectedVariantIndex !== undefined 
+    ? product.colorVariants![selectedVariantIndex] 
+    : null
+    
+  const productImage = selectedVariant?.image ||
     product.images?.[0] ||
     product.image ||
     product.colorVariants?.[0]?.image
 
   return (
-    <Link
+    <div
       key={product.id}
-      href={`/product/${product.id}-${slug}`}
-      onClick={handleNavigationClick}
-      className="flex gap-4 p-4 rounded-sm border border-zinc-100 hover:border-zinc-200 transition-colors"
+      className="flex flex-col gap-4 p-4 rounded-sm border border-zinc-100"
     >
-      {productImage && (
-        <div className="relative w-20 h-20 rounded-sm overflow-hidden flex-shrink-0 bg-zinc-50">
-          <Image
-            src={productImage}
-            alt={product.name}
-            fill
-            className="object-cover"
-            sizes="80px"
-          />
+      <Link
+        href={`/product/${product.id}-${slug}`}
+        onClick={handleNavigationClick}
+        className="flex gap-4 hover:opacity-80 transition-opacity"
+      >
+        {productImage && (
+          <div className="relative w-20 h-20 rounded-sm overflow-hidden flex-shrink-0 bg-zinc-50">
+            <Image
+              src={productImage}
+              alt={product.name}
+              fill
+              className="object-cover"
+              sizes="80px"
+            />
+          </div>
+        )}
+
+        <div className="flex-1 min-w-0">
+          <h4 className="font-medium text-sm mb-1 line-clamp-1">
+            {product.name}
+          </h4>
+
+          {product.description && (
+            <p className="text-xs text-zinc-500 line-clamp-2">
+              {product.description}
+            </p>
+          )}
+
+          {product.price && (
+            <p className="text-sm font-medium text-primary mt-2">
+              {product.price.toFixed(2)} DT
+            </p>
+          )}
+        </div>
+      </Link>
+      
+      {/* Color Variant Selection */}
+      {hasVariants && (
+        <div className="space-y-2 pl-1">
+          <div className="flex items-baseline gap-2">
+            <Label className="text-[10px] uppercase tracking-[0.15em] font-light text-zinc-600">
+              Couleur
+            </Label>
+            {selectedVariant && (
+              <span className="text-xs font-light text-zinc-500">{selectedVariant.colorName}</span>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {product.colorVariants!.map((variant, index) => {
+              const isSelected = selectedVariantIndex === index
+              const isOutOfStock = variant.quantity === 0
+              
+              return (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    setSelectedVariants(prev => ({
+                      ...prev,
+                      [product.id]: index
+                    }))
+                  }}
+                  disabled={isOutOfStock}
+                  className={cn(
+                    "relative w-10 h-10 rounded-full border-2 transition-all duration-300",
+                    isSelected
+                      ? "border-primary scale-110 shadow-md"
+                      : "border-zinc-200 hover:border-zinc-400 hover:scale-105",
+                    isOutOfStock && "opacity-40 cursor-not-allowed"
+                  )}
+                  style={{ backgroundColor: variant.color || "#000000" }}
+                  title={`${variant.colorName}${isOutOfStock ? ' (Rupture de stock)' : ''}`}
+                >
+                  {isOutOfStock && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-full">
+                      <div className="w-px h-6 bg-zinc-400 rotate-45" />
+                    </div>
+                  )}
+                </button>
+              )
+            })}
+          </div>
         </div>
       )}
-
-      <div className="flex-1 min-w-0">
-        <h4 className="font-medium text-sm mb-1 line-clamp-1">
-          {product.name}
-        </h4>
-
-        {product.description && (
-          <p className="text-xs text-zinc-500 line-clamp-2">
-            {product.description}
-          </p>
-        )}
-
-        {product.price && (
-          <p className="text-sm font-medium text-primary mt-2">
-            {product.price.toFixed(2)} DT
-          </p>
-        )}
-      </div>
-    </Link>
+    </div>
   )
 })}
 
