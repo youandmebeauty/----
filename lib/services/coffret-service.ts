@@ -36,7 +36,7 @@ export async function getCoffretAvailableStock(coffret: Coffret): Promise<number
     const productStocks = await Promise.all(
       coffret.productIds.map(async (productId) => {
         const product = await getProductById(productId)
-        const stock = product?.quantity ?? 0
+        const stock = product?.hasColorVariants ? Math.min(...(product.colorVariants?.map(v => v.quantity) || [])) : product?.quantity ?? 0
         return stock
       })
     )

@@ -488,6 +488,10 @@ export function CoffretDetailClient({
   const slug = generateSlug(product.name, {
     includeBrand: product.brand,
   })
+  const productImage =
+    product.images?.[0] ||
+    product.image ||
+    product.colorVariants?.[0]?.image
 
   return (
     <Link
@@ -496,10 +500,10 @@ export function CoffretDetailClient({
       onClick={handleNavigationClick}
       className="flex gap-4 p-4 rounded-sm border border-zinc-100 hover:border-zinc-200 transition-colors"
     >
-      {product.images?.[0] && (
+      {productImage && (
         <div className="relative w-20 h-20 rounded-sm overflow-hidden flex-shrink-0 bg-zinc-50">
           <Image
-            src={product.images[0]}
+            src={productImage}
             alt={product.name}
             fill
             className="object-cover"
