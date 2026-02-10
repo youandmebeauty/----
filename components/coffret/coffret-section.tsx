@@ -96,20 +96,28 @@ export function CoffretSection({
     }
 
     const productMap = new Map(products.map(p => [p.id, p]))
-    
-    // Filter coffrets by theme - show ONLY theme-specific coffrets (not universal)
+
     const filteredCoffrets = themeKey !== "none"
-        ? coffrets.filter(coffret => coffret.theme === themeKey)
-        : coffrets.filter(coffret => coffret.theme === "none");
-    
-    // Don't render if no coffrets match the theme
+        ? coffrets.filter(coffret => {
+            const rawTheme =
+                coffret.theme ??
+                (coffret as { themeKey?: string }).themeKey ??
+                (coffret.metadata?.theme as string | undefined)
+            return rawTheme === themeKey
+        })
+        : coffrets.filter(coffret => {
+            const rawTheme =
+                coffret.theme ??
+                (coffret as { themeKey?: string }).themeKey ??
+                (coffret.metadata?.theme as string | undefined)
+            return !rawTheme || rawTheme === "none"
+        })
+
     if (filteredCoffrets.length === 0) {
-        return null;
+        return null
     }
-    
+
     const displayedCoffrets = filteredCoffrets.slice(0, limit)
-    
-    // Generate SEO-friendly URL with theme parameter
     const coffretUrl = themeKey !== "none" ? `/coffrets?theme=${themeKey}` : "/coffrets"
 
         return (
