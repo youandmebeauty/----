@@ -84,8 +84,6 @@ function buildItemXml(product: Product, baseUrl: string): string {
   const productTypeParts = [product.category, product.subcategory].filter(Boolean) as string[]
   const productType = productTypeParts.length ? escapeXml(productTypeParts.join(" > ")) : ""
 
-  const gtin = product.barcode ? escapeXml(product.barcode) : ""
-
   const lines = [
     "<item>",
     `  <g:id>${sku}</g:id>`,
@@ -100,7 +98,6 @@ function buildItemXml(product: Product, baseUrl: string): string {
     hasSalePrice && salePrice ? `  <g:sale_price>${salePrice}</g:sale_price>` : "",
     brand ? `  <g:brand>${brand}</g:brand>` : "",
     productType ? `  <g:product_type>${productType}</g:product_type>` : "",
-    gtin ? `  <g:gtin>${gtin}</g:gtin>` : "",
     "</item>",
   ]
 
