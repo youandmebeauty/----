@@ -79,6 +79,7 @@ export interface OrderItem {
   price: number
   quantity: number
   image: string
+  metadata?: any // For storing additional data like variant selections
 }
 
 export interface SearchFilters {

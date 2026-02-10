@@ -20,6 +20,16 @@ function parseItemId(itemId: string): { productId: string; variantIndex: number 
   return { productId: itemId, variantIndex: null }
 }
 
+// Helper function to extract base coffret ID from variant-based composite ID
+function extractBaseCoffretId(itemId: string): string {
+  // Check if this is a variant-based coffret ID (format: coffretId-variants-hash)
+  const variantMatch = itemId.match(/^(.+)-variants-.+$/)
+  if (variantMatch) {
+    return variantMatch[1]
+  }
+  return itemId
+}
+
 // Get stock for a coffret (checks all constituent products)
 async function getCoffretStock(coffretId: string): Promise<number> {
   try {
@@ -63,10 +73,13 @@ async function getCoffretStock(coffretId: string): Promise<number> {
 // Get stock for an item (handles products, variants, AND coffrets)
 async function getItemStock(itemId: string): Promise<number> {
   try {
+    // Extract base coffret ID if this is a variant-based composite ID
+    const baseCoffretId = extractBaseCoffretId(itemId)
+    
     // First check if it's a coffret
-    const coffretDoc = await adminDb.collection(COFFRETS_COLLECTION).doc(itemId).get()
+    const coffretDoc = await adminDb.collection(COFFRETS_COLLECTION).doc(baseCoffretId).get()
     if (coffretDoc.exists) {
-      return await getCoffretStock(itemId)
+      return await getCoffretStock(baseCoffretId)
     }
 
     // Otherwise handle as product (with possible variant)

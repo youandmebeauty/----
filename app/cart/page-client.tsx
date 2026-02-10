@@ -50,7 +50,9 @@ export default function CartPage() {
       const stocks: { [id: string]: number } = {}
       for (const item of items) {
         try {
-          const stock = await getItemStock(item.id)
+          // For coffrets with variants, use the base coffret ID to check stock
+          const stockCheckId = item.metadata?.baseCoffretId || item.id
+          const stock = await getItemStock(stockCheckId)
           stocks[item.id] = stock
         } catch (error) {
           console.error(`Error fetching stock for item ${item.id}:`, error)
@@ -209,7 +211,9 @@ export default function CartPage() {
     try {
       // Validate stock before submitting order (re-fetch to ensure accuracy)
       for (const item of items) {
-        const stock = await getItemStock(item.id)
+        // For coffrets with variants, use the base coffret ID to check stock
+        const stockCheckId = item.metadata?.baseCoffretId || item.id
+        const stock = await getItemStock(stockCheckId)
         if (item.quantity > stock) {
           throw new Error(`Stock insuffisant pour ${item.name}. Seulement ${stock} disponible.`)
         }
@@ -221,6 +225,7 @@ export default function CartPage() {
         price: item.price,
         quantity: item.quantity,
         image: item.image,
+        ...(item.metadata && { metadata: item.metadata }),
       }))
 
       const orderData: any = {
@@ -405,7 +410,26 @@ export default function CartPage() {
                               <span className="inline-flex items-center px-2 py-1 rounded-full bg-primary/10 text-xs font-medium text-primary capitalize">
                                 {item.category}
                               </span>
+                              
+                              {/* Show variant info for coffrets */}
+                              {item.category === "Coffret" && item.metadata?.variants && (
+                                <span className="inline-flex items-center px-2 py-1 rounded-full bg-secondary/50 text-xs font-medium text-muted-foreground">
+                                  {Object.keys(item.metadata.variants).length} variant{Object.keys(item.metadata.variants).length > 1 ? 's' : ''} sélectionnée{Object.keys(item.metadata.variants).length > 1 ? 's' : ''}
+                                </span>
+                              )}
                             </div>
+                            
+                            {/* Display selected variants for coffrets */}
+                            {item.category === "Coffret" && item.metadata?.variants && (
+                              <div className="mt-2 space-y-1">
+                                {Object.entries(item.metadata.variants as Record<string, { variantIndex: number, variantName: string }>).map(([productId, variant]) => (
+                                  <div key={productId} className="text-xs text-muted-foreground flex items-center gap-1.5">
+                                    <div className="w-1 h-1 rounded-full bg-muted-foreground/40"></div>
+                                    <span>{variant.variantName}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                             {typeof item.promoPrice === "number" && item.promoPrice < item.price ? (
                             <p className="hidden sm:block text-sm font-semibold text-primary">
                               {item.promoPrice.toFixed(2)} DT chacun

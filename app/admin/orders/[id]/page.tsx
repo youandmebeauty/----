@@ -168,6 +168,19 @@ function OrderDetailsContent() {
                           <h3 className="font-semibold">{item.name}</h3>
                           <p className="text-sm text-muted-foreground">Quantité: {item.quantity}</p>
                           <p className="text-sm text-muted-foreground">{item.price.toFixed(2)} DT chacun</p>
+                          
+                          {/* Display selected variants for coffrets */}
+                          {(item as any).metadata?.variants && (
+                            <div className="mt-2 space-y-1">
+                              <p className="text-xs font-medium text-muted-foreground">Variantes sélectionnées:</p>
+                              {Object.entries((item as any).metadata.variants as Record<string, { variantIndex: number, variantName: string }>).map(([productId, variant]) => (
+                                <div key={productId} className="text-xs text-muted-foreground flex items-center gap-1.5 ml-2">
+                                  <div className="w-1 h-1 rounded-full bg-primary/60"></div>
+                                  <span>{variant.variantName}</span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
                         <div className="text-right">
                           <p className="font-semibold">{(item.price * item.quantity).toFixed(2)} DT</p>

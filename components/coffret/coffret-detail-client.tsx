@@ -70,6 +70,24 @@ export function CoffretDetailClient({
     })
     return initialVariants
   })
+  
+  // Generate unique cart ID based on coffret and selected variants
+  const generateCartItemId = () => {
+    // If no variants selected, use base coffret ID
+    if (Object.keys(selectedVariants).length === 0) {
+      return coffret.id
+    }
+    
+    // Create a sorted string of variant selections for consistent hashing
+    const variantSignature = Object.entries(selectedVariants)
+      .sort(([idA], [idB]) => idA.localeCompare(idB))
+      .map(([productId, variantIndex]) => `${productId}:${variantIndex}`)
+      .join('|')
+    
+    // Return composite ID
+    return `${coffret.id}-variants-${btoa(variantSignature).replace(/=/g, '')}`
+  }
+  
   const coffretImages = coffret.images && coffret.images.length > 0 
     ? coffret.images 
     : ["/placeholder.svg"]
@@ -83,8 +101,9 @@ export function CoffretDetailClient({
 
 
   // Calculate cart quantity
+  const cartItemId = generateCartItemId()
   const cartQuantity = items
-    .filter((item) => item.id === coffret.id)
+    .filter((item) => item.id === cartItemId)
     .reduce((sum, item) => sum + item.quantity, 0)
 
   // Compute available coffret stock from the products (minimum product stock)
@@ -184,20 +203,24 @@ export function CoffretDetailClient({
       }
     })
     
-    const existingItem = items.find((item) => item.id === coffret.id)
+    const uniqueCartId = generateCartItemId()
+    const existingItem = items.find((item) => item.id === uniqueCartId)
     if (existingItem) {
-      updateQuantity(coffret.id, existingItem.quantity + quantity)
+      updateQuantity(uniqueCartId, existingItem.quantity + quantity)
     } else {
       addItem({
-        id: coffret.id,
+        id: uniqueCartId,
         name: coffret.name,
         price: coffret.price,
         image: displayImage,
         category: "Coffret",
-        metadata: Object.keys(variantMetadata).length > 0 ? { variants: variantMetadata } : undefined,
+        metadata: Object.keys(variantMetadata).length > 0 ? { 
+          variants: variantMetadata,
+          baseCoffretId: coffret.id // Store original coffret ID for reference
+        } : undefined,
       })
       if (quantity > 1) {
-        updateQuantity(coffret.id, quantity)
+        updateQuantity(uniqueCartId, quantity)
       }
     }
 

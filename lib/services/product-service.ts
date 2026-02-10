@@ -344,11 +344,24 @@ export function parseItemId(itemId: string): { productId: string; variantIndex: 
   return { productId: itemId, variantIndex: null }
 }
 
+// Helper function to extract base coffret ID from variant-based composite ID
+function extractBaseCoffretId(itemId: string): string {
+  // Check if this is a variant-based coffret ID (format: coffretId-variants-hash)
+  const variantMatch = itemId.match(/^(.+)-variants-.+$/)
+  if (variantMatch) {
+    return variantMatch[1]
+  }
+  return itemId
+}
+
 // Get stock for an item (handles variants)
 export async function getItemStock(itemId: string): Promise<number> {
   try {
+    // Extract base coffret ID if this is a variant-based composite ID
+    const baseCoffretId = extractBaseCoffretId(itemId)
+    
     // First check if it's a coffret
-    const coffret = await getCoffretById(itemId)
+    const coffret = await getCoffretById(baseCoffretId)
     if (coffret) {
       return await getCoffretAvailableStock(coffret)
     }
