@@ -96,7 +96,13 @@ export function CoffretSection({
     }
 
     const productMap = new Map(products.map(p => [p.id, p]))
-    const displayedCoffrets = coffrets.slice(0, limit)
+    const coffretWithTheme = coffrets.map(c => ({ ...c, theme: c.theme || "none" }))
+    coffretWithTheme.sort((a, b) => {
+        if (a.theme === themeKey && b.theme !== themeKey) return -1
+        if (a.theme !== themeKey && b.theme === themeKey) return 1
+        return 0
+    });
+    const displayedCoffrets = coffretWithTheme.slice(0, limit)
 
         return (
         <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4 z-0 shadow-inner relative">
