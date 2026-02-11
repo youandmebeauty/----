@@ -106,7 +106,6 @@ function buildItemXml(product: Product, baseUrl: string): string {
   const description = escapeXml(rawDescription)
   const brand = product.brand ? escapeXml(product.brand) : ""
   const sku = escapeXml(product.id)
-  const gtin = product.barcode ? escapeXml(product.barcode) : ""
 
   const price = formatPrice(product.price)
   const salePriceValue = typeof product.promoPrice === "number" ? product.promoPrice : null
@@ -134,8 +133,6 @@ function buildItemXml(product: Product, baseUrl: string): string {
     `  <g:price>${price}</g:price>`,
     hasSalePrice && salePrice ? `  <g:sale_price>${salePrice}</g:sale_price>` : "",
     brand ? `  <g:brand>${brand}</g:brand>` : "",
-    gtin ? `  <g:gtin>${gtin}</g:gtin>` : "",
-    gtin ? "" : `  <g:identifier_exists>false</g:identifier_exists>`,
     productType ? `  <g:product_type>${productType}</g:product_type>` : "",
     "</item>",
   ]
