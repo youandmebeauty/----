@@ -63,29 +63,23 @@ function normalizeImageUrl(value: string, baseUrl: string): string | null {
 }
 
 function getPrimaryAndAdditionalImages(product: Product, baseUrl: string): { primary?: string, additional: string[] } {
-  const primaryCandidates: string[] = []
-  const additionalCandidates: string[] = []
+  // Get all product images including variant images, with fallback to product.image and de-duplication
+  const variantImages = product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
+    ? product.colorVariants.map(variant => variant.image).filter(Boolean)
+    : []
 
-  if (Array.isArray(product.images) && product.images.length > 0) {
-    primaryCandidates.push(product.images[0])
-    additionalCandidates.push(...product.images.slice(1))
-  } else if (product.image) {
-    primaryCandidates.push(product.image)
-  }
+  const mainImages = (product.images && product.images.length > 0)
+    ? product.images
+    : [product.image].filter(Boolean)
 
-  if (product.hasColorVariants && Array.isArray(product.colorVariants)) {
-    product.colorVariants.forEach((variant) => {
-      if (variant.image) additionalCandidates.push(variant.image)
-    })
-  }
+  const productImages = Array.from(
+    new Set([...(variantImages || []), ...(mainImages || [])].filter(Boolean))
+  )
 
-  if (primaryCandidates.length === 0 && additionalCandidates.length > 0) {
-    primaryCandidates.push(additionalCandidates.shift() as string)
-  }
-
+  // Normalize and deduplicate URLs
   const seen = new Set<string>()
-  const normalizeList = (values: string[]) => values
-    .map((value) => normalizeImageUrl(value, baseUrl))
+  const normalizedImages = productImages
+    .map((value) => normalizeImageUrl(value as string, baseUrl))
     .filter((value): value is string => !!value)
     .filter((value) => {
       if (seen.has(value)) return false
@@ -93,12 +87,9 @@ function getPrimaryAndAdditionalImages(product: Product, baseUrl: string): { pri
       return true
     })
 
-  const primaryList = normalizeList(primaryCandidates)
-  const additionalList = normalizeList(additionalCandidates)
-
   return {
-    primary: primaryList[0],
-    additional: additionalList,
+    primary: normalizedImages[0],
+    additional: normalizedImages.slice(1),
   }
 }
 
@@ -106,9 +97,16 @@ function buildItemXml(product: Product, baseUrl: string): string {
   const slug = generateSlug(product.name, { includeBrand: product.brand })
   const link = `${baseUrl}/product/${product.id}-${slug}`
   const title = escapeXml(product.name)
-  const description = escapeXml(toPlainText(product.longDescription ?? product.description))
+
+  const rawDescription =
+    toPlainText(product.longDescription ?? product.description) ||
+    product.name ||
+    ""
+
+  const description = escapeXml(rawDescription)
   const brand = product.brand ? escapeXml(product.brand) : ""
   const sku = escapeXml(product.id)
+  const gtin = product.barcode ? escapeXml(product.barcode) : ""
 
   const price = formatPrice(product.price)
   const salePriceValue = typeof product.promoPrice === "number" ? product.promoPrice : null
@@ -136,6 +134,8 @@ function buildItemXml(product: Product, baseUrl: string): string {
     `  <g:price>${price}</g:price>`,
     hasSalePrice && salePrice ? `  <g:sale_price>${salePrice}</g:sale_price>` : "",
     brand ? `  <g:brand>${brand}</g:brand>` : "",
+    gtin ? `  <g:gtin>${gtin}</g:gtin>` : "",
+    gtin ? "" : `  <g:identifier_exists>false</g:identifier_exists>`,
     productType ? `  <g:product_type>${productType}</g:product_type>` : "",
     "</item>",
   ]
@@ -148,7 +148,13 @@ export async function GET() {
     const baseUrl = getBaseUrl()
     const products = await getProducts()
 
-    const itemsXml = products.map((product) => buildItemXml(product, baseUrl)).join("\n")
+    // Filter out products without images (required by Google Merchant Center)
+    const validProducts = products.filter((product) => {
+      const { primary } = getPrimaryAndAdditionalImages(product, baseUrl)
+      return primary !== undefined
+    })
+
+    const itemsXml = validProducts.map((product) => buildItemXml(product, baseUrl)).join("\n")
 
     const xml = [
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
