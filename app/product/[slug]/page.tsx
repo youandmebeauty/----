@@ -142,13 +142,18 @@ export default async function ProductPage({ params }: ProductPageProps) {
     ? product.colorVariants.some(variant => variant.quantity > 0)
     : product.quantity > 0
 
-  // Get all product images including variant images
-  const productImages = product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
-    ? [
-        ...product.colorVariants.map(variant => variant.image).filter(Boolean),
-        ...(product.images || [])
-      ]
-    : (product.images && product.images.length > 0 ? product.images : [product.image].filter(Boolean))
+  // Get all product images including variant images, with fallback to product.image and de-duplication
+  const variantImages = product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
+    ? product.colorVariants.map(variant => variant.image).filter(Boolean)
+    : []
+
+  const mainImages = (product.images && product.images.length > 0)
+    ? product.images
+    : [product.image].filter(Boolean)
+
+  const productImages = Array.from(
+    new Set([...(variantImages || []), ...(mainImages || [])].filter(Boolean))
+  )
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -163,11 +168,31 @@ export default async function ProductPage({ params }: ProductPageProps) {
     offers: {
       "@type": "Offer",
       priceCurrency: "TND",
-      price: product.price,
+      // Use the same effective price as on-page tracking: promoPrice if present, otherwise price
+      price: product.promoPrice ?? product.price,
       availability: isInStock
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
       url: canonicalUrl,
+      // Expose both regular and promotional prices when applicable
+      priceSpecification: [
+        {
+          "@type": "UnitPriceSpecification",
+          priceCurrency: "TND",
+          price: product.price,
+          priceType: "https://schema.org/ListPrice",
+        },
+        ...(product.promoPrice
+          ? [
+              {
+                "@type": "UnitPriceSpecification",
+                priceCurrency: "TND",
+                price: product.promoPrice,
+                priceType: "https://schema.org/SalePrice",
+              },
+            ]
+          : []),
+      ],
       // Indicate whether a merchant return policy exists and basic shipping details
       hasMerchantReturnPolicy: false,
       shippingDetails: {
@@ -194,7 +219,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <ProductViewTracker 
         productId={product.id}
         productName={product.name}
-        productPrice={product.promoPrice || product.price}
+        productPrice={product.promoPrice ?? product.price}
       />
       <ProductClient product={product} />
       <RelatedProducts products={relatedProducts} currentProduct={product} />
