@@ -27,7 +27,7 @@ export default function GoogleAnalytics() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchData() {
+    const fetchData = async () => {
       try {
         const res = await fetch('/api/gAnalyse');
         
@@ -45,12 +45,12 @@ export default function GoogleAnalytics() {
       } finally {
         setLoading(false);
       }
-    }
+    };
     fetchData();
   }, []);
 
   // Format data for the chart
-  const chartData: ChartData[] = data?.map((row) => {
+  const chartData: ChartData[] = (data?.map((row) => {
     const dateStr = row.dimensionValues[0].value;
     const activeUsers = parseInt(row.metricValues[0].value, 10);
     
@@ -65,7 +65,7 @@ export default function GoogleAnalytics() {
       activeUsers,
       formattedDate,
     };
-  }) || [];
+  }) || []).sort((a, b) => a.date.localeCompare(b.date));
 
   // Calculate total active users
   const totalActiveUsers = chartData.reduce((sum, item) => sum + item.activeUsers, 0);
