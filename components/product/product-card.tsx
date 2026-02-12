@@ -157,18 +157,19 @@ const Slug = generateSlug(product.name, {
             </h3>
 
             {/* Price & Category */}
-            <div className="flex items-center justify-between pt-1">
+            <div className="flex items-center justify-between ">
               <div className="flex items-baseline gap-1">
                 {typeof product.promoPrice === "number" && product.promoPrice < product.price ? (
-                  <>
-                    <span className="text-lg font-light text-foreground tabular-nums">
-                      {product.promoPrice.toFixed(2)}
-                    </span>
-                    <span className="text-xs font-light text-muted-foreground">DT</span>
-                    <span className="text-xs line-through text-muted-foreground/60 ml-2">
+                  <div className="flex flex-col items-baseline">
+                    <span className="text-md line-through text-muted-foreground/60">
                       {product.price.toFixed(2)}
                     </span>
-                  </>
+                    
+                    <span className="text-lg font-light text-foreground tabular-nums">
+                      {product.promoPrice.toFixed(2)}<span className="ml-1 text-xs font-light text-muted-foreground">DT</span>
+                    </span>
+                    
+                    </div>
                 ) : (
                   <>
                     <span className="text-lg font-light text-foreground tabular-nums">
