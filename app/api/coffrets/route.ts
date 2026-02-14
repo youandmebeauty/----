@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 import { revalidateTag } from "next/cache"
 import type { Coffret } from "@/lib/models/models"
 import { Timestamp } from "firebase-admin/firestore"
+import { notifyCoffretIndexing } from "@/lib/services/google-indexing-service"
+import { generateSlug } from "@/lib/urls/product-url"
 
 const COFFRETS_COLLECTION = "coffrets"
 
@@ -77,6 +79,10 @@ export async function POST(request: NextRequest) {
 
         // Revalidate the coffrets cache
         revalidateTag("coffrets", "default")
+
+        // Notify Google Indexing API (fire-and-forget)
+        const slug = generateSlug(newCoffret.name)
+        notifyCoffretIndexing(docRef.id, slug, "URL_UPDATED").catch(() => {})
 
         return NextResponse.json(newCoffret, { status: 201 })
     } catch (error) {

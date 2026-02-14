@@ -394,13 +394,11 @@ export async function getItemStock(itemId: string): Promise<number> {
         return 0
       }
       
-      const stock = typeof variant.quantity === 'number' ? variant.quantity : (parseInt(String(variant.quantity || 0), 10) || 0)
-      return stock
+      return typeof variant.quantity === 'number' ? variant.quantity : (parseInt(String(variant.quantity || 0), 10) || 0)
     }
 
     // Otherwise return the product's stock
-    const stock = product.quantity ?? 0
-    return stock
+    return product.quantity ?? 0
   } catch (error) {
     console.error(`[getItemStock] Error getting stock for itemId ${itemId}:`, error)
     return 0

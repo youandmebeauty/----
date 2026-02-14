@@ -6,6 +6,8 @@ import { Timestamp } from "firebase-admin/firestore"
 import type { Product } from "@/lib/models/models"
 import { getProducts } from "@/lib/services/product-service"
 import { revalidateProducts } from "@/lib/utils/revalidate-util"
+import { notifyProductIndexing } from "@/lib/services/google-indexing-service"
+import { generateSlug } from "@/lib/urls/product-url"
 
 const PRODUCTS_COLLECTION = "products"
 
@@ -125,6 +127,10 @@ export async function POST(request: NextRequest) {
 
     // Revalidate products cache and record an audit log
     await revalidateProducts("create", { id: docRef.id, name: productData.name })
+
+    // Notify Google Indexing API (fire-and-forget)
+    const slug = generateSlug(productData.name, { includeBrand: productData.brand })
+    notifyProductIndexing(docRef.id, slug, "URL_UPDATED").catch(() => {})
 
     return NextResponse.json(newProduct, { status: 201 })
   } catch (error) {

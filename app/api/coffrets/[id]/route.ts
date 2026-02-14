@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { revalidateTag } from "next/cache"
 import type { Coffret } from "@/lib/models/models"
+import { notifyCoffretIndexing } from "@/lib/services/google-indexing-service"
+import { generateSlug } from "@/lib/urls/product-url"
 
 const COFFRETS_COLLECTION = "coffrets"
 
@@ -82,6 +84,10 @@ export async function PUT(
         // Revalidate the coffrets cache
         revalidateTag("coffrets","default")
 
+        // Notify Google Indexing API (fire-and-forget)
+        const slug = generateSlug(updatedCoffret.name)
+        notifyCoffretIndexing(id, slug, "URL_UPDATED").catch(() => {})
+
         return NextResponse.json(updatedCoffret)
     } catch (error) {
         console.error("Error updating coffret:", error)
@@ -108,10 +114,18 @@ export async function DELETE(
 
         const { adminDb } = await import("@/lib/utils/firebase-admin-util")
 
+        // Fetch coffret data before deleting (for indexing notification)
+        const coffretDoc = await adminDb.collection(COFFRETS_COLLECTION).doc(id).get()
+        const coffretName = coffretDoc.data()?.name || ""
+
         await adminDb.collection(COFFRETS_COLLECTION).doc(id).delete()
 
         // Revalidate the coffrets cache
         revalidateTag("coffrets","default")
+
+        // Notify Google Indexing API of removal (fire-and-forget)
+        const slug = generateSlug(coffretName)
+        notifyCoffretIndexing(id, slug, "URL_DELETED").catch(() => {})
 
         return NextResponse.json({ success: true })
     } catch (error) {

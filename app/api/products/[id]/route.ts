@@ -5,6 +5,8 @@ import { verifyAdminToken } from "@/lib/utils/auth-utils"
 import { Timestamp, FieldValue } from "firebase-admin/firestore"
 import type { Product } from "@/lib/models/models"
 import { revalidateProducts } from "@/lib/utils/revalidate-util"
+import { notifyProductIndexing } from "@/lib/services/google-indexing-service"
+import { generateSlug } from "@/lib/urls/product-url"
 
 const PRODUCTS_COLLECTION = "products"
 
@@ -178,6 +180,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     // Revalidate products cache and record an audit log
     await revalidateProducts("update", { id, name: updatedProduct.name })
 
+    // Notify Google Indexing API (fire-and-forget)
+    const slug = generateSlug(updatedProduct.name, { includeBrand: updatedProduct.brand })
+    notifyProductIndexing(id, slug, "URL_UPDATED").catch(() => {})
+
     return NextResponse.json(updatedProduct)
   } catch (error) {
     console.error("Error updating product:", error)
@@ -204,7 +210,12 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     await docRef.delete()
 
     // Revalidate products cache and record an audit log
-    await revalidateProducts("delete", { id,name: doc.data()?.name || null })
+    const deletedData = doc.data()!
+    await revalidateProducts("delete", { id, name: deletedData?.name || null })
+
+    // Notify Google Indexing API of removal (fire-and-forget)
+    const slug = generateSlug(deletedData.name || "", { includeBrand: deletedData.brand })
+    notifyProductIndexing(id, slug, "URL_DELETED").catch(() => {})
 
     return NextResponse.json({ success: true })
   } catch (error) {
