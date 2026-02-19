@@ -1,13 +1,31 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import Link from "next/link"
+import Script from "next/script"
 import { CheckCircle, Download } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { useToast } from "@/hooks/use-toast"
 import { generateInvoicePDF, type InvoiceDetails } from "@/lib/services/generate-invoice-service"
+
+declare global {
+  interface Window {
+    gapi?: {
+      load: (library: string, callback: () => void) => void
+      surveyoptin: {
+        render: (payload: {
+          merchant_id: number
+          order_id: string
+          email: string
+          delivery_country: string
+          estimated_delivery_date: string
+        }) => void
+      }
+    }
+  }
+}
 
 const STORAGE_KEY = "lastOrderInvoice"
 
@@ -16,6 +34,8 @@ export default function OrderConfirmationContent() {
   const [invoiceData, setInvoiceData] = useState<InvoiceDetails | null>(null)
   const [invoiceBlob, setInvoiceBlob] = useState<Blob | null>(null)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isOptInScriptReady, setIsOptInScriptReady] = useState(false)
+  const [hasRenderedOptIn, setHasRenderedOptIn] = useState(false)
 
   useEffect(() => {
     if (typeof window === "undefined") return
@@ -29,6 +49,41 @@ export default function OrderConfirmationContent() {
       console.error("Unable to load cached invoice payload:", error)
     }
   }, [])
+
+  const estimatedDeliveryDate = useMemo(() => {
+    if (!invoiceData?.date) return null
+
+    const baseDate = invoiceData.date instanceof Date
+      ? invoiceData.date
+      : new Date(invoiceData.date)
+
+    if (Number.isNaN(baseDate.getTime())) return null
+
+    const deliveryDate = new Date(baseDate)
+    deliveryDate.setDate(deliveryDate.getDate() + 3)
+
+    return deliveryDate.toISOString().slice(0, 10)
+  }, [invoiceData?.date])
+
+  useEffect(() => {
+    if (!invoiceData || !invoiceData.orderId || !invoiceData.customer?.email) return
+    if (!estimatedDeliveryDate) return
+    if (!isOptInScriptReady || hasRenderedOptIn) return
+    if (typeof window === "undefined") return
+
+    if (!window.gapi || !window.gapi.load) return
+
+    window.gapi.load("surveyoptin", () => {
+      window.gapi?.surveyoptin.render({
+        merchant_id: 5722628537,
+        order_id: invoiceData.orderId,
+        email: invoiceData.customer.email,
+        delivery_country: "TN",
+        estimated_delivery_date: estimatedDeliveryDate,
+      })
+      setHasRenderedOptIn(true)
+    })
+  }, [estimatedDeliveryDate, hasRenderedOptIn, invoiceData, isOptInScriptReady])
 
   const handleDownloadInvoice = () => {
     if (!invoiceData || !invoiceData.orderId) {
@@ -73,6 +128,11 @@ export default function OrderConfirmationContent() {
 
   return (
     <div className="min-h-screen bg-background">
+      <Script
+        src="https://apis.google.com/js/platform.js"
+        strategy="afterInteractive"
+        onLoad={() => setIsOptInScriptReady(true)}
+      />
       <main className="container mx-auto px-4 py-16">
         <div className="max-w-2xl mx-auto text-center">
           <Card>

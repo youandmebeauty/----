@@ -75,6 +75,31 @@ export default function RootLayout({
             alt=""
           />
         </noscript>
+
+        {/* Google Customer Reviews badge */}
+        <Script
+          id="merchantWidgetScript"
+          src="https://www.gstatic.com/shopping/merchant/merchantwidget.js"
+          strategy="afterInteractive"
+        />
+        <Script
+          id="merchant-widget-init"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                var script = document.getElementById('merchantWidgetScript');
+                if (!script) return;
+                script.addEventListener('load', function () {
+                  if (!window.merchantwidget) return;
+                  window.merchantwidget.start({
+                    merchant_id: 5722628537
+                  });
+                });
+              })();
+            `,
+          }}
+        />
         
       </head>
       <body className={inter.className}>
