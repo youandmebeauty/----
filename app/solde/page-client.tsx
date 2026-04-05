@@ -10,6 +10,8 @@ import { SHOP_CATEGORIES } from "@/lib/category-data"
 import { cn } from "@/lib/utils/utils"
 import { Breadcrumb } from "@/components/navigation/breadcrumb"
 
+
+
 export default function SoldePage() {
   const [discounted, setDiscounted] = useState<Product[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -81,20 +83,88 @@ export default function SoldePage() {
           )
         )
       : 0
+if (isLoading) {
+    return (
+      <ScrollAnimation variant="slideUp" className="min-h-screen bg-background">
+        <div className="container mx-auto px-4 lg:px-6 xl:px-8 py-8">
+          <ScrollAnimation variant="slideUp" className="mb-6">
+            <Breadcrumb
+              items={[{ name: "Soldes", href: "/solde", current: true }]}
+            />
+          </ScrollAnimation>
 
-  if (isLoading || discounted.length === 0) {
+          {/* Hero banner — identical to loaded state but with placeholder counts */}
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-50 via-primary-50/50 to-background p-8">
+            <div className="relative flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
+              <div>
+                <span className="-ml-4 inline-flex -rotate-12 items-center gap-1.5 rounded-full bg-gradient-to-r from-accent to-primary px-3 py-1 text-xs font-bold text-white shadow-md animate-pulse">
+                  HOT
+                </span>
+                <h2 className="text-3xl font-bold tracking-tight leading-tight sm:text-4xl">
+                  <span className="text-foreground">Soldes & </span>
+                  <span className="text-primary">Promotions</span>
+                </h2>
+                <p className="mt-2 text-muted-foreground">
+                  Une selection exclusive d&apos;offres exceptionnelles
+                </p>
+              </div>
+              <div className="flex w-full items-center justify-around gap-4 sm:w-auto">
+                <div>
+                  <div className="text-xs uppercase text-muted-foreground">Offres disponibles</div>
+                  <div className="h-9 w-8 rounded bg-muted animate-pulse mt-1" />
+                </div>
+                <div className="hidden h-14 w-px bg-border/40 sm:block" />
+                <div className="z-50 rounded-2xl bg-gradient-to-br from-primary to-accent px-5 py-3 shadow-lg">
+                  <div className="mb-1 text-xs uppercase text-white/90">Jusqu&apos;a</div>
+                  <div className="h-8 w-16 rounded bg-white/20 animate-pulse" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+
+          {/* Category filter placeholder */}
+          <div className="rounded-2xl p-4 sm:p-5 mb-4">
+            <div className="mb-3 h-4 w-32 rounded bg-muted animate-pulse" />
+            <div className="flex flex-wrap gap-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="h-9 rounded-md bg-muted animate-pulse"
+                  style={{ width: `${80 + i * 20}px`, animationDelay: `${i * 60}ms` }}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Cards skeleton — matches your provided snippet */}
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-8 lg:gap-x-6 lg:gap-y-12">
+            {[...Array(12)].map((_, i) => (
+              <div key={i} className="space-y-3 animate-pulse">
+                <div className="aspect-[3/4] bg-muted rounded" />
+                <div className="h-3 bg-muted w-3/4 rounded" />
+                <div className="h-3 bg-muted w-1/2 rounded" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </ScrollAnimation>
+    )
+  }
+
+  if (discounted.length === 0) {
     return null
   }
 
   return (
     <ScrollAnimation variant="slideUp" className="min-h-screen bg-background">
-
-            <div className="container mx-auto  px-4 lg:px-6 xl:px-8 py-8">
-                <ScrollAnimation variant="slideUp" className="mb-6">
-                  <Breadcrumb
-                    items={[{ name: "Soldes", href: "/solde", current: true }]}
-                  />
-                </ScrollAnimation>
+      <div className="container mx-auto px-4 lg:px-6 xl:px-8 py-8">
+        <ScrollAnimation variant="slideUp" className="mb-6">
+          <Breadcrumb
+            items={[{ name: "Soldes", href: "/solde", current: true }]}
+          />
+        </ScrollAnimation>
         <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary-50 via-primary-50/50 to-background p-8">
           <div className="relative flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-center">
             <div>
@@ -127,7 +197,7 @@ export default function SoldePage() {
             </div>
           </div>
         </div>
-                            <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <div className="h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
         <div className="rounded-2xl p-4 sm:p-5 mb-4">
           <div className="mb-3 text-sm font-medium text-muted-foreground">
@@ -158,11 +228,11 @@ export default function SoldePage() {
                   key={category.id}
                   onClick={() => handleCategoryChange(category.id)}
                   className={cn(
-                                "flex-shrink-0 px-8 py-2 text-[13px]  uppercase whitespace-nowrap transition-all duration-200 border",
+                    "flex-shrink-0 px-8 py-2 text-[13px] uppercase whitespace-nowrap transition-all duration-200 border",
                     selectedCategory === category.id
-                                    ? "bg-primary text-primary-foreground border-primary rounded-md"
-                                    : "bg-transparent text-muted-foreground border-border/50 hover:border-primary hover:text-foreground rounded-md"
-                            )}
+                      ? "bg-primary text-primary-foreground border-primary rounded-md"
+                      : "bg-transparent text-muted-foreground border-border/50 hover:border-primary hover:text-foreground rounded-md"
+                  )}
                   type="button"
                 >
                   {category.label} ({count})

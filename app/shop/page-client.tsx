@@ -6,7 +6,6 @@ import { searchProducts } from "@/lib/services/product-service"
 import type { Product, SearchFilters } from "@/lib/models/models"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 import { Sparkles, User, Wind, Pill } from "lucide-react"
-import { ProductCard } from "@/components/product/product-card"
 // Components
 import { ShopHeader } from "@/components/shop/shop-header"
 import { ShopFilters } from "@/components/shop/shop-filters"
