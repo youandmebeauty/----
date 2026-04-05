@@ -143,7 +143,7 @@ export function CoffretSection({
                                 {themeKey !== "none" ? 
                                 (
                                 
-                                                                <ScrollAnimation
+                            <ScrollAnimation
                                           variant="slideUp"
                                           duration={0.7}
                                           stagger={0.2}
