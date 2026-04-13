@@ -7,6 +7,7 @@ import { Metadata } from "next"
 import { CoffretSection } from "@/components/coffret/coffret-section"
 import { ScrollAnimation } from "@/components/navigation/scroll-animation"
 import ProduitSolde from "@/components/produitSolde"
+import { headers } from "next/dist/server/request/headers"
 export const metadata: Metadata = {
   title: "You & Me Beauty - Parapharmacie et Cosmétique Sfax | Maquillage & Parfums en Ligne Tunisie",
   alternates: {
@@ -70,7 +71,9 @@ export const metadata: Metadata = {
     },
   },
 }
-export default function Home() {
+export default async function Home() {
+    const nonce = (await headers()).get("x-nonce") ?? undefined
+  
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -88,7 +91,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen overflow-hidden">
-      <script
+      <script nonce={nonce}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />

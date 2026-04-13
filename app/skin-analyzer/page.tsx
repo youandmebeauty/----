@@ -1,6 +1,7 @@
 ﻿import { Metadata } from "next";
 import { SkinAnalyzerClientWrapper } from "@/components/skin-analyzer/skin-analyzer-client-wrapper";
 import { BreadcrumbJsonLd } from "@/components/navigation/breadcrumb";
+import { headers } from "next/dist/server/request/headers";
 
 export async function generateMetadata({ 
 }: {}): Promise<Metadata> {
@@ -57,7 +58,8 @@ export async function generateMetadata({
   };
 }
 
-export default function SkinAnalyzerPage() {
+export default async function SkinAnalyzerPage() {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -100,6 +102,7 @@ export default function SkinAnalyzerPage() {
                 <BreadcrumbJsonLd items={[{ name: "Analyseur de Peau", url: "https://youandme.tn/skin-analyzer" }]} />
     
       <script
+      nonce={nonce}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />

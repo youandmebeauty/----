@@ -2,7 +2,7 @@ import { Metadata } from "next"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 import ShopPage from "./page-client"
 import { BreadcrumbJsonLd } from "@/components/navigation/breadcrumb"
-
+import { headers } from "next/dist/server/request/headers"
 // Génère une liste de mots-clés à partir des catégories et sous-catégories
 const categoryKeywords: string[] = Array.from(
     new Set(
@@ -95,7 +95,8 @@ export const metadata: Metadata = {
         },
     },
 }
-export default function Page() {
+export default async function Page() {
+    const nonce = (await headers()).get("x-nonce") ?? undefined 
     const shopJsonLd = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
@@ -125,6 +126,8 @@ export default function Page() {
         <>
             <BreadcrumbJsonLd items={[{ name: "Boutique", url: "https://youandme.tn/shop" }]} />
             <script
+                nonce={nonce}
+
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(shopJsonLd) }}
             />

@@ -6,7 +6,7 @@ import { getProducts } from "@/lib/services/product-service"
 import { CoffretDetailClient } from "@/components/coffret/coffret-detail-client"
 import { CoffretViewTracker } from "@/components/meta/coffret-view-tracker"
 import { getRelatedCoffrets } from "@/lib/services/coffret-service"
-
+import { headers } from "next/dist/server/request/headers"
 interface CoffretPageProps {
   params: Promise<{ slug: string }>
 }
@@ -216,6 +216,7 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
       },
 
     }
+    const nonce = (await headers()).get("x-nonce") ?? undefined
 
     // ========================================================================
     // STRUCTURED DATA - ItemList (Products in Coffret)
@@ -270,12 +271,14 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
       <>
         {/* Breadcrumb Schema */}
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
         />
         
         {/* Product Schema */}
         <script
+          nonce={nonce}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
         />
@@ -283,6 +286,7 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
         {/* ItemList Schema (if products available) */}
         {itemListJsonLd && (
           <script
+            nonce={nonce}
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
           />

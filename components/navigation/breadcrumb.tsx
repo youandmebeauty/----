@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { ChevronRight, Home } from "lucide-react"
 import { cn } from "@/lib/utils/utils"
+import { headers } from "next/dist/server/request/headers"
 
 export interface BreadcrumbItem {
   name: string
@@ -51,7 +52,8 @@ interface BreadcrumbJsonLdProps {
   items: Array<{ name: string; url: string }>
 }
 
-export function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
+export async function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -73,6 +75,7 @@ export function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
 
   return (
     <script
+      nonce={nonce}
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
     />
