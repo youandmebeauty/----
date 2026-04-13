@@ -5,11 +5,14 @@ import { generateSlug } from "@/lib/urls/product-url"
 import { getProducts } from "@/lib/services/product-service"
 import { CoffretDetailClient } from "@/components/coffret/coffret-detail-client"
 import { CoffretViewTracker } from "@/components/meta/coffret-view-tracker"
+import { JsonLd } from "@/components/meta/json-ld"
 import { getRelatedCoffrets } from "@/lib/services/coffret-service"
-import { headers } from "next/dist/server/request/headers"
 interface CoffretPageProps {
   params: Promise<{ slug: string }>
 }
+
+export const dynamic = "force-dynamic"
+
 export async function generateStaticParams() {
   const coffrets = await getCoffrets()
 
@@ -141,7 +144,6 @@ const allProducts = await getProducts()
 const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
 
     // Build URLs
-    const Slug = generateSlug(coffret.name)
     const canonicalUrl = `https://youandme.tn/coffrets/${resolvedParams.slug}`
 
     // ========================================================================
@@ -216,8 +218,6 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
       },
 
     }
-    const nonce = (await headers()).get("x-nonce") ?? undefined
-
     // ========================================================================
     // STRUCTURED DATA - ItemList (Products in Coffret)
     // ========================================================================
@@ -270,26 +270,14 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
     return (
       <>
         {/* Breadcrumb Schema */}
-        <script
-          nonce={nonce}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-        />
+        <JsonLd data={breadcrumbJsonLd} />
         
         {/* Product Schema */}
-        <script
-          nonce={nonce}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
-        />
+        <JsonLd data={productJsonLd} />
         
         {/* ItemList Schema (if products available) */}
         {itemListJsonLd && (
-          <script
-            nonce={nonce}
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }}
-          />
+          <JsonLd data={itemListJsonLd} />
         )}
 
         <CoffretViewTracker 

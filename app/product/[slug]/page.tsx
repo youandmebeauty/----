@@ -6,7 +6,7 @@ import { Metadata } from "next"
 import { notFound } from "next/navigation"
 import { generateSlug } from "@/lib/urls/product-url"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
-import { headers } from "next/dist/server/request/headers"
+import { JsonLd } from "@/components/meta/json-ld"
 
 interface ProductPageProps {
   params: { slug: string }
@@ -104,7 +104,6 @@ export async function generateMetadata(
    Page (SSG)
 ---------------------------------------------- */
 export default async function ProductPage({ params }: ProductPageProps) {
-  const nonce = (await headers()).get("x-nonce") ?? undefined
   const resolvedParams = (await params) as { slug: string }
   const productId = resolvedParams?.slug?.split("-")[0]
 
@@ -209,17 +208,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <>
-      <script
-                  nonce={nonce}
-
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-      <script
-        nonce={nonce}
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
-      />
+      <JsonLd data={breadcrumbJsonLd} />
+      <JsonLd data={productJsonLd} />
 
       <ProductViewTracker 
         productId={product.id}

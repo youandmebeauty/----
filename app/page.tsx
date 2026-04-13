@@ -7,7 +7,7 @@ import { Metadata } from "next"
 import { CoffretSection } from "@/components/coffret/coffret-section"
 import { ScrollAnimation } from "@/components/navigation/scroll-animation"
 import ProduitSolde from "@/components/produitSolde"
-import { headers } from "next/dist/server/request/headers"
+import { JsonLd } from "@/components/meta/json-ld"
 export const metadata: Metadata = {
   title: "You & Me Beauty - Parapharmacie et Cosmétique Sfax | Maquillage & Parfums en Ligne Tunisie",
   alternates: {
@@ -72,8 +72,6 @@ export const metadata: Metadata = {
   },
 }
 export default async function Home() {
-    const nonce = (await headers()).get("x-nonce") ?? undefined
-  
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -91,10 +89,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen overflow-hidden">
-      <script nonce={nonce}
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd data={jsonLd} />
       <main>
         <section aria-label="Hero section">
           <ScrollAnimation
