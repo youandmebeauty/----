@@ -110,7 +110,6 @@ export default async function RootLayout({
       <body className={inter.className}>
         <script
           type="application/ld+json"
-          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ThemeProvider attribute="class" defaultTheme="light">

@@ -12,10 +12,10 @@ export function middleware(request: NextRequest) {
     "img-src 'self' data: https: https://firebasestorage.googleapis.com https://lh3.googleusercontent.com",
     "font-src 'self' https://fonts.gstatic.com",
     "connect-src 'self' https://ajax.googleapis.com/ https://connect.facebook.net https://www.google-analytics.com https://region1.google-analytics.com https://www.gstatic.com https://www.googleapis.com https://firebase.googleapis.com https://firebaseinstallations.googleapis.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://mpc-prod-25-s6uit34pua-wl.a.run.app https://demo-1.conversionsapigateway.com",
-    "frame-src 'self' https://www.google.com/",
+    "frame-src 'self' https://www.google.com/ https://www.facebook.com",
     "object-src 'none'",
     "base-uri 'self'",
-    "form-action 'self'",
+    "form-action 'self' https://www.facebook.com",
     "frame-ancestors 'self'",
     'upgrade-insecure-requests',
   ].join('; ')

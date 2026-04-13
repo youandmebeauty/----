@@ -8,6 +8,7 @@ import { CoffretSection } from "@/components/coffret/coffret-section"
 import { ScrollAnimation } from "@/components/navigation/scroll-animation"
 import ProduitSolde from "@/components/produitSolde"
 import { JsonLd } from "@/components/meta/json-ld"
+import { headers } from "next/headers"
 export const metadata: Metadata = {
   title: "You & Me Beauty - Parapharmacie et Cosmétique Sfax | Maquillage & Parfums en Ligne Tunisie",
   alternates: {

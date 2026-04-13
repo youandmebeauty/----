@@ -7,6 +7,7 @@ import { CoffretDetailClient } from "@/components/coffret/coffret-detail-client"
 import { CoffretViewTracker } from "@/components/meta/coffret-view-tracker"
 import { JsonLd } from "@/components/meta/json-ld"
 import { getRelatedCoffrets } from "@/lib/services/coffret-service"
+import { headers } from "next/headers"
 interface CoffretPageProps {
   params: Promise<{ slug: string }>
 }
@@ -218,6 +219,7 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
       },
 
     }
+    const nonce = (await headers()).get("x-nonce") ?? undefined
     // ========================================================================
     // STRUCTURED DATA - ItemList (Products in Coffret)
     // ========================================================================
@@ -270,14 +272,14 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
     return (
       <>
         {/* Breadcrumb Schema */}
-        <JsonLd data={breadcrumbJsonLd} />
+        <JsonLd data={breadcrumbJsonLd} nonce={nonce} />
         
         {/* Product Schema */}
-        <JsonLd data={productJsonLd} />
+        <JsonLd data={productJsonLd} nonce={nonce} />
         
         {/* ItemList Schema (if products available) */}
         {itemListJsonLd && (
-          <JsonLd data={itemListJsonLd} />
+          <JsonLd data={itemListJsonLd} nonce={nonce} />
         )}
 
         <CoffretViewTracker 

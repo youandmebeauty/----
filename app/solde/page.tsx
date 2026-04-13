@@ -1,8 +1,9 @@
 import { Metadata } from "next"
 import { SHOP_CATEGORIES } from "@/lib/category-data"
 import SoldePage from "./page-client"
-import { BreadcrumbJsonLd } from "@/components/navigation/breadcrumb"
+import { BreadcrumbJsonLd } from "@/components/navigation/breadcrumb-json-ld"
 import { JsonLd } from "@/components/meta/json-ld"
+import { headers } from "next/headers"
 
 const categoryKeywords: string[] = Array.from(
     new Set(
@@ -119,6 +120,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
+    const nonce = (await headers()).get("x-nonce") ?? undefined
     const shopJsonLd = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
@@ -150,7 +152,7 @@ export default async function Page() {
             <BreadcrumbJsonLd
                 items={[{ name: "Soldes & Promotions", url: "https://youandme.tn/solde" }]}
             />
-            <JsonLd data={shopJsonLd} />
+            <JsonLd data={shopJsonLd} nonce={nonce} />
             <SoldePage />
         </>
     )
