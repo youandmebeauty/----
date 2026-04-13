@@ -122,7 +122,7 @@ function buildItemXml(product: Product, baseUrl: string): string {
 
   const lines = [
     "<item>",
-    `<g:identifier_exists>false</g:identifier_exists>`,
+    `  <g:identifier_exists>false</g:identifier_exists>`,
     `  <g:id>${sku}</g:id>`,
     `  <g:title>${title}</g:title>`,
     `  <g:description>${description}</g:description>`,
@@ -146,8 +146,15 @@ export async function GET() {
     const baseUrl = getBaseUrl()
     const products = await getProducts()
 
-    // Filter out products without images (required by Google Merchant Center)
-    const validProducts = products.filter((product) => {
+    const soldeProducts = products.filter((product) => {
+      return (
+        typeof product.promoPrice === "number" &&
+        product.promoPrice > 0 &&
+        product.promoPrice < product.price
+      )
+    })
+
+    const validProducts = soldeProducts.filter((product) => {
       const { primary } = getPrimaryAndAdditionalImages(product, baseUrl)
       return primary !== undefined
     })
@@ -158,9 +165,9 @@ export async function GET() {
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
       "<rss version=\"2.0\" xmlns:g=\"http://base.google.com/ns/1.0\">",
       "<channel>",
-      "  <title>You &amp; Me Beauty</title>",
+      "  <title>You &amp; Me Beauty - Soldes</title>",
       `  <link>${escapeXml(baseUrl)}</link>`,
-      "  <description>Catalogue produits</description>",
+      "  <description>Produits en promotion</description>",
       itemsXml,
       "</channel>",
       "</rss>",
