@@ -29,7 +29,11 @@ declare global {
 
 const STORAGE_KEY = "lastOrderInvoice"
 
-export default function OrderConfirmationContent() {
+type OrderConfirmationContentProps = {
+  nonce?: string
+}
+
+export default function OrderConfirmationContent({ nonce }: OrderConfirmationContentProps) {
   const { toast } = useToast()
   const [invoiceData, setInvoiceData] = useState<InvoiceDetails | null>(null)
   const [invoiceBlob, setInvoiceBlob] = useState<Blob | null>(null)
@@ -131,6 +135,7 @@ export default function OrderConfirmationContent() {
       <Script
         src="https://apis.google.com/js/platform.js"
         strategy="afterInteractive"
+        nonce={nonce}
         onLoad={() => setIsOptInScriptReady(true)}
       />
       <main className="container mx-auto px-4 py-16">

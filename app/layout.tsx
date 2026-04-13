@@ -1,5 +1,6 @@
 import type React from "react"
 import Script from "next/script"
+import { headers } from "next/headers"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/providers/theme-provider"
@@ -15,11 +16,12 @@ import { Header } from "@/components/navigation/header"
 const inter = Inter({ subsets: ["latin"] })
 import { FeteThemeProvider } from "@/components/providers/fete-theme-provider"
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const nonce = (await headers()).get("x-nonce") ?? undefined
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -52,6 +54,7 @@ export default function RootLayout({
         <Script
           id="meta-pixel"
           strategy="afterInteractive"
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `
               !function(f,b,e,v,n,t,s)
@@ -81,10 +84,12 @@ export default function RootLayout({
           id="merchantWidgetScript"
           src="https://www.gstatic.com/shopping/merchant/merchantwidget.js"
           strategy="afterInteractive"
+          nonce={nonce}
         />
         <Script
           id="merchant-widget-init"
           strategy="afterInteractive"
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `
               (function () {
@@ -105,6 +110,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <script
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <ThemeProvider attribute="class" defaultTheme="light">
