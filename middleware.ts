@@ -7,7 +7,7 @@ export function middleware(request: NextRequest) {
   // Enforce a baseline Content Security Policy to mitigate XSS and injection.
   const csp = [
     "default-src 'self'",
-    `script-src 'self' https://www.googletagmanager.com/gtag/ https://connect.facebook.net https://www.gstatic.com https://apis.google.com https://ajax.googleapis.com https://cdn.jsdelivr.net 'nonce-${nonce}'`,
+    `script-src 'self' https://www.googletagmanager.com/gtag/ https://connect.facebook.net https://www.gstatic.com https://apis.google.com https://ajax.googleapis.com https://cdn.jsdelivr.net 'wasm-unsafe-eval' 'sha256-J9cZHZf5nVZbsm7Pqxc8RsURv1AIXkMgbhfrZvoOs/A=' 'nonce-${nonce}'`,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https: https://firebasestorage.googleapis.com https://lh3.googleusercontent.com",
     "font-src 'self' https://fonts.gstatic.com",
