@@ -64,6 +64,10 @@ async function loadONNXRuntime(): Promise<any> {
         const script = document.createElement('script');
         script.src = 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.19.2/dist/ort.min.js';
         script.async = true;
+        const pageNonce = document.querySelector('script[nonce]')?.getAttribute('nonce');
+        if (pageNonce) {
+            script.nonce = pageNonce;
+        }
 
         script.onload = () => {
             const ort = (window as any).ort;
