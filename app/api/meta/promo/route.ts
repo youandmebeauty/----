@@ -17,15 +17,6 @@ function getBaseUrl(): string {
   return DEFAULT_BASE_URL
 }
 
-function escapeXml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;")
-}
-
 function toPlainText(value?: string | null): string {
   if (!value) return ""
   return value.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
@@ -36,109 +27,74 @@ function formatPrice(value: number): string {
   return `${normalized.toFixed(2)} ${DEFAULT_CURRENCY}`
 }
 
+// CSV escape
+function csvEscape(value: string): string {
+  if (value == null) return ""
+  const str = String(value)
+  if (/[",\n]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`
+  }
+  return str
+}
+
 function isInStock(product: Product): boolean {
-  if (product.hasColorVariants && Array.isArray(product.colorVariants) && product.colorVariants.length > 0) {
-    return product.colorVariants.some((variant) => (variant.quantity ?? 0) > 0)
+  if (
+    product.hasColorVariants &&
+    Array.isArray(product.colorVariants) &&
+    product.colorVariants.length > 0
+  ) {
+    return product.colorVariants.some((v) => (v.quantity ?? 0) > 0)
   }
   return (product.quantity ?? 0) > 0
 }
 
-function normalizeImageUrl(value: string, baseUrl: string): string | null {
-  const trimmed = value.trim()
-  if (!trimmed) return null
-
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
-    return trimmed
-  }
-
-  if (trimmed.startsWith("//")) {
-    return `https:${trimmed}`
-  }
-
-  if (trimmed.startsWith("/")) {
-    return `${baseUrl}${trimmed}`
-  }
-
-  return `${baseUrl}/${trimmed}`
-}
-
-function getPrimaryAndAdditionalImages(product: Product, baseUrl: string): { primary?: string, additional: string[] } {
-  // Get all product images including variant images, with fallback to product.image and de-duplication
-  const variantImages = product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
-    ? product.colorVariants.map(variant => variant.image).filter(Boolean)
-    : []
-
-  const mainImages = (product.images && product.images.length > 0)
-    ? product.images
-    : [product.image].filter(Boolean)
-
-  const productImages = Array.from(
-    new Set([...(variantImages || []), ...(mainImages || [])].filter(Boolean))
-  )
-
-  // Normalize and deduplicate URLs
-  const seen = new Set<string>()
-  const normalizedImages = productImages
-    .map((value) => normalizeImageUrl(value as string, baseUrl))
-    .filter((value): value is string => !!value)
-    .filter((value) => {
-      if (seen.has(value)) return false
-      seen.add(value)
-      return true
-    })
-
-  return {
-    primary: normalizedImages[0],
-    additional: normalizedImages.slice(1),
-  }
-}
-
-function buildItemXml(product: Product, baseUrl: string): string {
-  const slug = generateSlug(product.name, { includeBrand: product.brand })
-  const link = `${baseUrl}/product/${product.id}-${slug}`
-  const title = escapeXml(product.name)
-
-  const rawDescription =
-    toPlainText(product.longDescription ?? product.description) ||
-    product.name ||
+function getPrimaryImage(product: Product, baseUrl: string): string {
+  const img =
+    product.images?.[0] ||
+    product.image ||
     ""
 
-  const description = escapeXml(rawDescription)
-  const brand = product.brand ? escapeXml(product.brand) : ""
-  const sku = escapeXml(product.id)
+  if (!img) return ""
+
+  if (img.startsWith("http")) return img
+  if (img.startsWith("/")) return `${baseUrl}${img}`
+  return `${baseUrl}/${img}`
+}
+
+function buildCsvRow(product: Product, baseUrl: string): string {
+  const slug = generateSlug(product.name, { includeBrand: product.brand })
+  const link = `${baseUrl}/product/${product.id}-${slug}`
+
+  const title = product.name
+  const description =
+    toPlainText(product.longDescription ?? product.description) || product.name
 
   const price = formatPrice(product.price)
-  const salePriceValue = typeof product.promoPrice === "number" ? product.promoPrice : null
-  const hasSalePrice = salePriceValue !== null && salePriceValue < product.price
-  const salePrice = hasSalePrice ? formatPrice(salePriceValue as number) : null
+
+  const salePrice =
+    typeof product.promoPrice === "number" && product.promoPrice < product.price
+      ? formatPrice(product.promoPrice)
+      : ""
 
   const availability = isInStock(product) ? "in stock" : "out of stock"
-  const { primary, additional } = getPrimaryAndAdditionalImages(product, baseUrl)
-  const imageLink = primary ? escapeXml(primary) : ""
-  const additionalImages = additional.slice(0, 9).map((image) => `<g:additional_image_link>${escapeXml(image)}</g:additional_image_link>`)
+  const image = getPrimaryImage(product, baseUrl)
 
-  const productTypeParts = [product.category, product.subcategory].filter(Boolean) as string[]
-  const productType = productTypeParts.length ? escapeXml(productTypeParts.join(" > ")) : ""
+  const category = [product.category, product.subcategory]
+    .filter(Boolean)
+    .join(" > ")
 
-  const lines = [
-    "<item>",
-    `  <g:identifier_exists>false</g:identifier_exists>`,
-    `  <g:id>${sku}</g:id>`,
-    `  <g:title>${title}</g:title>`,
-    `  <g:description>${description}</g:description>`,
-    `  <g:link>${escapeXml(link)}</g:link>`,
-    imageLink ? `  <g:image_link>${imageLink}</g:image_link>` : "",
-    ...additionalImages.map((line) => `  ${line}`),
-    `  <g:availability>${availability}</g:availability>`,
-    `  <g:condition>new</g:condition>`,
-    `  <g:price>${price}</g:price>`,
-    hasSalePrice && salePrice ? `  <g:sale_price>${salePrice}</g:sale_price>` : "",
-    brand ? `  <g:brand>${brand}</g:brand>` : "",
-    productType ? `  <g:product_type>${productType}</g:product_type>` : "",
-    "</item>",
-  ]
-
-  return lines.filter(Boolean).join("\n")
+  return [
+    csvEscape(product.id),
+    csvEscape(title),
+    csvEscape(description),
+    csvEscape(link),
+    csvEscape(image),
+    csvEscape(price),
+    csvEscape(salePrice),
+    csvEscape(availability),
+    csvEscape(product.brand || ""),
+    csvEscape(category),
+  ].join(",")
 }
 
 export async function GET() {
@@ -146,41 +102,47 @@ export async function GET() {
     const baseUrl = getBaseUrl()
     const products = await getProducts()
 
-    const soldeProducts = products.filter((product) => {
+    const saleProducts = products.filter((p) => {
       return (
-        typeof product.promoPrice === "number" &&
-        product.promoPrice > 0 &&
-        product.promoPrice < product.price
+        typeof p.promoPrice === "number" &&
+        p.promoPrice > 0 &&
+        p.promoPrice < p.price
       )
     })
 
-    const validProducts = soldeProducts.filter((product) => {
-      const { primary } = getPrimaryAndAdditionalImages(product, baseUrl)
-      return primary !== undefined
+    const validProducts = saleProducts.filter((p) => {
+      return !!getPrimaryImage(p, baseUrl)
     })
 
-    const itemsXml = validProducts.map((product) => buildItemXml(product, baseUrl)).join("\n")
+    const header = [
+      "id",
+      "title",
+      "description",
+      "link",
+      "image",
+      "price",
+      "sale_price",
+      "availability",
+      "brand",
+      "category",
+    ].join(",")
 
-    const xml = [
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
-      "<rss version=\"2.0\" xmlns:g=\"http://base.google.com/ns/1.0\">",
-      "<channel>",
-      "  <title>You &amp; Me Beauty - Soldes</title>",
-      `  <link>${escapeXml(baseUrl)}</link>`,
-      "  <description>Produits en promotion</description>",
-      itemsXml,
-      "</channel>",
-      "</rss>",
-    ].join("\n")
+    const rows = validProducts.map((p) => buildCsvRow(p, baseUrl))
 
-    return new NextResponse(xml, {
+    const csv = [header, ...rows].join("\n")
+
+    return new NextResponse(csv, {
       status: 200,
       headers: {
-        "Content-Type": "application/rss+xml; charset=utf-8",
+        "Content-Type": "text/csv; charset=utf-8",
+        "Content-Disposition": "inline; filename=sale-products.csv",
       },
     })
   } catch (error) {
-    console.error("Merchant feed error:", error)
-    return NextResponse.json({ error: "Failed to generate merchant feed" }, { status: 500 })
+    console.error("CSV feed error:", error)
+    return NextResponse.json(
+      { error: "Failed to generate CSV feed" },
+      { status: 500 }
+    )
   }
 }
