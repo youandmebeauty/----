@@ -27,7 +27,6 @@ function formatPrice(value: number): string {
   return `${normalized.toFixed(2)} ${DEFAULT_CURRENCY}`
 }
 
-// CSV escape
 function csvEscape(value: string): string {
   if (value == null) return ""
   const str = String(value)
@@ -49,13 +48,8 @@ function isInStock(product: Product): boolean {
 }
 
 function getPrimaryImage(product: Product, baseUrl: string): string {
-  const img =
-    product.images?.[0] ||
-    product.image ||
-    ""
-
+  const img = product.images?.[0] || product.image || ""
   if (!img) return ""
-
   if (img.startsWith("http")) return img
   if (img.startsWith("/")) return `${baseUrl}${img}`
   return `${baseUrl}/${img}`
@@ -77,7 +71,7 @@ function buildCsvRow(product: Product, baseUrl: string): string {
       : ""
 
   const availability = isInStock(product) ? "in stock" : "out of stock"
-  const image = getPrimaryImage(product, baseUrl)
+  const imageLink = getPrimaryImage(product, baseUrl)
 
   const category = [product.category, product.subcategory]
     .filter(Boolean)
@@ -88,10 +82,11 @@ function buildCsvRow(product: Product, baseUrl: string): string {
     csvEscape(title),
     csvEscape(description),
     csvEscape(link),
-    csvEscape(image),
+    csvEscape(imageLink),       // image_link (Meta required name)
     csvEscape(price),
     csvEscape(salePrice),
     csvEscape(availability),
+    csvEscape("new"),           // condition (required by Meta)
     csvEscape(product.brand || ""),
     csvEscape(category),
   ].join(",")
@@ -102,29 +97,21 @@ export async function GET() {
     const baseUrl = getBaseUrl()
     const products = await getProducts()
 
-    const saleProducts = products.filter((p) => {
-      return (
-        typeof p.promoPrice === "number" &&
-        p.promoPrice > 0 &&
-        p.promoPrice < p.price
-      )
-    })
-
-    const validProducts = saleProducts.filter((p) => {
-      return !!getPrimaryImage(p, baseUrl)
-    })
+    // Filter out products with no image (Meta rejects rows without image_link)
+    const validProducts = products.filter((p) => !!getPrimaryImage(p, baseUrl))
 
     const header = [
       "id",
       "title",
       "description",
       "link",
-      "image",
+      "image_link",       // fixed: was "image"
       "price",
       "sale_price",
       "availability",
+      "condition",        // added: required by Meta
       "brand",
-      "category",
+      "google_product_category",
     ].join(",")
 
     const rows = validProducts.map((p) => buildCsvRow(p, baseUrl))
@@ -135,7 +122,7 @@ export async function GET() {
       status: 200,
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
-        "Content-Disposition": "inline; filename=sale-products.csv",
+        "Content-Disposition": "inline; filename=catalogue.csv",
       },
     })
   } catch (error) {
