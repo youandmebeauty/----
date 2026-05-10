@@ -129,7 +129,7 @@ const header = [
       status: 200,
       headers: {
         "Content-Type": "text/csv; charset=utf-8",
-        "Content-Disposition": "inline; filename=sale-products.csv",
+        "Content-Disposition": "inline; filename=all-products.csv",
       },
     })
   } catch (error) {
