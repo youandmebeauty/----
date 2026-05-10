@@ -38,6 +38,20 @@ export function ShopHeader({
     setIsFilterOpen,
     filterProps
 }: ShopHeaderProps) {
+    const selectedCategoryLabel = SHOP_CATEGORIES.find(
+        (category: any) => category.id === filterProps.selectedCategory
+    )?.label
+
+    const activeFilterSummary = [
+        filterProps.selectedCategory !== "all" ? selectedCategoryLabel : null,
+        filterProps.selectedSubcategory,
+        filterProps.selectedSkinTypes?.length ? `${filterProps.selectedSkinTypes.length} type${filterProps.selectedSkinTypes.length > 1 ? "s" : ""} de peau` : null,
+        filterProps.selectedHairTypes?.length ? `${filterProps.selectedHairTypes.length} type${filterProps.selectedHairTypes.length > 1 ? "s" : ""} de cheveux` : null,
+        filterProps.priceRange?.[0] !== 0 || filterProps.priceRange?.[1] !== 1000
+            ? `${filterProps.priceRange?.[0] ?? 0} - ${filterProps.priceRange?.[1] ?? 1000} DT`
+            : null,
+    ].filter(Boolean)
+
     return (
         <div className="space-y-4 sm:space-y-5 lg:space-y-6">
             {/* Title and Result Count */}
@@ -101,35 +115,57 @@ export function ShopHeader({
                 <div className="lg:hidden">
                     <Sheet open={isFilterOpen} onOpenChange={setIsFilterOpen}>
                         <SheetTrigger asChild>
-                            <Button variant="outline" className="font-medium w-full sm:w-auto">
+                            <Button variant="outline" className="font-medium w-full sm:w-auto gap-2">
                                 <Filter className="w-4 h-4 mr-2" />
                                 Filtres
                                 {activeFiltersCount > 0 && ` (${activeFiltersCount})`}
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="w-full sm:w-80 p-0">
+                        <SheetContent side="left" className="w-full sm:w-80 p-0 h-[100dvh] max-h-[100dvh] overflow-y-auto overscroll-contain">
                             <SheetTitle className="sr-only">Filtres de produits</SheetTitle>
                             <SheetDescription className="sr-only">
                                 Filtrez les produits par catégorie, type de peau, type de cheveux et prix
                             </SheetDescription>
-                            <div className="flex flex-col h-full">
-                                <div className="px-6 py-4 border-b flex items-center justify-between">
-                                    <h2 className="text-lg font-semibold">Filtres</h2>
+                            <div className="relative min-h-full pt-10">
+                                <div className="sticky top-0 z-10 border-b px-5 py-4 sm:px-6 sm:py-5 space-y-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+                                    <div className="flex items-start justify-between gap-3">
+                                        <div>
+                                            <h2 className="text-lg sm:text-xl font-semibold leading-none">Filtres</h2>
+                                            <p className="mt-2 text-sm text-muted-foreground">
+                                                Affinez la liste avec de gros contrôles tactiles.
+                                            </p>
+                                        </div>
+                                    </div>
+
                                     {activeFiltersCount > 0 && (
                                         <button
                                             onClick={clearAllFilters}
-                                            className="text-sm font-medium underline hover:no-underline transition-all"
+                                            className="absolute right-5 top-12 text-sm font-medium underline underline-offset-4 hover:no-underline transition-all whitespace-nowrap"
                                         >
                                             Effacer tout
                                         </button>
                                     )}
+
+                                    {activeFilterSummary.length > 0 && (
+                                        <div className="flex flex-wrap gap-2">
+                                            {activeFilterSummary.map((item) => (
+                                                <span
+                                                    key={item}
+                                                    className="inline-flex items-center rounded-full border border-border/60 bg-muted/40 px-3 py-1 text-xs font-medium text-foreground"
+                                                >
+                                                    {item}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-                                <div className="flex-1 overflow-y-auto px-6">
+
+                                <div className="px-5 py-4 sm:px-6 sm:py-5" data-lenis-prevent data-lenis-prevent-wheel data-lenis-prevent-touch>
                                     <ShopFilters isMobile {...filterProps} />
                                 </div>
-                                <div className="p-6 border-t">
+                                <div className="sticky bottom-0 z-10 border-t p-4 sm:p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
                                     <Button
-                                        className="w-full bg-foreground text-background hover:bg-foreground/90 font-medium"
+                                        className="w-full bg-foreground text-background hover:bg-foreground/90 font-medium h-12"
                                         onClick={() => setIsFilterOpen(false)}
                                     >
                                         Voir {productCount} produits

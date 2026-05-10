@@ -21,7 +21,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode
 }) {
-  const nonce = (await headers()).get("x-nonce") ?? undefined
+  const nonce = (await headers()).get("x-nonce") || ""
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Organization",
@@ -51,7 +51,7 @@ export default async function RootLayout({
     <html lang="fr" suppressHydrationWarning>
       <head>
         {/* Meta Pixel */}
-        <Script
+        {nonce && <Script
           id="meta-pixel"
           strategy="afterInteractive"
           nonce={nonce}
@@ -68,7 +68,7 @@ export default async function RootLayout({
               fbq('init', '${process.env.NEXT_PUBLIC_META_PIXEL_ID}');
             `,
           }}
-        />
+        />}
         <noscript>
           <img
             height="1"
@@ -80,13 +80,13 @@ export default async function RootLayout({
         </noscript>
 
         {/* Google Customer Reviews badge */}
-        <Script
+        {nonce && <Script
           id="merchantWidgetScript"
           src="https://www.gstatic.com/shopping/merchant/merchantwidget.js"
           strategy="afterInteractive"
           nonce={nonce}
-        />
-        <Script
+        />}
+        {nonce && <Script
           id="merchant-widget-init"
           strategy="afterInteractive"
           nonce={nonce}
@@ -104,15 +104,16 @@ export default async function RootLayout({
               })();
             `,
           }}
-        />
+        />}
         
       </head>
       <body className={inter.className}>
-        <script
-          nonce={nonce}
+        {nonce && <Script
+          id="json-ld"
           type="application/ld+json"
+          nonce={nonce}
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
+        />}
         <ThemeProvider attribute="class" defaultTheme="light">
           <SmoothScrollProvider>
             <FirebaseProvider>

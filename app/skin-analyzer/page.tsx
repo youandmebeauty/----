@@ -60,7 +60,7 @@ export async function generateMetadata({
 }
 
 export default async function SkinAnalyzerPage() {
-  const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const nonce = (await headers()).get("x-nonce") || "";
   const jsonLd = {
     "@context": "https://schema.org",
     "@graph": [
@@ -102,11 +102,11 @@ export default async function SkinAnalyzerPage() {
     <>
                 <BreadcrumbJsonLd items={[{ name: "Analyseur de Peau", url: "https://youandme.tn/skin-analyzer" }]} />
     
-      <script
+      {nonce && <script
       nonce={nonce}
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      />}
       <SkinAnalyzerClientWrapper />
     </>
   );

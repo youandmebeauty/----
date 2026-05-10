@@ -98,7 +98,7 @@ export const metadata: Metadata = {
     },
 }
 export default async function Page() {
-    const nonce = (await headers()).get("x-nonce") ?? undefined
+    const nonce = (await headers()).get("x-nonce") || ""
     const shopJsonLd = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
@@ -123,11 +123,11 @@ export default async function Page() {
     return (
         <>
             <BreadcrumbJsonLd items={[{ name: "Coffrets", url: "https://youandme.tn/coffrets" }]} />
-            <script
+            {nonce && <script
                 nonce={nonce}
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(shopJsonLd) }}
-            />           
+            />}
             <CoffretPage />
         </>
     )

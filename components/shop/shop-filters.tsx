@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils/utils"
 interface ShopFiltersProps {
     isMobile?: boolean
     selectedCategory: string
+    handleCategoryChange: (id: string) => void
     selectedSubcategory: string | null
     handleSubcategoryChange: (id: string) => void
     selectedSkinTypes: string[]
@@ -25,6 +26,7 @@ interface ShopFiltersProps {
 export function ShopFilters({
     isMobile = false,
     selectedCategory,
+    handleCategoryChange,
     selectedSubcategory,
     handleSubcategoryChange,
     selectedSkinTypes,
@@ -73,18 +75,66 @@ export function ShopFilters({
         return selectedSubcategory === "cheveux"
     }
 
+    const sectionSpacing = isMobile ? "space-y-5" : "space-y-8"
+    const sectionTitleClass = isMobile
+        ? "text-[11px] font-semibold uppercase tracking-[0.22em] text-foreground"
+        : "text-sm font-semibold uppercase tracking-widest text-foreground"
+    const sectionHeaderClass = isMobile
+        ? "flex items-center justify-between w-full mb-4 group"
+        : "flex items-center justify-between w-full mb-6 group"
+    const optionLabelClass = isMobile
+        ? "flex items-center gap-3 cursor-pointer group rounded-xl border border-border/40 bg-background/60 px-3 py-3"
+        : "flex items-center gap-3 cursor-pointer group"
+    const categoryButtonClass = (isActive: boolean) =>
+        cn(
+            "flex items-center justify-center rounded-xl border px-3 py-3 text-sm font-medium transition-all duration-200",
+            isMobile ? "min-h-12" : "min-h-11",
+            isActive
+                ? "border-primary bg-primary text-primary-foreground shadow-sm"
+                : "border-border/50 bg-background/60 text-muted-foreground hover:border-primary hover:text-foreground"
+        )
+
     return (
-        <div className="space-y-8">
+        <div className={sectionSpacing}>
+            {/* Categories */}
+            <div>
+                <div className={sectionHeaderClass}>
+                    <div className="flex items-center gap-3">
+                        <span className="h-px w-8 bg-primary"></span>
+                        <span className={sectionTitleClass}>Catégories</span>
+                    </div>
+                </div>
+                <div className={isMobile ? "grid grid-cols-2 gap-2" : "flex flex-wrap gap-2"}>
+                    <button
+                        type="button"
+                        onClick={() => handleCategoryChange("all")}
+                        className={categoryButtonClass(selectedCategory === "all")}
+                    >
+                        Tous
+                    </button>
+                    {SHOP_CATEGORIES.map((category) => (
+                        <button
+                            key={category.id}
+                            type="button"
+                            onClick={() => handleCategoryChange(category.id)}
+                            className={categoryButtonClass(selectedCategory === category.id)}
+                        >
+                            {category.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             {/* Subcategories */}
             {activeCategory?.subcategories && activeCategory.subcategories.length > 0 && (
                 <div>
                     <button
                         onClick={() => handleToggleFilterExpand('subcategory')}
-                        className="flex items-center justify-between w-full mb-6 group"
+                        className={sectionHeaderClass}
                     >
                         <div className="flex items-center gap-3">
                             <span className="h-px w-8 bg-primary"></span>
-                            <span className="text-sm font-semibold uppercase tracking-widest text-foreground">
+                            <span className={sectionTitleClass}>
                                 Type
                             </span>
                         </div>
@@ -97,7 +147,7 @@ export function ShopFilters({
                             <ChevronDown className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
                         </div>
                     </button>
-                    <Collapse isOpen={expandedFilters.includes("subcategory")} className="space-y-3">
+                    <Collapse isOpen={expandedFilters.includes("subcategory")} className={isMobile ? "space-y-2" : "space-y-3"}>
                                 {activeCategory.subcategories.map((sub) => {
                                     const hasChildren = sub.subcategories && sub.subcategories.length > 0
                                     const isExpanded = expandedSubcats.includes(sub.id)
@@ -111,7 +161,10 @@ export function ShopFilters({
                                                         e.preventDefault();
                                                         toggleSubcatExpand(sub.id);
                                                     }}
-                                                    className="flex items-center gap-2 w-full py-2 group/btn"
+                                                    className={cn(
+                                                        "flex items-center gap-2 w-full group/btn text-left",
+                                                        isMobile ? "rounded-xl border border-border/40 bg-background/60 px-3 py-3" : "py-2"
+                                                    )}
                                                 >
                                                     <div
                                                         className={cn(
@@ -121,12 +174,15 @@ export function ShopFilters({
                                                     >
                                                         <ChevronRight className="h-4 w-4 flex-shrink-0 text-muted-foreground transition-colors group-hover/btn:text-foreground" />
                                                     </div>
-                                                    <span className="text-sm text-muted-foreground group-hover/btn:text-foreground transition-colors">
+                                                    <span className={cn(
+                                                        "text-sm text-muted-foreground group-hover/btn:text-foreground transition-colors",
+                                                        isMobile && "font-medium"
+                                                    )}>
                                                         {sub.label}
                                                     </span>
                                                 </button>
                                             ) : (
-                                                <label className="flex items-center gap-3 cursor-pointer group">
+                                                <label className={optionLabelClass}>
                                                     <Checkbox
                                                         id={`${isMobile ? 'mobile' : 'desktop'}-sub-${sub.id}`}
                                                         checked={isSelected}
@@ -146,14 +202,17 @@ export function ShopFilters({
                                             {/* Nested Subcategories */}
                                             <Collapse
                                                 isOpen={!!(hasChildren && isExpanded)}
-                                                className="ml-6 space-y-2 border-l border-border pl-4"
+                                                className={cn("ml-6 border-l border-border", isMobile ? "space-y-2 pl-3" : "space-y-2 pl-4")}
                                             >
                                                 {sub.subcategories?.map((child) => {
                                                     const isChildSelected = selectedSubcategory === child.id
                                                     return (
-                                                        <label 
+                                                        <label
                                                             key={child.id} 
-                                                            className="flex items-center gap-3 cursor-pointer group/child"
+                                                            className={cn(
+                                                                "flex items-center gap-3 cursor-pointer group/child",
+                                                                isMobile && "rounded-xl border border-border/40 bg-background/60 px-3 py-3"
+                                                            )}
                                                         >
                                                             <Checkbox
                                                                 id={`${isMobile ? 'mobile' : 'desktop'}-sub-${child.id}`}
@@ -189,11 +248,11 @@ export function ShopFilters({
                     <div key={filter.id}>
                         <button
                             onClick={() => handleToggleFilterExpand(filter.id)}
-                            className="flex items-center justify-between w-full mb-6 group"
+                            className={sectionHeaderClass}
                         >
                             <div className="flex items-center gap-3">
                                 <span className="h-px w-8 bg-primary"></span>
-                                <span className="text-sm font-semibold uppercase tracking-widest text-foreground">
+                                <span className={sectionTitleClass}>
                                     {filter.label}
                                 </span>
                             </div>
@@ -206,7 +265,7 @@ export function ShopFilters({
                                 <ChevronDown className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
                             </div>
                         </button>
-                        <Collapse isOpen={expandedFilters.includes(filter.id)} className="space-y-3">
+                        <Collapse isOpen={expandedFilters.includes(filter.id)} className={isMobile ? "space-y-2" : "space-y-3"}>
                                     {filter.options.map((option) => {
                                         const isChecked = filter.id === "skinType" 
                                             ? selectedSkinTypes.includes(option)
@@ -217,7 +276,7 @@ export function ShopFilters({
                                         return (
                                             <label 
                                                 key={option} 
-                                                className="flex items-center gap-3 cursor-pointer group"
+                                                className={optionLabelClass}
                                             >
                                                 <Checkbox
                                                     id={`${isMobile ? 'mobile' : 'desktop'}-${filter.id}-${option}`}
@@ -248,11 +307,11 @@ export function ShopFilters({
             <div>
                 <button
                     onClick={() => handleToggleFilterExpand('price')}
-                    className="flex items-center justify-between w-full mb-6 group"
+                    className={sectionHeaderClass}
                 >
                     <div className="flex items-center gap-3">
                         <span className="h-px w-8 bg-primary"></span>
-                        <span className="text-sm font-semibold uppercase tracking-widest text-foreground">
+                        <span className={sectionTitleClass}>
                             Prix
                         </span>
                     </div>
@@ -265,18 +324,20 @@ export function ShopFilters({
                         <ChevronDown className="h-4 w-4 text-muted-foreground transition-colors group-hover:text-foreground" />
                     </div>
                 </button>
-                <Collapse isOpen={expandedFilters.includes("price")} className="space-y-6">
+                <Collapse isOpen={expandedFilters.includes("price")} className={isMobile ? "space-y-4" : "space-y-6"}>
+                            <div className={cn(isMobile && "rounded-2xl border border-border/40 bg-background/60 p-4") }>
                             <Slider
                                 defaultValue={priceRange}
                                 onValueChange={setPriceRange}
                                 max={1000}
                                 step={5}
-                                className={cn("w-full", "py-4")}
+                                className={cn("w-full", isMobile ? "py-2" : "py-4")}
                                 aria-label="Prix"
                             />
                             <div className="flex items-center justify-between text-sm">
                                 <span className="text-muted-foreground">{priceRange[0]} DT</span>
                                 <span className="text-muted-foreground">{priceRange[1]} DT</span>
+                            </div>
                             </div>
                 </Collapse>
             </div>

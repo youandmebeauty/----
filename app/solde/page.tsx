@@ -120,7 +120,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-    const nonce = (await headers()).get("x-nonce") ?? undefined
+    const nonce = (await headers()).get("x-nonce") || ""
     const shopJsonLd = {
         "@context": "https://schema.org",
         "@type": "CollectionPage",

@@ -2,12 +2,20 @@ import type { NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
 export function middleware(request: NextRequest) {
-  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
+  const isDev = process.env.NODE_ENV !== 'production'
+
+  // Generate a nonce for each request
+  const nonce = crypto.getRandomValues(new Uint8Array(16))
+    .reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), '')
+
+  const scriptSrc = isDev
+    ? `script-src 'self' https://www.googletagmanager.com/gtag/ https://connect.facebook.net https://www.gstatic.com https://apis.google.com https://ajax.googleapis.com https://cdn.jsdelivr.net https://widget.cloudinary.com https://upload-widget.cloudinary.com 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' 'nonce-${nonce}'`
+    : `script-src 'self' https://www.googletagmanager.com/gtag/ https://connect.facebook.net https://www.gstatic.com https://apis.google.com https://ajax.googleapis.com https://cdn.jsdelivr.net https://widget.cloudinary.com https://upload-widget.cloudinary.com 'wasm-unsafe-eval' 'sha256-J9cZHZf5nVZbsm7Pqxc8RsURv1AIXkMgbhfrZvoOs/A=' 'sha256-UnthrFpGFotkvMOTp/ghVMSXoZZj9Y6epaMsaBAbUtg=' 'nonce-${nonce}'`
 
   // Enforce a baseline Content Security Policy to mitigate XSS and injection.
   const csp = [
     "default-src 'self'",
-    `script-src 'self' https://www.googletagmanager.com/gtag/ https://connect.facebook.net https://www.gstatic.com https://apis.google.com https://ajax.googleapis.com https://cdn.jsdelivr.net https://widget.cloudinary.com https://upload-widget.cloudinary.com 'wasm-unsafe-eval' 'sha256-J9cZHZf5nVZbsm7Pqxc8RsURv1AIXkMgbhfrZvoOs/A=' 'nonce-${nonce}'`,
+    scriptSrc,
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https: https://firebasestorage.googleapis.com https://lh3.googleusercontent.com",
     "font-src 'self' https://fonts.gstatic.com",

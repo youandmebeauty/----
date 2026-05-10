@@ -219,7 +219,7 @@ const relatedCoffrets = await getRelatedCoffrets(coffret.id, 4)
       },
 
     }
-    const nonce = (await headers()).get("x-nonce") ?? undefined
+    const nonce = (await headers()).get("x-nonce") || ""
     // ========================================================================
     // STRUCTURED DATA - ItemList (Products in Coffret)
     // ========================================================================

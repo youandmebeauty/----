@@ -5,7 +5,7 @@ interface BreadcrumbJsonLdProps {
 }
 
 export async function BreadcrumbJsonLd({ items }: BreadcrumbJsonLdProps) {
-  const nonce = (await headers()).get("x-nonce") ?? undefined
+  const nonce = (await headers()).get("x-nonce") || ""
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",

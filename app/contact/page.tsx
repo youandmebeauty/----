@@ -53,7 +53,7 @@ export const metadata: Metadata = {
 }
 
 export default async function Page() {
-    const nonce = (await headers()).get("x-nonce") ?? undefined 
+    const nonce = (await headers()).get("x-nonce") || ""
     const jsonLd = {
         "@context": "https://schema.org",
         "@graph": [
@@ -114,11 +114,11 @@ export default async function Page() {
         <>
                     <BreadcrumbJsonLd items={[{ name: "Contact", url: "https://youandme.tn/contact" }]} />
         
-            <script
+            {nonce && <script
             nonce={nonce}
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-            />
+            />}
             <ContactPage />
         </>
     )

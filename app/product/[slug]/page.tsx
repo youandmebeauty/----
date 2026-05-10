@@ -105,7 +105,7 @@ export async function generateMetadata(
    Page (SSG)
 ---------------------------------------------- */
 export default async function ProductPage({ params }: ProductPageProps) {
-  const nonce = (await headers()).get("x-nonce") ?? undefined
+  const nonce = (await headers()).get("x-nonce") || ""
   const resolvedParams = (await params) as { slug: string }
   const productId = resolvedParams?.slug?.split("-")[0]
 

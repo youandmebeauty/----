@@ -24,7 +24,7 @@ export const metadata: Metadata = {
 }
 
 export default async function OrderConfirmationPage() {
-  const nonce = (await headers()).get("x-nonce") ?? undefined
+  const nonce = (await headers()).get("x-nonce") || ""
 
   return <OrderConfirmationContent nonce={nonce} />
 }

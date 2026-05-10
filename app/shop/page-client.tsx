@@ -41,6 +41,35 @@ function SearchContent() {
   const [sortBy, setSortBy] = useState("newest")
   const [searchQuery, setSearchQuery] = useState("")
   const [isNavigating, setIsNavigating] = useState(false)
+
+  const buildShopParams = (options: {
+    categoryId?: string | null
+    subcategoryId?: string | null
+    sortValue?: string | null
+  } = {}) => {
+    const params = new URLSearchParams()
+
+    const query = searchParams.get("q") || searchParams.get("shop") || ""
+    if (query) {
+      params.set("q", query)
+    }
+
+    const sortValue = options.sortValue ?? sortBy
+    if (sortValue) {
+      params.set("sort", sortValue)
+    }
+
+    if (options.categoryId && options.categoryId !== "all") {
+      params.set("category", options.categoryId)
+    }
+
+    if (options.subcategoryId) {
+      params.set("subcategory", options.subcategoryId)
+    }
+
+    return params
+  }
+
   useEffect(() => {
     // In search page, we prioritize 'q' for the query
     const category = searchParams.get("category") || "all"
@@ -95,31 +124,12 @@ function SearchContent() {
     setSelectedSkinTypes([])
     setSelectedHairTypes([])
 
-    const params = new URLSearchParams() // Start fresh to avoid accumulation of unwanted params? Or preserve?
-    // Let's behave similarly to ShopPage but keep 'q'
-
-    // Actually, ShopPage does: new URLSearchParams(searchParams.toString())
-    const paramsCurrent = new URLSearchParams(searchParams.toString())
-
-    if (categoryId === "all") {
-      paramsCurrent.delete("category")
-    } else {
-      paramsCurrent.set("category", categoryId)
-    }
-    paramsCurrent.delete("subcategory")
-
-    // Preserve sortBy in URL
-    if (sortBy ) {
-      paramsCurrent.set("sort", sortBy)
-    }
-
-    // Ensure q is preserved (it should be since we extended searchParams)
-
-    router.replace(`/shop?${paramsCurrent.toString()}`, { scroll: false })
+    const params = buildShopParams({ categoryId })
+    router.replace(params.toString() ? `/shop?${params.toString()}` : "/shop", { scroll: false })
   }
 
   const handleSubcategoryChange = (subcategoryId: string) => {
-    const params = new URLSearchParams(searchParams.toString())
+    const params = buildShopParams({ categoryId: selectedCategory })
     if (selectedSubcategory === subcategoryId) {
       setSelectedSubcategory(null)
       params.delete("subcategory")
@@ -127,14 +137,16 @@ function SearchContent() {
       setSelectedSubcategory(subcategoryId)
       params.set("subcategory", subcategoryId)
     }
-    router.replace(`/shop?${params.toString()}`, { scroll: false })
+    router.replace(params.toString() ? `/shop?${params.toString()}` : "/shop", { scroll: false })
   }
 
   const handleSortChange = (newSortBy: string) => {
     setSortBy(newSortBy)
-    const params = new URLSearchParams(searchParams.toString())
-    params.set("sort", newSortBy)
-    router.replace(`/shop?${params.toString()}`, { scroll: false })
+    const params = buildShopParams({ categoryId: selectedCategory, sortValue: newSortBy })
+    if (selectedSubcategory) {
+      params.set("subcategory", selectedSubcategory)
+    }
+    router.replace(params.toString() ? `/shop?${params.toString()}` : "/shop", { scroll: false })
   }
 
   const toggleSkinType = (type: string) => {
@@ -166,7 +178,17 @@ function SearchContent() {
     (selectedSubcategory ? 1 : 0) +
     selectedSkinTypes.length +
     selectedHairTypes.length +
-    (priceRange[0] !== 0 || priceRange[1] !== 200 ? 1 : 0)
+    (priceRange[0] !== 0 || priceRange[1] !== 1000 ? 1 : 0)
+
+  const hasActiveFilters =
+    selectedCategory !== "all" ||
+    selectedSubcategory !== null ||
+    selectedSkinTypes.length > 0 ||
+    selectedHairTypes.length > 0 ||
+    priceRange[0] !== 0 ||
+    priceRange[1] !== 1000
+
+  const shouldShowSaleSection = !searchQuery && !hasActiveFilters
 
   const activeCategory = SHOP_CATEGORIES.find(c => c.id === selectedCategory)
 
@@ -242,9 +264,11 @@ function SearchContent() {
           <FeaturedSection />
         </ScrollAnimation>
 
-        <ScrollAnimation variant="blurRise" className="mb-12">
-          <ProduitSolde  />
-        </ScrollAnimation>
+        {shouldShowSaleSection && (
+          <ScrollAnimation variant="blurRise" className="mb-12">
+            <ProduitSolde />
+          </ScrollAnimation>
+        )}
         
         {/* Header & Controls */}
         <ScrollAnimation
@@ -281,7 +305,7 @@ function SearchContent() {
               start="top 85%"
               end="bottom top"
             >
-              <div className="sticky top-24">
+              <div className="sticky top-24 max-h-[calc(100dvh-6rem)] overflow-y-auto pr-2 overscroll-contain" data-lenis-prevent data-lenis-prevent-wheel data-lenis-prevent-touch>
                 <ShopFilters {...filterProps} />
               </div>
             </ScrollAnimation>
