@@ -97,7 +97,7 @@ export function ShopFilters({
     return (
         <div className={sectionSpacing}>
             {/* Categories */}
-            <div>
+            <div className="block md:hidden space-y-4">
                 <div className={sectionHeaderClass}>
                     <div className="flex items-center gap-3">
                         <span className="h-px w-8 bg-primary"></span>

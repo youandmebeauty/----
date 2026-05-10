@@ -121,12 +121,12 @@ export function ShopHeader({
                                 {activeFiltersCount > 0 && ` (${activeFiltersCount})`}
                             </Button>
                         </SheetTrigger>
-                        <SheetContent side="left" className="w-full sm:w-80 p-0 h-[100dvh] max-h-[100dvh] overflow-y-auto overscroll-contain">
+                        <SheetContent side="left" className="w-full sm:w-80 p-0 flex h-[100dvh] max-h-[100dvh] flex-col overflow-hidden">
                             <SheetTitle className="sr-only">Filtres de produits</SheetTitle>
                             <SheetDescription className="sr-only">
                                 Filtrez les produits par catégorie, type de peau, type de cheveux et prix
                             </SheetDescription>
-                            <div className="relative min-h-full pt-10">
+                            <div className="relative grid flex-1 min-h-0 grid-rows-[auto_minmax(0,1fr)_auto] pt-10">
                                 <div className="sticky top-0 z-10 border-b px-5 py-4 sm:px-6 sm:py-5 space-y-4 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
                                     <div className="flex items-start justify-between gap-3">
                                         <div>
@@ -160,7 +160,7 @@ export function ShopHeader({
                                     )}
                                 </div>
 
-                                <div className="px-5 py-4 sm:px-6 sm:py-5" data-lenis-prevent data-lenis-prevent-wheel data-lenis-prevent-touch>
+                                <div className="min-h-0 overflow-y-auto px-5 py-4 sm:px-6 sm:py-5 overscroll-contain" data-lenis-prevent data-lenis-prevent-wheel data-lenis-prevent-touch>
                                     <ShopFilters isMobile {...filterProps} />
                                 </div>
                                 <div className="sticky bottom-0 z-10 border-t p-4 sm:p-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
