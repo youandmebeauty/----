@@ -19,8 +19,7 @@ interface CoffretSectionProps {
 }
 
 export function CoffretSection({
-    limit = 3,
-    title = "Nos Coffrets Cadeaux",
+    limit = 4,
     showViewAll = true,
 }: CoffretSectionProps) {
     const { themeKey, theme } = useFeteTheme();
@@ -204,7 +203,7 @@ export function CoffretSection({
           
 
                 {/* Grid - Clean Swiss Layout */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 container p-4 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 container p-4 gap-8">
                         {displayedCoffrets.map((coffret, index) => {
                             const productNames = coffret.productIds
                                 ?.map(id => productMap.get(id)?.name)
@@ -215,7 +214,7 @@ export function CoffretSection({
                                     key={coffret.id}
                                     className="group transition-transform duration-300 hover:-translate-y-2"
                                     style={{ animationDelay: `${index * 100}ms` }}
-                                >
+                                > 
                                     <CoffretCard
                                         coffret={coffret}
                                         productNames={productNames}
@@ -229,10 +228,10 @@ export function CoffretSection({
 
                 {/* Mobile CTA */}
                 {showViewAll && (
-                    <div className="mt-16 lg:hidden text-center">
+                    <div className="mt-4 md:mt-16 lg:hidden text-center">
                         <Button 
                             asChild 
-                            className="  max-w-md bg-primary rounded-full hover:bg-primary/90 text-white font-bold px-8 py-6  uppercase tracking-wider border-0"
+                            className=" max-w-xs md:max-w-md bg-primary rounded-full hover:bg-primary/90 text-white font-bold px-8 py-6  uppercase tracking-wider border-0"
                         >
                             <Link href="/coffrets">
                                 Voir tous les coffrets →

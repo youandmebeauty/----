@@ -10,11 +10,13 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from "@/components/ui/sheet"
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Moon, Sun, ShoppingBag, Menu, Search, X } from "lucide-react"
 import GlassSurface from "../GlassSurface"
 import { gsap } from "@/lib/utils/gsap-util"
 import { AnnounceOffre } from "../announceOffre"
 import { useFeteTheme } from "@/components/providers/fete-theme-provider"
+import { SHOP_CATEGORIES } from "@/lib/category-data"
 
 export function Header() {
   const { theme, setTheme } = useTheme()
@@ -30,13 +32,142 @@ export function Header() {
   const badgeRef = useRef<HTMLDivElement | null>(null)
   const mobileNavRef = useRef<HTMLUListElement | null>(null)
   const mobileThemeRef = useRef<HTMLDivElement | null>(null)
-const { themeKey } = useFeteTheme();
+  const { themeKey } = useFeteTheme()
   const navigation = [
     { name: "Accueil", href: "/" },
     { name: "Boutique", href: "/shop" },
     { name: "Analyseur de peau", href: "/skin-analyzer" },
     { name: "Contact", href: "/contact" },
   ]
+
+  const buildShopHref = (categoryId: string, subcategoryId?: string) => {
+    const params = new URLSearchParams()
+    params.set("category", categoryId)
+
+    if (subcategoryId) {
+      params.set("subcategory", subcategoryId)
+    }
+
+    return `/shop?${params.toString()}`
+  }
+
+  const renderSubcategoryAccordion = (
+    categoryId: string,
+    subcategories: Array<{
+      id: string
+      label: string
+      subcategories?: Array<{ id: string; label: string }>
+    }>
+  ) => (
+    <Accordion type="single" collapsible className="w-full space-y-2">
+      {subcategories.map((sub) => {
+        const hasChildren = Boolean(sub.subcategories?.length)
+
+        return (
+          <AccordionItem
+            key={sub.id}
+            value={sub.id}
+            className="w-full overflow-hidden rounded-xl border border-white/10 bg-white/[0.04] px-3"
+          >
+            {hasChildren ? (
+              <AccordionTrigger className="w-full py-3 text-left text-sm font-medium  text-white/80 hover:!no-underline">
+                <span>{sub.label}</span>
+              </AccordionTrigger>
+            ) : (
+              <div className="w-full py-3">
+                <Link
+                  href={buildShopHref(categoryId, sub.id)}
+                  onClick={() => setIsOpen(false)}
+                  className="block w-full text-sm font-medium  text-white/80 transition-colors hover:text-primary"
+                >
+                  {sub.label}
+                </Link>
+              </div>
+            )}
+
+            {hasChildren ? (
+              <AccordionContent className="pb-3 pt-0">
+                <div className="space-y-2 pl-1">
+                  <Link
+                    href={buildShopHref(categoryId, sub.id)}
+                    onClick={() => setIsOpen(false)}
+                    className="block w-full text-xs font-medium uppercase tracking-[0.22em] text-white/65 transition-colors hover:text-primary"
+                  >
+                    Voir tout {sub.label.toLowerCase()}
+                  </Link>
+
+                  <div className="w-full space-y-2 pl-4 border-l border-white/10">
+                    {sub.subcategories?.map((child) => (
+                      <Link
+                        key={child.id}
+                        href={buildShopHref(categoryId, child.id)}
+                        onClick={() => setIsOpen(false)}
+                        className="block w-full text-sm text-white/65 transition-colors hover:text-primary"
+                      >
+                        {child.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </AccordionContent>
+            ) : null}
+          </AccordionItem>
+        )
+      })}
+    </Accordion>
+  )
+
+  const renderCategoryAccordion = () => {
+    return (
+      <Accordion type="single" collapsible className="w-full space-y-3">
+        {SHOP_CATEGORIES.map((category) => (
+          <AccordionItem
+            key={category.id}
+            value={category.id}
+            className="w-full overflow-hidden rounded-2xl border border-white/10 bg-white/5 px-4"
+          >
+            <AccordionTrigger className="w-full py-4 text-left text-base   text-white/90 hover:!no-underline">
+              <span>{category.label}</span>
+            </AccordionTrigger>
+            <AccordionContent className="pb-4 pt-0">
+              <div className="w-full space-y-3 pl-1">
+                <Link
+                  href={buildShopHref(category.id)}
+                  onClick={() => setIsOpen(false)}
+                  className="block w-full text-sm font-medium text-white/80 transition-colors hover:text-primary"
+                >
+                  Voir tout {category.label.toLowerCase()}
+                </Link>
+
+                {category.subcategories?.length ? (
+                  <div className="pt-1">
+                    {renderSubcategoryAccordion(category.id, category.subcategories)}
+                  </div>
+                ) : null}
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
+    )
+  }
+
+  const renderCategoriesSection = () => {
+    return (
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="categories" className="w-full border-none">
+          <AccordionTrigger className="w-full py-0   text-white/90 hover:text-primary hover:!no-underline active:scale-95 transition-all">
+            <span className="text-left  text-2xl">Catégories</span>
+          </AccordionTrigger>
+          <AccordionContent className="pt-5 pb-0">
+            <div className="w-full space-y-5">
+              {renderCategoryAccordion()}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    )
+  }
 
   const containerStyle = useMemo(
     () => ({
@@ -310,7 +441,7 @@ const { themeKey } = useFeteTheme();
                             borderRadius={0}
                             borderWidth={0.07}
                           >
-                            <div className="flex flex-col h-full">
+                            <div className="flex flex-col h-full overflow-y-auto">
                               <div className="p-6 border-b border-white/50 mt-16">
                                 <SheetTitle className="text-3xl text-white/90 font-bold uppercase">Menu</SheetTitle>
                                 <SheetDescription className="sr-only">Menu de navigation principal</SheetDescription>
@@ -322,7 +453,7 @@ const { themeKey } = useFeteTheme();
                                     <li key={item.name}>
                                       <Link
                                         href={item.href}
-                                        className="text-2xl font-semibold uppercase tracking-tight text-white/90 hover:text-primary active:scale-95 transition-all block"
+                                        className="text-2xl font-h   text-white/90 hover:text-primary active:scale-95 transition-all block"
                     
                                       >
                                         {item.name}
@@ -331,6 +462,10 @@ const { themeKey } = useFeteTheme();
                                   ))}
                                 </ul>
                               </nav>
+
+                              <div className="px-6 pb-6">
+                                {renderCategoriesSection()}
+                              </div>
 
                               {/* Mobile-only theme toggle in menu */}
                               <div

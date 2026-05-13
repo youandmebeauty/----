@@ -25,11 +25,11 @@ export function FeaturedProducts() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 640) {
-        setItemsPerView(1)
-      } else if (window.innerWidth < 1024) {
         setItemsPerView(3)
+      } else if (window.innerWidth < 1024) {
+        setItemsPerView(4)
       } else {
-        setItemsPerView(5)
+        setItemsPerView(7)
       }
     }
 
@@ -153,7 +153,7 @@ export function FeaturedProducts() {
                 stagger={0.15}
                 childSelector=".product-item"
                 ease="expo"
-                className="grid grid-cols-1 gap-y-16 gap-x-8 sm:grid-cols-3 lg:grid-cols-5 transition-all duration-500"
+                className="grid grid-cols-3 gap-y-16 gap-x-8 sm:grid-cols-4 lg:grid-cols-7 transition-all duration-500"
               >
                 {getVisibleProducts().map((product, index) => (
                   <div key={`${product.id}-${currentIndex}-${index}`} className="product-item">

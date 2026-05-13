@@ -185,12 +185,12 @@ export function CoffretCard({
             {/* Content */}
             <div className="space-y-2 flex-1 flex flex-col">
                 <div className="flex items-start justify-between gap-2">
-                    <h3 className=" uppercase text-2xl text-primary leading-tight group-hover:text-primary transition-colors flex-1">
+                    <h3 className=" max-w-10 md:max-w-full uppercase text-sm md:text-2xl text-primary leading-tight group-hover:text-primary transition-colors flex-1">
 
                             {coffret.name}
                     </h3>
                     <div className="flex flex-col items-end gap-1">
-                        <div className="text-lg font-light tabular-nums">
+                        <div className="text-xs md:text-lg font-light tabular-nums">
                             {coffret.price.toFixed(2)} DT
                         </div>
  

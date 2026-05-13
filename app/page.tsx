@@ -89,7 +89,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen overflow-hidden">
+    <div className="min-h-screen">
       <JsonLd data={jsonLd} />
       <main>
         <section aria-label="Hero section">
@@ -130,20 +130,13 @@ export default async function Home() {
 
         </section>
 
-        <section aria-label="Product categories">
-            <Categories />
-        </section>
-        
-        <section aria-label="Featured products">
-          <ScrollAnimation
-            variant="slideUp"
-            duration={0.9}
-          
-            delay={0.15}
-          >
-            <FeaturedProducts />
-          </ScrollAnimation>
-        </section>
+<section aria-label="Product categories">
+  <Categories />
+</section>
+
+<section aria-label="Featured products">
+  <FeaturedProducts />
+</section>
         
         <section aria-label="Why choose us">
             <WhyChooseUs />

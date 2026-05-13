@@ -82,6 +82,9 @@ const Slug = generateSlug(product.name, {
 
         <div className="relative">
           {/* Image Container */}
+                                    <span className="text-[10px] absolute top-0 z-50 -left-3 uppercase tracking-wider text-muted-foreground/60 bg-secondary/50 blur-sm px-2 py-1 rounded-full">
+                {product.category}
+              </span>
           <div className="relative aspect-[3/4] overflow-hidden bg-secondary/10 rounded-lg">
             {/* Loading skeleton */}
             {!imageLoaded && (
@@ -106,6 +109,7 @@ const Slug = generateSlug(product.name, {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               onLoad={() => setImageLoaded(true)}
             />
+
             </div>
             {/* Multi-layer Gradient Overlay on Hover */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -179,14 +183,12 @@ const Slug = generateSlug(product.name, {
                   </>
                 )}
               </div>
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground/60 bg-secondary/30 px-2 py-1 rounded-full">
-                {product.category}
-              </span>
+
             </div>
 
             {/* Color Variants Preview */}
             {product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0 && (
-              <div className="flex items-center  gap-2 ">
+              <div className="flex md:items-center items-start md:flex-row flex-col  gap-2 ">
                 <span className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">Couleurs:</span>
                 <div className="flex gap-1.5">
                   {product.colorVariants.slice(0, 5).map((variant, index) => (

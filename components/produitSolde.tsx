@@ -33,9 +33,9 @@ export default function ProduitSolde() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) setItemsPerView(1)
-      else if (window.innerWidth < 1024) setItemsPerView(3)
-      else setItemsPerView(5)
+      if (window.innerWidth < 640) setItemsPerView(3)
+      else if (window.innerWidth < 1024) setItemsPerView(4)
+      else setItemsPerView(7)
     }
     handleResize()
     window.addEventListener("resize", handleResize)
@@ -74,14 +74,6 @@ export default function ProduitSolde() {
 
   const maxDots = discounted.length - itemsPerView + 1
 
-  const maxDiscount =
-    discounted.length > 0
-      ? Math.max(
-          ...discounted.map((p) =>
-            Math.round(((p.price - (p.promoPrice as number)) / p.price) * 100)
-          )
-        )
-      : 0
 
   if (isLoading || discounted.length === 0) return null
 
@@ -138,11 +130,11 @@ export default function ProduitSolde() {
               stagger={0.15}
               childSelector=".product-item"
               ease="expo"
-              className="grid grid-cols-1 gap-y-16 gap-x-8 sm:grid-cols-3 lg:grid-cols-5 transition-all duration-500"
+              className="grid grid-cols-3 gap-y-24 gap-x-8 sm:grid-cols-4 lg:grid-cols-7 transition-all duration-500"
             >
               {getVisibleProducts().map((product, index) => (
                 <div key={`${product.id}-${currentIndex}-${index}`} className="product-item">
-                  <div className="relative">
+                  <div className="relative flex items-center justify-center flex-row">
                     <div className="absolute -top-2 -right-2 z-10">
                       <div className="bg-gradient-to-br from-red-600 to-red-500 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-lg rotate-12">
                         -{Math.round(
@@ -150,7 +142,7 @@ export default function ProduitSolde() {
                         )}%
                       </div>
                     </div>
-                    <ProductCard product={product} />
+                    <ProductCard className="scale-90 md:scale-100" product={product} />
                   </div>
                 </div>
               ))}

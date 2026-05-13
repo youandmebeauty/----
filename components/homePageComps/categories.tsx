@@ -69,7 +69,7 @@ export  function Categories() {
           duration={0.7}
           delay={0.2}
           ease="expo"
-          className="grid grid-cols-1 -my-24 md:my-16 gap-8 md:grid-cols-2 lg:grid-cols-4 scale-90 md:scale-100  mx-auto"
+          className="grid grid-cols-2 -my-10 md:my-16 gap-8 md:grid-cols-4 lg:grid-cols-4 scale-90 md:scale-100  mx-auto"
         >
           {categories.map((category) => (
             <a
@@ -88,7 +88,7 @@ export  function Categories() {
               }}
             >
               {/* Polaroid frame */}
-              <div className="bg-white p-4 pb-16 shadow-xl rounded-sm">
+              <div className="bg-white p-4 shadow-xl rounded-sm">
                 {/* Photo */}
                 <div className="relative aspect-[4/5] overflow-hidden bg-gray-200 mb-4">
                   <img
@@ -103,7 +103,7 @@ export  function Categories() {
 
                 {/* Label */}
                 <div className="text-center">
-                  <h3 className="text-2xl md:text-3xl text-black/90 tracking-tight">
+                  <h3 className="text-xl md:text-2xl text-black/90 tracking-tight">
                     {category.name}
                   </h3>
                 </div>
