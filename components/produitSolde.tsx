@@ -33,7 +33,7 @@ export default function ProduitSolde() {
 
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth < 640) setItemsPerView(3)
+      if (window.innerWidth < 640) setItemsPerView(2)
       else if (window.innerWidth < 1024) setItemsPerView(4)
       else setItemsPerView(7)
     }
@@ -130,7 +130,7 @@ export default function ProduitSolde() {
               stagger={0.15}
               childSelector=".product-item"
               ease="expo"
-              className="grid grid-cols-3 gap-y-24 gap-x-8 sm:grid-cols-4 lg:grid-cols-7 transition-all duration-500"
+              className="grid grid-cols-2 aspect-[3/4] gap-x-8 sm:grid-cols-4 lg:grid-cols-7 transition-all duration-500"
             >
               {getVisibleProducts().map((product, index) => (
                 <div key={`${product.id}-${currentIndex}-${index}`} className="product-item">
@@ -142,7 +142,7 @@ export default function ProduitSolde() {
                         )}%
                       </div>
                     </div>
-                    <ProductCard className="scale-90 md:scale-100" product={product} />
+                    <ProductCard product={product} />
                   </div>
                 </div>
               ))}

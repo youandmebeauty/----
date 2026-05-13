@@ -82,10 +82,10 @@ const Slug = generateSlug(product.name, {
 
         <div className="relative">
           {/* Image Container */}
-                                    <span className="text-[10px] absolute top-0 z-50 -left-3 uppercase tracking-wider text-muted-foreground/60 bg-secondary/50 blur-sm px-2 py-1 rounded-full">
+                                    <span className="text-[10px] absolute top-0 z-50 -left-3 uppercase tracking-wider text-muted-foreground/60 bg-secondary/50 px-2 py-1 rounded-full">
                 {product.category}
               </span>
-          <div className="relative aspect-[3/4] overflow-hidden bg-secondary/10 rounded-lg">
+          <div className="relative overflow-hidden bg-secondary/10 rounded-lg">
             {/* Loading skeleton */}
             {!imageLoaded && (
               <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 via-secondary/10 to-secondary/5 animate-pulse" />
