@@ -22,7 +22,6 @@ export function ProductCard({ product, className, onNavigateStart }: ProductCard
   const { items, addItem, updateQuantity } = useCart()
   const [imageLoaded, setImageLoaded] = useState(false)
 
-  // Calculate the number of items of this product already in the cart
   const cartQuantity = items
     .filter((item) => item.id === product.id)
     .reduce((sum, item) => sum + item.quantity, 0)
@@ -31,184 +30,168 @@ export function ProductCard({ product, className, onNavigateStart }: ProductCard
     e.preventDefault()
     e.stopPropagation()
 
-    // For products with color variants, redirect to product page to select color
     if (product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0) {
-      return // Let the link navigate to product page
-    }
-
-
-    const remainingStock = product.quantity - cartQuantity
-    const quantityToAdd = 1
-
-    if (quantityToAdd > remainingStock) {
       return
     }
-  await trackCartAddition([
-    { id: product.id, name: product.name, price: product.price, quantity: quantityToAdd }
-  ])
+
+    const remainingStock = product.quantity - cartQuantity
+    if (1 > remainingStock) return
+
+    await trackCartAddition([
+      { id: product.id, name: product.name, price: product.price, quantity: 1 }
+    ])
+
     const existingItem = items.find((item) => item.id === product.id)
     if (existingItem) {
-      updateQuantity(product.id, existingItem.quantity + quantityToAdd)
+      updateQuantity(product.id, existingItem.quantity + 1)
     } else {
       addItem({
         id: product.id,
         name: product.name,
         price: product.price,
-        promoPrice: (typeof product.promoPrice === "number" && product.promoPrice < product.price) ? product.promoPrice : undefined,
-        image: (product.images && product.images.length > 0 ? product.images[0] : product.image) || "/placeholder.svg",
+        promoPrice:
+          typeof product.promoPrice === "number" && product.promoPrice < product.price
+            ? product.promoPrice
+            : undefined,
+        image:
+          (product.images && product.images.length > 0 ? product.images[0] : product.image) ||
+          "/placeholder.svg",
         category: product.category,
       })
     }
-    toast({
-      description: `${product.name} ajouté au panier`,
-    })
-  }
-
-  const handleNavigationClick = () => {
-    onNavigateStart?.()
+    toast({ description: `${product.name} ajouté au panier` })
   }
 
   const isOutOfStock = product.quantity <= cartQuantity
-const Slug = generateSlug(product.name, { 
-    includeBrand: product.brand 
-  })
+  const Slug = generateSlug(product.name, { includeBrand: product.brand })
+
   return (
     <div className={cn("group relative", className)}>
-      <Link
-  href={`/product/${product.id}-${Slug}`}
-  className="block"
-  onClick={handleNavigationClick}
->
-
+      <Link href={`/product/${product.id}-${Slug}`} className="block" onClick={onNavigateStart}>
+        {/* Image container — fixed aspect ratio, no overflow */}
         <div className="relative">
-          {/* Image Container */}
-                                    <span className="text-[10px] absolute top-0 z-50 -left-3 uppercase tracking-wider text-muted-foreground/60 bg-secondary/50 px-2 py-1 rounded-full">
-                {product.category}
-              </span>
-          <div className="relative overflow-hidden bg-secondary/10 rounded-lg">
+          <div className="relative overflow-hidden rounded-xl bg-white aspect-[3/4]">
             {/* Loading skeleton */}
             {!imageLoaded && (
               <div className="absolute inset-0 bg-gradient-to-br from-secondary/20 via-secondary/10 to-secondary/5 animate-pulse" />
             )}
-                                            <div className="w-full h-full flex items-center justify-center  bg-white">
 
             <Image
               src={
-                product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0
+                product.hasColorVariants &&
+                product.colorVariants &&
+                product.colorVariants.length > 0
                   ? product.colorVariants[0].image || "/placeholder.svg"
-                  : (product.images && product.images.length > 0 ? product.images[0] : product.image) || "/placeholder.svg"
+                  : (product.images && product.images.length > 0
+                      ? product.images[0]
+                      : product.image) || "/placeholder.svg"
               }
               alt={product.name}
-              width={1350}
-              height={1080}
+              fill
               className={cn(
                 "object-cover transition-all duration-700 ease-out",
-                "group-hover:scale-[1.08]",
+                "group-hover:scale-[1.06]",
                 imageLoaded ? "opacity-100" : "opacity-0"
               )}
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 14vw"
               onLoad={() => setImageLoaded(true)}
             />
 
-            </div>
-            {/* Multi-layer Gradient Overlay on Hover */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-black/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+            {/* Gradient overlays */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
-            {/* Stock Badge */}
+            {/* Category badge — top left */}
+            <span className="absolute top-2 left-2 z-10 text-[9px] uppercase tracking-wider text-muted-foreground bg-background/80 backdrop-blur-sm px-2 py-0.5 rounded-full border border-border/40">
+              {product.category}
+            </span>
+
+            {/* Out of stock badge */}
             {isOutOfStock && (
-              <div className="absolute top-3 left-3 bg-background/95 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-lg border border-border/50">
-                <span className="text-[10px] uppercase tracking-wider font-semibold text-destructive">
+              <div className="absolute top-2 right-2 z-10 bg-background/95 backdrop-blur-sm px-2.5 py-1 rounded-full shadow border border-border/50">
+                <span className="text-[9px] uppercase tracking-wider font-semibold text-destructive">
                   Épuisé
                 </span>
               </div>
             )}
 
-            
-
-            {/* Quick Add Button - Bottom */}
+            {/* Quick add — slides up from bottom */}
             {!isOutOfStock && !product.hasColorVariants && (
-              <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-out">
+              <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-400 ease-out">
                 <Button
                   onClick={handleAddToCart}
                   className={cn(
-                    "w-full h-12 bg-background/95 backdrop-blur-sm hover:bg-primary text-foreground hover:text-primary-foreground",
-                    "border border-border/50 rounded-full shadow-xl hover:shadow-2xl",
-                    "transition-all duration-300 hover:scale-[1.02]",
-                    "font-medium uppercase tracking-wide"
+                    "w-full h-10 bg-background/95 backdrop-blur-sm hover:bg-primary text-foreground hover:text-primary-foreground",
+                    "border border-border/50 rounded-full shadow-lg",
+                    "transition-all duration-300",
+                    "text-xs font-medium uppercase tracking-wide gap-1.5"
                   )}
                   variant="outline"
                 >
-                  <ShoppingBag className="h-4 w-4" />
-                  <span className="text-xs truncate">Ajouter au panier</span>
+                  <ShoppingBag className="h-3.5 w-3.5 shrink-0" />
+                  <span className="truncate">Ajouter</span>
                 </Button>
               </div>
             )}
           </div>
 
-          {/* Product Info */}
-          <div className="mt-4 space-y-2 px-1">
-            {/* Brand */}
+          {/* Product info */}
+          <div className="mt-3 space-y-1 px-0.5">
             {product.brand && (
-              <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground/80 font-medium transition-colors duration-300 group-hover:text-primary/80">
+              <p className="text-[10px] uppercase tracking-[0.12em] text-muted-foreground/70 font-medium group-hover:text-primary/70 transition-colors duration-300">
                 {product.brand}
               </p>
             )}
 
-            {/* Product Name */}
-            <h3 className="font-serif text-base leading-snug text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-2 min-h-[2.5rem]">
+            <h3 className="font-serif text-sm leading-snug text-foreground group-hover:text-primary transition-colors duration-300 line-clamp-2 min-h-[2.25rem]">
               {product.name}
             </h3>
 
-            {/* Price & Category */}
-            <div className="flex items-center justify-between ">
-              <div className="flex items-baseline gap-1">
-                {typeof product.promoPrice === "number" && product.promoPrice < product.price ? (
-                  <div className="flex flex-col items-baseline">
-                    <span className="text-md line-through text-muted-foreground/60">
-                      {product.price.toFixed(2)}
-                    </span>
-                    
-                    <span className="text-lg font-light text-foreground tabular-nums">
-                      {product.promoPrice.toFixed(2)}<span className="ml-1 text-xs font-light text-muted-foreground">DT</span>
-                    </span>
-                    
-                    </div>
-                ) : (
-                  <>
-                    <span className="text-lg font-light text-foreground tabular-nums">
-                      {product.price.toFixed(2)}
-                    </span>
-                    <span className="text-xs font-light text-muted-foreground">DT</span>
-                  </>
-                )}
-              </div>
-
+            {/* Price */}
+            <div>
+              {typeof product.promoPrice === "number" && product.promoPrice < product.price ? (
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-sm line-through text-muted-foreground/50">
+                    {product.price.toFixed(2)}
+                  </span>
+                  <span className="text-base font-medium text-foreground tabular-nums">
+                    {product.promoPrice.toFixed(2)}
+                    <span className="ml-0.5 text-[10px] font-light text-muted-foreground">DT</span>
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-baseline gap-1">
+                  <span className="text-base font-light text-foreground tabular-nums">
+                    {product.price.toFixed(2)}
+                  </span>
+                  <span className="text-[10px] font-light text-muted-foreground">DT</span>
+                </div>
+              )}
             </div>
 
-            {/* Color Variants Preview */}
-            {product.hasColorVariants && product.colorVariants && product.colorVariants.length > 0 && (
-              <div className="flex md:items-center items-start md:flex-row flex-col  gap-2 ">
-                <span className="text-[10px] text-muted-foreground/70 uppercase tracking-wider">Couleurs:</span>
-                <div className="flex gap-1.5">
-                  {product.colorVariants.slice(0, 5).map((variant, index) => (
-                    <div
-                      key={index}
-                      className="relative w-6 h-6 -mr-4 z-10 rounded-full border-2 border-background shadow-sm"
-                      style={{ backgroundColor: variant.color || "#000000" }}
-                      title={variant.colorName}
-                    />
-                  ))}
-                  {product.colorVariants.length > 5 && (
-                    <div className="w-6 h-6 z-20 rounded-full border border-background bg-secondary flex items-center justify-center">
-                      <span className="text-[8px] text-muted-foreground font-semibold">
-                        +{product.colorVariants.length - 5}
-                      </span>
-                    </div>
-                  )}
+            {/* Color variants */}
+            {product.hasColorVariants &&
+              product.colorVariants &&
+              product.colorVariants.length > 0 && (
+                <div className="flex items-center gap-2 pt-0.5">
+                  <div className="flex items-center gap-1">
+                    {product.colorVariants.slice(0, 5).map((variant, index) => (
+                      <div
+                        key={index}
+                        className="w-4 h-4 rounded-full border border-background shadow-sm ring-1 ring-border/40"
+                        style={{ backgroundColor: variant.color || "#000000" }}
+                        title={variant.colorName}
+                      />
+                    ))}
+                    {product.colorVariants.length > 5 && (
+                      <div className="w-4 h-4 rounded-full border border-background bg-secondary flex items-center justify-center ring-1 ring-border/40">
+                        <span className="text-[8px] text-muted-foreground font-semibold">
+                          +{product.colorVariants.length - 5}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         </div>
       </Link>

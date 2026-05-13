@@ -58,7 +58,6 @@ export default function ProduitSolde() {
     })
   }, [discounted.length, itemsPerView])
 
-  // Auto-play — now after showSlider and nextSlide are defined
   useEffect(() => {
     if (!showSlider) return
     autoPlayRef.current = setInterval(nextSlide, 4000)
@@ -74,51 +73,49 @@ export default function ProduitSolde() {
 
   const maxDots = discounted.length - itemsPerView + 1
 
-
   if (isLoading || discounted.length === 0) return null
 
   return (
     <ScrollAnimation variant="slideUp" className="mb-8">
       <div className="space-y-6">
-{/* Header */}
-<div className="relative flex flex-col rounded-3xl bg-gradient-to-br from-primary-50 via-primary-50/50 to-background p-8">
-  <div className="text-center mb-6 flex flex-col items-center gap-4">
 
-    {/* Label row */}
-    <div className="inline-flex items-center gap-2">
-      <div className="h-px w-12 bg-gradient-to-r from-transparent to-primary"></div>
-      <span className="text-xs font-medium tracking-[0.3em] uppercase text-primary">
-        Une sélection exclusive d&apos;offres exceptionnelles
-      </span>
-      <div className="h-px w-12 bg-gradient-to-r from-primary to-transparent"></div>
-    </div>
+        {/* Header */}
+        <div className="relative flex flex-col rounded-3xl bg-gradient-to-br from-primary-50 via-primary-50/50 to-background px-6 py-8 sm:px-10">
+          <div className="text-center flex flex-col items-center gap-4">
+            {/* Label row */}
+            <div className="inline-flex items-center gap-2">
+              <div className="h-px w-10 bg-gradient-to-r from-transparent to-primary" />
+              <span className="text-xs font-medium tracking-[0.25em] uppercase text-primary">
+                Une sélection exclusive d&apos;offres exceptionnelles
+              </span>
+              <div className="h-px w-10 bg-gradient-to-r from-primary to-transparent" />
+            </div>
 
-    {/* Title */}
-    <h1 className="text-4xl md:text-6xl tracking-tight font-light leading-none">
-      <span className="relative inline-block">
-        <span className="text-foreground">Soldes</span>
-        <span className="absolute -top-4 -left-4 inline-flex items-center gap-1.5 px-3 py-1 text-xs -rotate-12 font-bold bg-gradient-to-r from-accent to-primary text-white rounded-full shadow-md animate-pulse pointer-events-none">
-          HOT
-        </span>
-      </span>
-      <span className="text-foreground"> & </span>
-      <span className="text-primary">Promotions</span>
-    </h1>
+            {/* Title */}
+            <h2 className="text-4xl md:text-6xl tracking-tight font-light leading-none">
+              <span className="relative inline-block">
+                <span className="text-foreground">Soldes</span>
+                <span className="absolute -top-3 -left-3 inline-flex items-center gap-1 px-2.5 py-0.5 text-[10px] -rotate-12 font-bold bg-gradient-to-r from-accent to-primary text-white rounded-full shadow-md animate-pulse pointer-events-none">
+                  HOT
+                </span>
+              </span>
+              <span className="text-foreground"> &amp; </span>
+              <span className="text-primary">Promotions</span>
+            </h2>
 
-    {/* CTA */}
-    <Button
-      size="sm"
-      asChild
-      className="mt-2 w-full sm:w-auto group bg-primary hover:bg-primary/90 text-primary-foreground h-12 px-8 rounded-full text-base font-medium transition-all duration-300 ease-out hover:scale-105"
-    >
-      <Link href="/solde" className="flex items-center justify-center">
-        Voir tout
-        <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-      </Link>
-    </Button>
-
-  </div>
-</div>
+            {/* CTA */}
+            <Button
+              size="sm"
+              asChild
+              className="mt-1 w-full sm:w-auto group bg-primary hover:bg-primary/90 text-primary-foreground h-11 px-8 rounded-full text-sm font-medium transition-all duration-300 hover:scale-105"
+            >
+              <Link href="/solde" className="flex items-center justify-center gap-2">
+                Voir tout
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </Link>
+            </Button>
+          </div>
+        </div>
 
         {/* Products — Slider */}
         {showSlider ? (
@@ -130,13 +127,14 @@ export default function ProduitSolde() {
               stagger={0.15}
               childSelector=".product-item"
               ease="expo"
-              className="grid grid-cols-2 aspect-[3/4] gap-x-8 sm:grid-cols-4 lg:grid-cols-7 transition-all duration-500"
+              className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4 lg:grid-cols-7 transition-all duration-500"
             >
               {getVisibleProducts().map((product, index) => (
                 <div key={`${product.id}-${currentIndex}-${index}`} className="product-item">
-                  <div className="relative flex items-center justify-center flex-row">
-                    <div className="absolute -top-2 -right-2 z-10">
-                      <div className="bg-gradient-to-br from-red-600 to-red-500 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-lg rotate-12">
+                  {/* Discount badge — relative to image via ProductCard wrapper */}
+                  <div className="relative">
+                    <div className="absolute -top-2 -right-2 z-20 pointer-events-none">
+                      <div className="bg-gradient-to-br from-red-600 to-red-500 text-white font-bold text-[10px] px-2.5 py-1 rounded-full shadow-lg rotate-12 whitespace-nowrap">
                         -{Math.round(
                           ((product.price - product.promoPrice!) / product.price) * 100
                         )}%
@@ -149,46 +147,46 @@ export default function ProduitSolde() {
             </ScrollAnimation>
 
             {/* Dots */}
-            <div className="flex justify-center gap-2 mt-8">
+            <div className="flex justify-center gap-2 mt-6">
               {Array.from({ length: maxDots }).map((_, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentIndex(index)}
-                  className={`h-2 rounded-full transition-all ${
+                  className={`h-1.5 rounded-full transition-all ${
                     index === currentIndex
                       ? "w-8 bg-primary"
-                      : "w-2 bg-border hover:bg-primary/50"
+                      : "w-1.5 bg-border hover:bg-primary/50"
                   }`}
                   aria-label={`Go to slide ${index + 1}`}
                 />
               ))}
             </div>
 
-            {/* Prev button */}
+            {/* Prev */}
             <button
               onClick={prevSlide}
-              className="absolute left-0 top-1/2 -translate-y-1/2 sm:-translate-x-6 bg-background border border-border rounded-full p-2 sm:p-3 shadow-lg hover:bg-secondary transition-colors z-10"
+              className="absolute left-0 top-[40%] -translate-y-1/2 sm:-translate-x-4 bg-background border border-border rounded-full p-2 sm:p-2.5 shadow-lg hover:bg-secondary transition-colors z-10"
               aria-label="Previous products"
             >
-              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+              <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
 
-            {/* Next button */}
+            {/* Next */}
             <button
               onClick={nextSlide}
-              className="absolute right-0 top-1/2 -translate-y-1/2 sm:translate-x-6 bg-background border border-border rounded-full p-2 sm:p-3 shadow-lg hover:bg-secondary transition-colors z-10"
+              className="absolute right-0 top-[40%] -translate-y-1/2 sm:translate-x-4 bg-background border border-border rounded-full p-2 sm:p-2.5 shadow-lg hover:bg-secondary transition-colors z-10"
               aria-label="Next products"
             >
-              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+              <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         ) : (
-          <div className="flex gap-4 flex-wrap justify-center">
+          <div className="flex flex-wrap gap-4 justify-center">
             {discounted.map((product) => (
-              <div key={product.id} className="w-56">
+              <div key={product.id} className="w-48 sm:w-52">
                 <div className="relative">
-                  <div className="absolute -top-2 -right-2 z-10">
-                    <div className="bg-gradient-to-br from-red-600 to-red-500 text-white font-bold text-xs px-3 py-1.5 rounded-full shadow-lg rotate-12">
+                  <div className="absolute -top-2 -right-2 z-20 pointer-events-none">
+                    <div className="bg-gradient-to-br from-red-600 to-red-500 text-white font-bold text-[10px] px-2.5 py-1 rounded-full shadow-lg rotate-12 whitespace-nowrap">
                       -{Math.round(
                         ((product.price - product.promoPrice!) / product.price) * 100
                       )}%
