@@ -174,7 +174,7 @@ export function CoffretSection({
                                     Nos Coffrets Cadeaux                           
                                                 
                                 </h1>  
-                                {showViewAll && themeFilteredCoffrets.length >= 3 && (
+                                {showViewAll && themeFilteredCoffrets.length > 3 && (
                                                     <Button 
                                         size="sm" 
                                         className="w-full hidden lg:inline-flex sm:w-auto group bg-primary mt-4 hover:bg-primary/90 text-primary-foreground h-12 sm:h-13 px-8 rounded-full text-base font-medium transition-all duration-300 ease-out hover:scale-105"
@@ -243,7 +243,7 @@ export function CoffretSection({
                     </div>
 
                 {/* Mobile CTA */}
-                {showViewAll && themeFilteredCoffrets.length >= 3 && (
+                {showViewAll && themeFilteredCoffrets.length > 3 && (
                     <div className="mt-4 md:mt-16 lg:hidden text-center">
                         <Button 
                             asChild 
