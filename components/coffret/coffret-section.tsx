@@ -19,7 +19,7 @@ interface CoffretSectionProps {
 }
 
 export function CoffretSection({
-    limit = 4,
+    limit = 3,
     showViewAll = true,
 }: CoffretSectionProps) {
     const { themeKey, theme } = useFeteTheme();
@@ -203,7 +203,7 @@ export function CoffretSection({
           
 
                 {/* Grid - Clean Swiss Layout */}
-                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 container p-4 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 container p-4 gap-8">
                         {displayedCoffrets.map((coffret, index) => {
                             const productNames = coffret.productIds
                                 ?.map(id => productMap.get(id)?.name)
