@@ -101,7 +101,7 @@ export function CoffretSection({
         if (a.theme !== themeKey && b.theme === themeKey) return 1
         return 0
     });
-    const displayedCoffrets = coffretWithTheme.slice(0, limit)
+    const displayedCoffrets = coffretWithTheme.slice(0, limit).reverse()
 
         return (
         <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4 z-0 shadow-inner relative">
