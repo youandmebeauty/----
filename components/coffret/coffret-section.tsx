@@ -103,12 +103,17 @@ export function CoffretSection({
     });
 
     // If a theme is applied, only show coffrets that match that theme.
-    // Do not fall back to other themes: if there are 0 themed items, hide the section.
+    // If there are none for the current theme, fall back to coffrets with theme "none".
+    // If still none, hide the section.
     let themeFilteredCoffrets = coffretWithTheme
     if (themeKey !== "none") {
         themeFilteredCoffrets = coffretWithTheme.filter(c => c.theme === themeKey)
         if (themeFilteredCoffrets.length === 0) {
-            return null
+            const noneThemeCoffrets = coffretWithTheme.filter(c => c.theme === "none")
+            if (noneThemeCoffrets.length === 0) {
+                return null
+            }
+            themeFilteredCoffrets = noneThemeCoffrets
         }
     }
 
