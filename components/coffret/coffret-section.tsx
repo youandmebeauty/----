@@ -101,7 +101,18 @@ export function CoffretSection({
         if (a.theme !== themeKey && b.theme === themeKey) return 1
         return 0
     });
-    const displayedCoffrets = coffretWithTheme.slice(0, limit).reverse()
+
+    // If a theme is applied, only show coffrets that match that theme.
+    // Do not fall back to other themes: if there are 0 themed items, hide the section.
+    let themeFilteredCoffrets = coffretWithTheme
+    if (themeKey !== "none") {
+        themeFilteredCoffrets = coffretWithTheme.filter(c => c.theme === themeKey)
+        if (themeFilteredCoffrets.length === 0) {
+            return null
+        }
+    }
+
+    const displayedCoffrets = themeFilteredCoffrets.slice(0, limit).reverse()
 
         return (
         <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4 z-0 shadow-inner relative">
@@ -203,7 +214,7 @@ export function CoffretSection({
           
 
                 {/* Grid - Clean Swiss Layout */}
-                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 container p-4 gap-8">
+                    <div className="grid grid-cols-3 md:grid-cols-3 lg:grid-cols-3 container p-4 gap-8">
                         {displayedCoffrets.map((coffret, index) => {
                             const productNames = coffret.productIds
                                 ?.map(id => productMap.get(id)?.name)
