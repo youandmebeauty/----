@@ -117,7 +117,7 @@ export function CoffretSection({
         }
     }
 
-    const displayedCoffrets = themeFilteredCoffrets.slice(0, limit).reverse()
+    const displayedCoffrets = themeFilteredCoffrets.slice(0, limit)
 
         return (
         <div className="py-10 mt-10 bg-background border border-border/50 rounded-3xl m-4 z-0 shadow-inner relative">
@@ -174,7 +174,7 @@ export function CoffretSection({
                                     Nos Coffrets Cadeaux                           
                                                 
                                 </h1>  
-                                {showViewAll && (
+                                {showViewAll && themeFilteredCoffrets.length >= 3 && (
                                                     <Button 
                                         size="sm" 
                                         className="w-full hidden lg:inline-flex sm:w-auto group bg-primary mt-4 hover:bg-primary/90 text-primary-foreground h-12 sm:h-13 px-8 rounded-full text-base font-medium transition-all duration-300 ease-out hover:scale-105"
@@ -204,7 +204,7 @@ export function CoffretSection({
                                     Nos Packs Exclusifs                           
                                                 
                                 </h1>  
-                                {showViewAll && (
+                                {showViewAll && themeFilteredCoffrets.length >= 3 && (
                                                     <Button 
                                         size="sm" 
                                         className="w-full hidden lg:inline-flex sm:w-auto group bg-primary mt-4 hover:bg-primary/90 text-primary-foreground h-12  px-8 rounded-full text-base font-medium transition-all duration-300 ease-out hover:scale-105"
@@ -243,7 +243,7 @@ export function CoffretSection({
                     </div>
 
                 {/* Mobile CTA */}
-                {showViewAll && (
+                {showViewAll && themeFilteredCoffrets.length >= 3 && (
                     <div className="mt-4 md:mt-16 lg:hidden text-center">
                         <Button 
                             asChild 
