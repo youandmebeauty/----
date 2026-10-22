@@ -23,8 +23,6 @@ function generateCreativeLayout(count: number) {
   
   for (let i = 0; i < count; i++) {
     // Create organic size distribution
-    const rand = Math.random()
- 
     
     // Dramatic rotations for visual interest
     const rotation = -8 + Math.random() * 16

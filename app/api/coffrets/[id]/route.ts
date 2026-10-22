@@ -3,6 +3,7 @@ import { revalidateTag } from "next/cache"
 import type { Coffret } from "@/lib/models/models"
 import { notifyCoffretIndexing } from "@/lib/services/google-indexing-service"
 import { generateSlug } from "@/lib/urls/product-url"
+import { verifyAdminToken } from "@/lib/utils/auth-utils"
 
 const COFFRETS_COLLECTION = "coffrets"
 
@@ -11,6 +12,10 @@ export async function PUT(
     { params }: { params: Promise<{ id: string }> } // ✅ params is now a Promise
 ) {
     try {
+        const auth = await verifyAdminToken(request)
+        if (!auth.valid) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
         const { id } = await params // ✅ await params
         const updates: Partial<Omit<Coffret, "id" | "createdAt">> = await request.json()
 
@@ -103,6 +108,10 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> } // ✅ params is now a Promise
 ) {
     try {
+        const auth = await verifyAdminToken(request)
+        if (!auth.valid) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
         const { id } = await params // ✅ await params
 
         if (!id) {

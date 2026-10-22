@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server"
 import nodemailer from "nodemailer"
 import { generateCustomerEmailBody, generateAdminEmailBody } from "@/lib/services/email-service"
+import { adminDb } from "@/lib/utils/firebase-admin-util"
 
 // Gmail SMTP configuration
 const transporter = nodemailer.createTransport({
@@ -32,6 +33,19 @@ export async function POST(request: NextRequest) {
         { success: false, error: "Invalid order data - missing email or customer name" },
         { status: 400 }
       )
+    }
+
+    if (typeof order.id !== "string" || !order.id) {
+      return NextResponse.json(
+        { success: false, error: "Invalid order data - missing order id" },
+        { status: 400 }
+      )
+    }
+
+    const orderSnapshot = await adminDb.collection("orders").doc(order.id).get()
+    const storedOrder = orderSnapshot.data()
+    if (!orderSnapshot.exists || storedOrder?.email !== order.email) {
+      return NextResponse.json({ success: false, error: "Order not found" }, { status: 404 })
     }
 
     // Validate environment variables

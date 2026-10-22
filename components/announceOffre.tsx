@@ -6,7 +6,6 @@ export function AnnounceOffre() {
   if (!theme || theme.key === "none") return null
 
   const announcementText = theme.announcementText || ""
-  const icon = theme.icons && theme.icons.length > 0 ? theme.icons[0] : "🎁"
 
   const gradientFrom = theme.colors.primary || "#FF0055"
   const gradientTo = theme.colors.secondary || theme.colors.primary || "#FF66AA"

@@ -12,7 +12,7 @@ interface MetricsCardProps {
     format?: "currency" | "number"
 }
 
-export function MetricsCard({ title, value, change, icon, format = "number" }: MetricsCardProps) {
+export function MetricsCard({ title, value, change, icon }: MetricsCardProps) {
     const isPositive = change !== undefined && change >= 0
 
     return (

@@ -55,7 +55,6 @@ export default function GoogleAnalytics() {
     const activeUsers = parseInt(row.metricValues[0].value, 10);
     
     // Format date from YYYYMMDD to readable format
-    const year = dateStr.substring(0, 4);
     const month = dateStr.substring(4, 6);
     const day = dateStr.substring(6, 8);
     const formattedDate = `${month}/${day}`;

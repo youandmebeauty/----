@@ -4,13 +4,14 @@ import nodemailer from "nodemailer"
 import { z } from "zod"
 import { adminDb } from "@/lib/utils/firebase-admin-util"
 import { Timestamp } from "firebase-admin/firestore"
+import { createHash } from "node:crypto"
 
 // Schema de validation Zod
 const contactSchema = z.object({
-  name: z.string().min(2, "Le nom doit contenir au moins 2 caractères"),
-  email: z.string().email("Format d'email invalide"),
-  subject: z.string().min(5, "Le sujet doit contenir au moins 5 caractères"),
-  message: z.string().min(10, "Le message doit contenir au moins 10 caractères"),
+  name: z.string().trim().min(2, "Le nom doit contenir au moins 2 caractères").max(100),
+  email: z.string().trim().email("Format d'email invalide").max(320),
+  subject: z.string().trim().min(5, "Le sujet doit contenir au moins 5 caractères").max(200),
+  message: z.string().trim().min(10, "Le message doit contenir au moins 10 caractères").max(5000),
 })
 
 // Configuration SMTP Gmail
@@ -53,7 +54,8 @@ export async function POST(request: NextRequest) {
 
     if (ip !== "unknown") {
       const rateLimitRef = adminDb.collection("rate_limits")
-      const docRef = rateLimitRef.doc(`contact_${ip}`)
+      const ipKey = createHash("sha256").update(ip).digest("hex")
+      const docRef = rateLimitRef.doc(`contact_${ipKey}`)
 
       const doc = await docRef.get()
 
@@ -137,6 +139,10 @@ export async function POST(request: NextRequest) {
 }
 
 function generateAdminEmailBody({ name, email, subject, message }: any): string {
+  const safeName = escapeHtml(name)
+  const safeEmail = escapeHtml(email)
+  const safeSubject = escapeHtml(subject)
+  const safeMessage = escapeHtml(message)
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="background-color: #45062E; padding: 20px; text-align: center;">
@@ -151,15 +157,15 @@ function generateAdminEmailBody({ name, email, subject, message }: any): string 
           <table style="width: 100%; border-collapse: collapse;">
             <tr>
               <td style="padding: 8px 0; font-weight: bold; color: #666;">Nom:</td>
-              <td style="padding: 8px 0;">${name}</td>
+              <td style="padding: 8px 0;">${safeName}</td>
             </tr>
             <tr>
               <td style="padding: 8px 0; font-weight: bold; color: #666;">Email:</td>
-              <td style="padding: 8px 0;"><a href="mailto:${email}" style="color: #45062E;">${email}</a></td>
+              <td style="padding: 8px 0;"><a href="mailto:${safeEmail}" style="color: #45062E;">${safeEmail}</a></td>
             </tr>
             <tr>
               <td style="padding: 8px 0; font-weight: bold; color: #666;">Sujet:</td>
-              <td style="padding: 8px 0;">${subject}</td>
+              <td style="padding: 8px 0;">${safeSubject}</td>
             </tr>
           </table>
         </div>
@@ -167,7 +173,7 @@ function generateAdminEmailBody({ name, email, subject, message }: any): string 
         <div style="background-color: white; padding: 20px; border-radius: 8px;">
           <h3 style="color: #45062E; margin-top: 0;">Message</h3>
           <div style="background-color: #f8f8f8; padding: 15px; border-radius: 4px; border-left: 4px solid #45062E;">
-            <p style="margin: 0; line-height: 1.6; white-space: pre-wrap;">${message}</p>
+            <p style="margin: 0; line-height: 1.6; white-space: pre-wrap;">${safeMessage}</p>
           </div>
         </div>
       </div>
@@ -176,6 +182,8 @@ function generateAdminEmailBody({ name, email, subject, message }: any): string 
 }
 
 function generateCustomerEmailBody({ name, subject }: any): string {
+  const safeName = escapeHtml(name)
+  const safeSubject = escapeHtml(subject)
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <div style="background-color: #45062E; padding: 20px; text-align: center;">
@@ -186,14 +194,24 @@ function generateCustomerEmailBody({ name, subject }: any): string {
         <h2 style="color: #45062E; margin-bottom: 20px;">Merci de nous avoir contacté!</h2>
         
         <div style="background-color: white; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
-          <p style="margin: 0 0 15px 0; font-size: 16px;">Cher(e) ${name},</p>
+          <p style="margin: 0 0 15px 0; font-size: 16px;">Cher(e) ${safeName},</p>
           
           <p style="margin: 0 0 15px 0; line-height: 1.6;">
             Merci d'avoir contacté You & Me Beauty! Nous avons bien reçu votre message concernant 
-            "<strong>${subject}</strong>".
+            "<strong>${safeSubject}</strong>".
           </p>
         </div>
       </div>
     </div>
   `
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  }[character] ?? character))
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { adminDb } from "@/lib/utils/firebase-admin-util"
 import { revalidateProducts } from "@/lib/utils/revalidate-util"
 import type { Order } from "@/lib/models/models"
+import { verifyAdminToken } from "@/lib/utils/auth-utils"
 
 const PRODUCTS_COLLECTION = "products"
 const COFFRETS_COLLECTION = "coffrets"
@@ -122,6 +123,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await verifyAdminToken(request)
+    if (!auth.valid) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const { id } = await params
     const orderDoc = await adminDb.collection(ORDERS_COLLECTION).doc(id).get()
 
@@ -152,15 +157,21 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const auth = await verifyAdminToken(request)
+    if (!auth.valid) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const { id } = await params
     const { status } = await request.json()
 
-    if (!status) {
+    const allowedStatuses = new Set(["pending", "processing", "shipped", "delivered", "cancelled"])
+    if (typeof status !== "string" || !allowedStatuses.has(status)) {
       return NextResponse.json(
-        { error: "Status is required" },
+        { error: "Invalid status" },
         { status: 400 }
       )
     }
+    const nextStatus = status as Order["status"]
 
     const orderRef = adminDb.collection(ORDERS_COLLECTION).doc(id)
     const orderDoc = await orderRef.get()
@@ -176,7 +187,7 @@ export async function PATCH(
     const previousStatus = orderData.status
 
     // If status is unchanged, just return current order
-    if (status === previousStatus) {
+    if (nextStatus === previousStatus) {
       const currentOrder: Order = {
         ...orderData,
         id,
@@ -186,11 +197,11 @@ export async function PATCH(
 
 
     // Update order status after any necessary stock changes
-    await orderRef.update({ status })
+    await orderRef.update({ status: nextStatus })
 
     // Revalidate products cache because stock changes occurred
     try {
-      await revalidateProducts("order-status-change", { id, status, previousStatus })
+      await revalidateProducts("order-status-change", { id, status: nextStatus, previousStatus })
     } catch (e) {
       console.warn("Failed to revalidate products after order status change:", e)
     }
@@ -199,7 +210,7 @@ export async function PATCH(
     const updatedOrder: Order = {
       ...orderData,
       id,
-      status
+      status: nextStatus
     }
 
     return NextResponse.json(updatedOrder)

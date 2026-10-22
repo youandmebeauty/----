@@ -35,6 +35,9 @@ export async function sendOrderConfirmationEmail(order: Order): Promise<boolean>
 }
 
 function generateCustomerEmailBody(order: Order): string {
+  const customerName = escapeHtml(order.customerName)
+  const orderId = escapeHtml(order.id)
+  const safePromoCode = order.promoCode ? escapeHtml(order.promoCode) : ""
   const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingCost = subtotal > 200 ? 0 : 8;
   const discount = order.discount || 0;
@@ -44,7 +47,7 @@ function generateCustomerEmailBody(order: Order): string {
     .map(
       (item) =>
         `<tr>
-      <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${escapeHtml(item.name)}</td>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.quantity}</td>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.price.toFixed(2)} DT</td>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${(item.price * item.quantity).toFixed(2)} DT</td>
@@ -60,14 +63,14 @@ function generateCustomerEmailBody(order: Order): string {
       
       <div style="padding: 20px;">
         <h2>Merci pour votre commande !</h2>
-        <p>Bonjour ${order.customerName},</p>
+        <p>Bonjour ${customerName},</p>
         <p>Nous avons bien reçu votre commande et nous y travaillons actuellement. Voici un récapitulatif de votre achat :</p>
         
         <div style="margin: 20px 0;">
           <h3>Récapitulatif de la commande</h3>
-          <p><strong>Numéro de commande :</strong> #${order.id}</p>
+          <p><strong>Numéro de commande :</strong> #${orderId}</p>
           <p><strong>Date de commande :</strong> ${new Date(order.createdAt).toLocaleDateString('fr-FR')}</p>
-          ${promoCode ? `<p><strong>Code promo utilisé :</strong> <span style="color: #16a34a; font-weight: bold;">${promoCode}</span></p>` : ''}
+          ${promoCode ? `<p><strong>Code promo utilisé :</strong> <span style="color: #16a34a; font-weight: bold;">${safePromoCode}</span></p>` : ''}
           
           <table style="width: 100%; border-collapse: collapse;">
             <thead>
@@ -127,6 +130,15 @@ function generateCustomerEmailBody(order: Order): string {
 }
 
 function generateAdminEmailBody(order: Order): string {
+  const customerName = escapeHtml(order.customerName)
+  const email = escapeHtml(order.email)
+  const phone = escapeHtml(order.phone)
+  const address = escapeHtml(order.address)
+  const city = escapeHtml(order.city)
+  const postalCode = escapeHtml(String(order.postalCode))
+  const gouvernorat = escapeHtml(order.gouvernorat)
+  const orderId = escapeHtml(order.id)
+  const safePromoCode = order.promoCode ? escapeHtml(order.promoCode) : ""
   const subtotal = order.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const shippingCost = subtotal > 200 ? 0 : 8;
   const discount = order.discount || 0;
@@ -136,7 +148,7 @@ function generateAdminEmailBody(order: Order): string {
     .map(
       (item) =>
         `<tr>
-      <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.name}</td>
+      <td style="padding: 10px; border-bottom: 1px solid #eee;">${escapeHtml(item.name)}</td>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.quantity}</td>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${item.price.toFixed(2)} DT</td>
       <td style="padding: 10px; border-bottom: 1px solid #eee;">${(item.price * item.quantity).toFixed(2)} DT</td>
@@ -152,12 +164,12 @@ function generateAdminEmailBody(order: Order): string {
       
       <div style="padding: 20px;">
         <h2>Nouvelle commande reçue</h2>
-        <p><strong>Numéro de commande :</strong> #${order.id}</p>
+        <p><strong>Numéro de commande :</strong> #${orderId}</p>
         <p><strong>Date de commande :</strong> ${new Date(order.createdAt).toLocaleDateString('fr-FR')}</p>
-        <p><strong>Client :</strong> ${order.customerName}</p>
-        <p><strong>Email :</strong> ${order.email}</p>
-        <p><strong>Téléphone :</strong> ${order.phone || "Non fourni"}</p>
-        ${promoCode ? `<p><strong>Code promo utilisé :</strong> <span style="color: #16a34a; font-weight: bold;">${promoCode}</span> ${discount > 0 ? `(-${discount.toFixed(2)} DT)` : ''}</p>` : ''}
+        <p><strong>Client :</strong> ${customerName}</p>
+        <p><strong>Email :</strong> ${email}</p>
+        <p><strong>Téléphone :</strong> ${phone || "Non fourni"}</p>
+        ${promoCode ? `<p><strong>Code promo utilisé :</strong> <span style="color: #16a34a; font-weight: bold;">${safePromoCode}</span> ${discount > 0 ? `(-${discount.toFixed(2)} DT)` : ''}</p>` : ''}
         
         <div style="margin: 20px 0;">
           <h3>Détails de la commande</h3>
@@ -199,16 +211,16 @@ function generateAdminEmailBody(order: Order): string {
         
         <div style="margin: 20px 0;">
           <h3>Adresse de livraison</h3>
-          <p>${order.customerName}<br>
-          ${order.address}<br>
-          ${order.city}, ${order.postalCode}<br>
-          ${order.gouvernorat}</p>
+          <p>          ${customerName}<br>
+          ${address}<br>
+          ${city}, ${postalCode}<br>
+          ${gouvernorat}</p>
         </div>
         
         ${order.notes
       ? `<div style="margin: 20px 0;">
           <h3>Notes du client</h3>
-          <p>${order.notes}</p>
+          <p>${escapeHtml(order.notes)}</p>
         </div>`
       : ""
     }
@@ -221,3 +233,13 @@ function generateAdminEmailBody(order: Order): string {
 
 // Export the email generation functions so they can be used server-side
 export { generateCustomerEmailBody, generateAdminEmailBody }
+
+function escapeHtml(value: string | null | undefined): string {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;",
+  }[character] ?? character))
+}

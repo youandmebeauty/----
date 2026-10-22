@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 import { adminDb } from '@/lib/utils/firebase-admin-util'
+import { verifyAdminToken } from '@/lib/utils/auth-utils'
+import { NextRequest } from 'next/server'
 
 const DOC_PATH = 'config/fete_theme'
 
@@ -19,11 +21,15 @@ export async function GET() {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    const auth = await verifyAdminToken(request)
+    if (!auth.valid) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const body = await request.json()
-    const { key } = body
-    if (!key) return NextResponse.json({ error: 'Missing key' }, { status: 400 })
+    const key = typeof body?.key === 'string' ? body.key.trim() : ''
+    if (!/^[a-z0-9_-]{1,64}$/i.test(key)) {
+      return NextResponse.json({ error: 'Invalid key' }, { status: 400 })
+    }
 
     const ref = adminDb.doc ? adminDb.doc(DOC_PATH) : adminDb.collection('config').doc('fete_theme')
     await ref.set({ key }, { merge: true })

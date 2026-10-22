@@ -5,15 +5,20 @@ import { adminDb } from "@/lib/utils/firebase-admin-util"
 import { revalidateTag } from "next/cache"
 import { Timestamp } from "firebase-admin/firestore"
 import type { Product } from "@/lib/models/models"
+import { verifyAdminToken } from "@/lib/utils/auth-utils"
 
 const PRODUCTS_COLLECTION = "products"
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string; variantIndex: string } }
+  { params }: { params: Promise<{ id: string; variantIndex: string }> }
 ) {
   try {
-    const { id, variantIndex } = params
+    const auth = await verifyAdminToken(request)
+    if (!auth.valid) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+    const { id, variantIndex } = await params
     const { quantity } = await request.json()
 
     const variantIdx = parseInt(variantIndex, 10)

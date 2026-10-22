@@ -1,4 +1,4 @@
-import type { Product, Order } from "@/lib/models/models"
+import type { Product } from "@/lib/models/models"
 
 export interface OrderAnalytics {
     totalRevenue: number

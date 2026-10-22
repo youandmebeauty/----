@@ -11,7 +11,6 @@ interface CameraViewProps {
 export function CameraView({ onCapture, onCancel, onError }: CameraViewProps) {
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const photoCanvasRef = useRef<HTMLCanvasElement | null>(null);
-    const [isScanning, setIsScanning] = useState(true);
 
     useEffect(() => {
         let stream: MediaStream | null = null;

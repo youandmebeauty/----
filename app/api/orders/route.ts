@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { adminDb } from "@/lib/utils/firebase-admin-util"
 import type { Order } from "@/lib/models/models"
 import { sendConversionEventFromServer } from "@/lib/services/meta-events"
+import { verifyAdminToken } from "@/lib/utils/auth-utils"
 
 const PRODUCTS_COLLECTION = "products"
 const COFFRETS_COLLECTION = "coffrets"
@@ -214,8 +215,12 @@ try {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = await verifyAdminToken(request)
+    if (!auth.valid) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
     const ordersSnapshot = await adminDb
       .collection(ORDERS_COLLECTION)
       .orderBy("createdAt", "desc")

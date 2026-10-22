@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useToast } from "@/hooks/use-toast"
 import { getCoffretById, updateCoffret,deleteCoffret } from "@/lib/services/coffret-service"
 import { getProducts } from "@/lib/services/product-service"
-import type { Coffret, Product } from "@/lib/models/models"
+import type { Product } from "@/lib/models/models"
 import { ArrowLeft, Image as ImageIcon, X, Plus, Trash2, Package, SearchX, Search, CheckCircle2 } from "lucide-react"
 import { CldUploadWidget } from 'next-cloudinary'
 
@@ -36,7 +36,6 @@ function EditCoffretContent() {
     const { toast } = useToast()
     const [loading, setLoading] = useState(false)
     const [dataLoading, setDataLoading] = useState(true)
-      const [coffretData, setCoffretData] = useState<Coffret | null>(null)
     
     const [products, setProducts] = useState<Product[]>([])
     const [formData, setFormData] = useState({
@@ -88,7 +87,6 @@ const handleDelete = async () => {
                     getCoffretById(id)
                 ])
                 setProducts(productsData)
-                setCoffretData(coffretData)
                 if (coffretData) {
                     
                     setFormData({

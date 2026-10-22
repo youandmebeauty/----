@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
 import { AdminRouteGuard } from "@/components/admin/admin-route-guard"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -9,10 +8,9 @@ import { Package, ShoppingCart, Users, DollarSign, LogOut, TrendingUp, BarChart3
 import { useToast } from "@/hooks/use-toast"
 import { useAuth } from "@/hooks/use-auth"
 import { getProducts } from "@/lib/services/product-service"
-import { getCoffrets } from "@/lib/services/coffret-service"
 import { getOrders } from "@/lib/services/order-service"
 import { getAnalytics } from "@/lib/services/analytics-service"
-import type { Product, Order, Coffret } from "@/lib/models/models"
+import type { Product } from "@/lib/models/models"
 import type { AnalyticsPeriod } from "@/lib/services/analytics-service"
 import { MetricsCard } from "@/components/admin/metrics-card"
 import { LoadingAnimation } from "@/components/ui/loading-animation"
@@ -28,7 +26,6 @@ const getCreatedAtMillis = (product: Product): number => {
 }
 
 function DashboardContent() {
-  const router = useRouter()
   const { toast } = useToast()
   const { signOut } = useAuth()
   const [loading, setLoading] = useState(true)
@@ -47,9 +44,8 @@ function DashboardContent() {
   const fetchData = async () => {
     try {
       setLoading(true)
-      const [productsData, coffretsData, ordersData, analyticsData] = await Promise.all([
+      const [productsData, ordersData, analyticsData] = await Promise.all([
         getProducts(),
-        getCoffrets(),
         getOrders(),
         getAnalytics(),
       ])

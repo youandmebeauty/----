@@ -4,11 +4,16 @@ import type { Coffret } from "@/lib/models/models"
 import { Timestamp } from "firebase-admin/firestore"
 import { notifyCoffretIndexing } from "@/lib/services/google-indexing-service"
 import { generateSlug } from "@/lib/urls/product-url"
+import { verifyAdminToken } from "@/lib/utils/auth-utils"
 
 const COFFRETS_COLLECTION = "coffrets"
 
 export async function POST(request: NextRequest) {
     try {
+        const auth = await verifyAdminToken(request)
+        if (!auth.valid) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+        }
         const coffret: Omit<Coffret, "id" | "createdAt" | "updatedAt"> & Partial<Pick<Coffret, "quantity">> = await request.json()
 
         // Validate coffret data

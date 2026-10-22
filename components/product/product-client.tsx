@@ -203,9 +203,6 @@ export function ProductClient({ product }: ProductClientProps) {
 
     const inStock = displayQuantity > cartQuantity
     const remainingStock = displayQuantity - cartQuantity
-    const Slug = generateSlug(product.name, { 
-        includeBrand: product.brand 
-    })
   
     const categoryLabel = getCategoryLabel(product.category)
     const breadcrumbItems = [

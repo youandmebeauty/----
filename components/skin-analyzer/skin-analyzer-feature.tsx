@@ -324,8 +324,8 @@ export default function SkinAnalyzerFeature() {
     const [groupedDetections, setGroupedDetections] = useState<GroupedDetection[]>([]);
     const [useCamera, setUseCamera] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState(false);
     const [isClient, setIsClient] = useState(false);
+    const [, setLoading] = useState(false);
 
     useEffect(() => {
         setIsClient(true);

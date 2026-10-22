@@ -13,7 +13,7 @@ interface AdminRouteGuardProps {
 }
 
 export function AdminRouteGuard({ children }: AdminRouteGuardProps) {
-  const { user, loading, isAdmin, hasValidToken } = useAuth()
+  const { loading, isAdmin, hasValidToken } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
