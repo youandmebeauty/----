@@ -29,7 +29,9 @@ const nextConfig = {
 
   // Empty turbopack config to silence warning
   turbopack: {},
-
+outputFileTracingIncludes: {
+  "/api/models": ["./private-models/**/*"],
+},
   async headers() {
     return [
       {

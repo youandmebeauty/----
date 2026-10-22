@@ -316,7 +316,7 @@ const ScrollStack: React.FC<ScrollStackProps> = ({
       cardOffsetsRef.current = [];
       lastTransformsRef.current.clear();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+     
   }, [itemDistance, useWindowScroll]);
 
   if (useWindowScroll) {
