@@ -3,9 +3,21 @@
 import { useEffect, useRef } from "react"
 
 declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      'model-viewer': any
+  namespace React {
+    namespace JSX {
+      interface IntrinsicElements {
+        'model-viewer': React.DetailedHTMLProps<React.HTMLAttributes<HTMLElement>, HTMLElement> & {
+          src?: string
+          alt?: string
+          exposure?: string
+          "shadow-intensity"?: string
+          "shadow-softness"?: string
+          "lighting-environment"?: string
+          "auto-rotate"?: boolean
+          "camera-controls"?: boolean
+          "disable-zoom"?: boolean
+        }
+      }
     }
   }
 }

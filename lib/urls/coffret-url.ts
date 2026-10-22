@@ -125,7 +125,7 @@ export function getCoffretStructuredData(coffret: Coffret, baseUrl: string) {
       "@type": "Offer",
       "price": coffret.price.toFixed(2),
       "priceCurrency": "TND",
-      "availability": coffret.stock === 0 
+      "availability": (coffret.quantity ?? 0) === 0 
         ? "https://schema.org/OutOfStock" 
         : "https://schema.org/InStock",
       "url": url,
