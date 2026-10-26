@@ -222,9 +222,6 @@ importers:
       three:
         specifier: 0.181.2
         version: 0.181.2
-      uuid:
-        specifier: 11.1.1
-        version: 11.1.1
       vaul:
         specifier: ^1.1.2
         version: 1.1.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -10178,7 +10175,8 @@ snapshots:
       base64-arraybuffer: 1.0.2
     optional: true
 
-  uuid@11.1.1: {}
+  uuid@11.1.1:
+    optional: true
 
   vaul@1.1.2(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1):
     dependencies:
