@@ -1,6 +1,7 @@
 "use client"
 
 import { ScrollAnimation } from "../navigation/scroll-animation";
+import { useIsMobile } from "@/hooks/use-mobile";
 const categories = [
   {
     id: "soins",
@@ -41,6 +42,8 @@ const categories = [
 
 
 export  function Categories() {
+  const isMobile = useIsMobile();
+
   return (
     <div className="relative  bg-background">
      
@@ -50,6 +53,7 @@ export  function Categories() {
           duration={0.7}
           stagger={0.2}
           delay={0.2}
+          disabled={isMobile}
          className="mb-10 text-center">
           <div className="inline-flex items-center gap-2 mb-4">
                             <div className="h-px w-12 bg-gradient-to-r from-transparent to-primary"></div>
@@ -69,6 +73,7 @@ export  function Categories() {
           duration={0.7}
           delay={0.2}
           ease="expo"
+          disabled={isMobile}
           className="grid grid-cols-2 -my-10 md:my-16 gap-8 md:grid-cols-4 lg:grid-cols-4 scale-90 md:scale-100  mx-auto"
         >
           {categories.map((category) => (

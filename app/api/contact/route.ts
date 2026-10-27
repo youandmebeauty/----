@@ -35,15 +35,19 @@ const RATE_LIMIT_DURATION = 15 * 60 * 1000 // 15 minutes
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-
+    
     // 1. Validation Zod
     const result = contactSchema.safeParse(body)
     if (!result.success) {
       return NextResponse.json(
-        { success: false, error: result.error.errors[0].message },
+        {
+          success: false,
+          error: result.error.issues[0]?.message ?? "Données invalides.",
+        },
         { status: 400 }
       )
     }
+
 
     const { name, email, subject, message } = result.data
 
