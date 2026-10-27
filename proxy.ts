@@ -20,7 +20,7 @@ export function proxy(request: NextRequest) {
     "img-src 'self' data: https: https://firebasestorage.googleapis.com https://lh3.googleusercontent.com",
     "font-src 'self' https://fonts.gstatic.com",
     "connect-src 'self' https://ajax.googleapis.com/ https://connect.facebook.net https://www.google-analytics.com https://region1.google-analytics.com https://www.gstatic.com https://www.googleapis.com https://firebase.googleapis.com https://firebaseinstallations.googleapis.com https://firestore.googleapis.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://cdn.jsdelivr.net https://api.cloudinary.com https://res.cloudinary.com https://api.bigdatacloud.net https://api.open-meteo.com https://mpc-prod-25-s6uit34pua-wl.a.run.app https://demo-1.conversionsapigateway.com",
-    "frame-src 'self' https://www.google.com/ https://www.facebook.com https://widget.cloudinary.com https://upload-widget.cloudinary.com",
+    "frame-src 'self' https://youandme-bdf15.firebaseapp.com https://www.google.com/ https://www.facebook.com https://widget.cloudinary.com https://upload-widget.cloudinary.com",
     "worker-src 'self' blob:",
     "object-src 'none'",
     "base-uri 'self'",
