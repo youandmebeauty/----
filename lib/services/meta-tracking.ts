@@ -26,6 +26,8 @@ export interface ConversionsAPIPayload {
       st?: string // state
       zp?: string // postal code
       country?: string
+      client_ip_address?: string
+      client_user_agent?: string
     }
     custom_data?: {
       value?: number
@@ -267,6 +269,8 @@ export async function sendToConversionsAPI(
   userData?: {
     email?: string
     phone?: string
+    clientIpAddress?: string
+    clientUserAgent?: string
   }
 ): Promise<Response | null> {
   const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID
@@ -277,12 +281,29 @@ export async function sendToConversionsAPI(
     return null
   }
 
-  if (!pixelId) {
+  const trimmedPixelId = pixelId?.trim()
+  if (!trimmedPixelId) {
     console.error('NEXT_PUBLIC_META_PIXEL_ID not configured')
     return null
   }
 
   const eventTime = Math.floor(Date.now() / 1000)
+
+  const customDataPayload: NonNullable<ConversionsAPIPayload['data'][number]['custom_data']> = {
+    currency: 'TND',
+  }
+  if (typeof customData?.value === 'number' && Number.isFinite(customData.value)) {
+    customDataPayload.value = customData.value
+  }
+  if (customData?.contentIds?.length) {
+    customDataPayload.content_ids = customData.contentIds
+  }
+  if (customData?.contentName) {
+    customDataPayload.content_name = customData.contentName
+  }
+  if (typeof customData?.numItems === 'number' && Number.isFinite(customData.numItems)) {
+    customDataPayload.num_items = customData.numItems
+  }
 
   const payload: ConversionsAPIPayload = {
     data: [
@@ -291,26 +312,28 @@ export async function sendToConversionsAPI(
         event_time: eventTime,
         event_id: eventId,
         action_source: 'website',
-        custom_data: {
-          value: customData?.value,
-          currency: 'TND',
-          content_ids: customData?.contentIds,
-          content_name: customData?.contentName,
-          num_items: customData?.numItems,
-        },
+        custom_data: customDataPayload,
       },
     ],
     access_token: accessToken,
   }
 
-  // Add user data if provided (email/phone should be hashed on client before sending)
   if (userData?.email || userData?.phone) {
     payload.data[0].user_data = {}
     if (userData.email) payload.data[0].user_data!.em = userData.email
     if (userData.phone) payload.data[0].user_data!.ph = userData.phone
   }
+  if (userData?.clientIpAddress) {
+    payload.data[0].user_data ??= {}
+    payload.data[0].user_data.client_ip_address = userData.clientIpAddress
+  }
+  if (userData?.clientUserAgent) {
+    payload.data[0].user_data ??= {}
+    payload.data[0].user_data.client_user_agent = userData.clientUserAgent
+  }
 
-  const url = `https://graph.facebook.com/v18.0/${pixelId}/events`
+  const apiVersion = process.env.META_GRAPH_API_VERSION?.trim() || 'v24.0'
+  const url = `https://graph.facebook.com/${apiVersion}/${encodeURIComponent(trimmedPixelId)}/events`
 
   try {
     const response = await fetch(url, {
@@ -322,9 +345,21 @@ export async function sendToConversionsAPI(
     })
 
     if (!response.ok) {
-      const errorData = await response.json()
+      const errorText = await response.text()
+      let errorData: unknown = errorText
+      try {
+        errorData = JSON.parse(errorText)
+      } catch {
+        // Keep the plain-text Meta response as the diagnostic fallback.
+      }
       console.error('Meta Conversions API error:', errorData)
-      throw new Error(`Meta API error: ${response.status}`)
+
+      const metaError = typeof errorData === 'object' && errorData !== null
+        ? (errorData as { error?: { message?: string; code?: number; error_subcode?: number } }).error
+        : undefined
+      const detail = metaError?.message
+        ?? (typeof errorData === 'string' ? errorData : 'Unknown Meta API error')
+      throw new Error(`Meta API error ${response.status}: ${detail}`)
     }
 
     return response

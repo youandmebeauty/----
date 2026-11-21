@@ -28,5 +28,6 @@ next-env.d.ts
 
 /scripts
 serviceAccountKey.json
+*-firebase-adminsdk-*.json
 /posts
 /sync

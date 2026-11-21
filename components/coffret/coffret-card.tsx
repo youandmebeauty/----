@@ -5,7 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ShoppingBag, ArrowRight, Package } from "lucide-react"
+import { ShoppingBag, Package } from "lucide-react"
 import {  getCoffretUrl } from "@/lib/urls/coffret-url"
 
 import { toast } from "../ui/use-toast"

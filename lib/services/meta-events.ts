@@ -31,7 +31,10 @@ async function sendEventToServer(
   }
 
   try {
-    await fetch('/api/meta/events', {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
+      || process.env.SITE_URL?.replace(/\/$/, '')
+      || (typeof window !== 'undefined' ? window.location.origin : '')
+    const response = await fetch(`${baseUrl}/api/meta/events`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -43,6 +46,10 @@ async function sendEventToServer(
         userData,
       }),
     })
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => null)
+      console.error('Meta server tracking failed:', errorBody)
+    }
   } catch (error) {
     console.error(`Error sending ${eventName} event to server:`, error)
   }
@@ -159,7 +166,14 @@ export async function sendConversionEventFromServer(
   const contentIds = orderItems.map(item => item.id)
 
   try {
-    await fetch('/api/meta/events', {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, '')
+      || process.env.SITE_URL?.replace(/\/$/, '')
+      || (typeof window !== 'undefined' ? window.location.origin : '')
+    if (!baseUrl) {
+      throw new Error('A public site URL is required for server-side Meta tracking')
+    }
+
+    const response = await fetch(`${baseUrl}/api/meta/events`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -178,6 +192,10 @@ export async function sendConversionEventFromServer(
         },
       }),
     })
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => null)
+      throw new Error(errorBody?.error || `Meta tracking failed with status ${response.status}`)
+    }
 
     return { success: true, eventId }
   } catch (error) {

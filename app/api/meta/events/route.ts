@@ -1,5 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendToConversionsAPI } from '@/lib/services/meta-tracking'
+import { createHash } from 'node:crypto'
+
+function sha256(value: string): string {
+  return createHash('sha256').update(value).digest('hex')
+}
+
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase()
+}
+
+function normalizePhone(phone: string): string {
+  return phone.replace(/[\s().+-]/g, '')
+}
 
 /**
  * Meta Conversions API Route Handler
@@ -37,6 +50,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (!process.env.NEXT_PUBLIC_META_PIXEL_ID?.trim()) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'NEXT_PUBLIC_META_PIXEL_ID is not configured',
+        },
+        { status: 500 }
+      )
+    }
+
     // Validate request method
     if (request.method !== 'POST') {
       return NextResponse.json(
@@ -67,11 +90,31 @@ export async function POST(request: NextRequest) {
     }
 
     // Send to Meta Conversions API
+    const hashedUserData = userData
+      ? {
+          email: typeof userData.email === 'string' && normalizeEmail(userData.email)
+            ? sha256(normalizeEmail(userData.email))
+            : undefined,
+          phone: typeof userData.phone === 'string' && normalizePhone(userData.phone)
+            ? sha256(normalizePhone(userData.phone))
+            : undefined,
+          clientIpAddress: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+            || request.headers.get('x-real-ip')?.trim()
+            || undefined,
+          clientUserAgent: request.headers.get('user-agent')?.trim() || undefined,
+        }
+      : {
+          clientIpAddress: request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+            || request.headers.get('x-real-ip')?.trim()
+            || undefined,
+          clientUserAgent: request.headers.get('user-agent')?.trim() || undefined,
+        }
+
     await sendToConversionsAPI(
       eventName,
       eventId,
       customData,
-      userData
+      hashedUserData
     )
 
     return NextResponse.json(
@@ -90,7 +133,7 @@ export async function POST(request: NextRequest) {
         success: false,
         error: error instanceof Error ? error.message : 'Failed to send event to Meta',
       },
-      { status: 500 }
+      { status: 502 }
     )
   }
 }
