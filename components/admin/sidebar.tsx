@@ -42,55 +42,53 @@ export default function Sidebar({ className = "" }: { className?: string }) {
     { href: "/admin/config", label: "Configuration", icon: <Cog className="w-5 h-5" /> },
   ]
 
-  // Get user's location
+  // Get the browser location for the weather widget.
   useEffect(() => {
-    const getLocation = () => {
-      if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const { latitude, longitude } = position.coords
-            
-            // Try to get city name using reverse geocoding
-            try {
-              const geoResponse = await fetch(
-                `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=fr`
-              )
-              const geoData = await geoResponse.json()
-              
-              setLocation({
-                latitude,
-                longitude,
-                city: geoData.city || geoData.locality || "Votre ville"
-              })
-            } catch {
-              setLocation({ latitude, longitude, city: "Votre ville" })
-            }
-            
-            setLocationError(false)
-          },
-          (error) => {
-            console.error("Error getting location:", error)
-            // Fallback to default location (Sfax)
-            setLocation({
-              latitude: 34.7398,
-              longitude: 10.7600,
-              city: "Sfax"
-            })
-            setLocationError(true)
-          }
-        )
-      } else {
-        // Geolocation not supported, use default
+    if (!("geolocation" in navigator)) {
+      setLocation({
+        latitude: 34.7398,
+        longitude: 10.7600,
+        city: "Sfax",
+      })
+      setLocationError(true)
+      return
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords
+
+        try {
+          const geoResponse = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=fr`
+          )
+          const geoData = await geoResponse.json()
+
+          setLocation({
+            latitude,
+            longitude,
+            city: geoData.city || geoData.locality || "Votre ville",
+          })
+        } catch {
+          setLocation({ latitude, longitude, city: "Votre ville" })
+        }
+
+        setLocationError(false)
+      },
+      () => {
         setLocation({
           latitude: 34.7398,
           longitude: 10.7600,
-          city: "Sfax"
+          city: "Sfax",
         })
         setLocationError(true)
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 30 * 60 * 1000,
       }
-    }
-
-    getLocation()
+    )
   }, [])
 
   // Fetch weather data based on location
