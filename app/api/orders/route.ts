@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server"
 import { adminDb } from "@/lib/utils/firebase-admin-util"
 import type { Order } from "@/lib/models/models"
-import { sendConversionEventFromServer } from "@/lib/services/meta-events"
 import { verifyAdminToken } from "@/lib/utils/auth-utils"
+import { createHash } from "node:crypto"
+import { generateEventId, sendToConversionsAPI } from "@/lib/services/meta-tracking"
 
 const PRODUCTS_COLLECTION = "products"
 const COFFRETS_COLLECTION = "coffrets"
@@ -194,12 +195,32 @@ export async function POST(request: NextRequest) {
       }
     }
 try {
-  await sendConversionEventFromServer(
-    newOrder.id,
-    newOrder.total,
-    newOrder.items,
-    newOrder.email,
-    newOrder.phone
+  const contentIds = newOrder.items.map((item: { id: string }) => item.id)
+  const hashedUserData = {
+    email: newOrder.email
+      ? createHash("sha256").update(newOrder.email.trim().toLowerCase()).digest("hex")
+      : undefined,
+    phone: newOrder.phone
+      ? createHash("sha256").update(newOrder.phone.replace(/[\s().+-]/g, "")).digest("hex")
+      : undefined,
+    clientIpAddress: request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
+      || request.headers.get("x-real-ip")?.trim()
+      || undefined,
+    clientUserAgent: request.headers.get("user-agent")?.trim() || undefined,
+  }
+
+  await sendToConversionsAPI(
+    "Lead",
+    generateEventId(),
+    {
+      value: newOrder.total,
+      contentIds,
+      numItems: newOrder.items.reduce(
+        (sum: number, item: { quantity: number }) => sum + item.quantity,
+        0
+      ),
+    },
+    hashedUserData
   )
 } catch (metaError) {
   console.error('Meta tracking error (non-fatal):', metaError)

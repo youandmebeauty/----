@@ -9,8 +9,8 @@ export function proxy(request: NextRequest) {
     .reduce((acc, byte) => acc + byte.toString(16).padStart(2, '0'), '')
 
   const scriptSrc = isDev
-    ? `script-src 'self' https://www.googletagmanager.com/gtag/ https://connect.facebook.net https://www.gstatic.com https://apis.google.com https://ajax.googleapis.com https://cdn.jsdelivr.net https://widget.cloudinary.com https://upload-widget.cloudinary.com 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' 'nonce-${nonce}'`
-    : `script-src 'self' https://www.googletagmanager.com/gtag/ https://connect.facebook.net https://www.gstatic.com https://apis.google.com https://ajax.googleapis.com https://cdn.jsdelivr.net https://widget.cloudinary.com https://upload-widget.cloudinary.com 'wasm-unsafe-eval' 'sha256-J9cZHZf5nVZbsm7Pqxc8RsURv1AIXkMgbhfrZvoOs/A=' 'sha256-UnthrFpGFotkvMOTp/ghVMSXoZZj9Y6epaMsaBAbUtg=' 'nonce-${nonce}'`
+    ? `script-src 'self' https://www.googletagmanager.com/gtag/ https://www.google.com https://connect.facebook.net https://www.gstatic.com https://apis.google.com https://ajax.googleapis.com https://cdn.jsdelivr.net https://widget.cloudinary.com https://upload-widget.cloudinary.com 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' 'nonce-${nonce}'`
+    : `script-src 'self' https://www.googletagmanager.com/gtag/ https://www.google.com https://connect.facebook.net https://www.gstatic.com https://apis.google.com https://ajax.googleapis.com https://cdn.jsdelivr.net https://widget.cloudinary.com https://upload-widget.cloudinary.com 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' 'sha256-J9cZHZf5nVZbsm7Pqxc8RsURv1AIXkMgbhfrZvoOs/A=' 'sha256-UnthrFpGFotkvMOTp/ghVMSXoZZj9Y6epaMsaBAbUtg=' 'nonce-${nonce}'`
 
   // Enforce a baseline Content Security Policy to mitigate XSS and injection.
   const csp = [
