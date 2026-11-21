@@ -16,7 +16,9 @@ const contactSchema = z.object({
 
 // Configuration SMTP Gmail
 const createTransporter = () => {
-  if (!process.env.GMAIL_USER || !process.env.GMAIL_APP_PASSWORD) {
+  const gmailUser = process.env.GMAIL_USER?.trim()
+  const gmailAppPassword = process.env.GMAIL_APP_PASSWORD?.replace(/\s/g, "")
+  if (!gmailUser || !gmailAppPassword) {
     console.warn("⚠️ Les identifiants Gmail ne sont pas configurés.")
     return null
   }
@@ -24,8 +26,8 @@ const createTransporter = () => {
   return nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_APP_PASSWORD,
+      user: gmailUser,
+      pass: gmailAppPassword,
     },
   })
 }

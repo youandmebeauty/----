@@ -1,5 +1,4 @@
 import { Metadata } from "next"
-import { headers } from "next/headers"
 import OrderConfirmationContent from "./order-confirmation-content"
 
 export const metadata: Metadata = {
@@ -24,7 +23,5 @@ export const metadata: Metadata = {
 }
 
 export default async function OrderConfirmationPage() {
-  const nonce = (await headers()).get("x-nonce") || ""
-
-  return <OrderConfirmationContent nonce={nonce} />
+  return <OrderConfirmationContent />
 }
