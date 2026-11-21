@@ -1,4 +1,5 @@
 import type React from "react"
+import type { Metadata } from "next"
 import Script from "next/script"
 import { headers } from "next/headers"
 import { Inter } from "next/font/google"
@@ -15,6 +16,21 @@ import { Header } from "@/components/navigation/header"
 
 const inter = Inter({ subsets: ["latin"] })
 import { FeteThemeProvider } from "@/components/providers/fete-theme-provider"
+
+export const metadata: Metadata = {
+  icons: {
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+      { url: "/android-chrome-192x192.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  manifest: "/site.webmanifest",
+}
 
 export default async function RootLayout({
   children,
